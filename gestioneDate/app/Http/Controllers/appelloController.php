@@ -31,7 +31,7 @@ class appelloController extends Controller
             ->pluck('ins_corso_id')
             ->toArray();
         // 2. Recupera le sessioni d'esame attive
-        $sessioni = \App\Models\Sessione::all();
+        $sessioni = Sessione::all();
         return view('appelli.create', compact('insegnamentiCorsi', 'sessioni'));
     }
 

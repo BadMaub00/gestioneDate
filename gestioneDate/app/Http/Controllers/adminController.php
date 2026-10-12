@@ -18,7 +18,7 @@ class adminController extends Controller
 
         // 2. Se non è stata specificata una sessione nell'URL, seleziona la prima/più recente di default
         if (!$sessione_id && $sessioni->isNotEmpty()) {
-            $sessione_id = $sessioni->first()->getKey();
+            $sessione_id = $sessioni->first()->getKey(); 
         }
 
         // 3. Recupera tutti gli appelli d'esame per la sessione selezionata
