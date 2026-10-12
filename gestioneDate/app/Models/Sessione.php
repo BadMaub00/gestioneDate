@@ -16,4 +16,6 @@ class Sessione extends Model
     {
         return $this->hasMany(Appello::class, 'sessione_id', 'sessione_id');
     }
+
+
 }
