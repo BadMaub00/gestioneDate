@@ -73,7 +73,7 @@ class appelloController extends Controller
 
         // Iniettiamo l'ID nei dati validati (assicurati che la chiave 'id' corrisponda 
         // al nome della colonna della chiave primaria nel database per il modello Appello)
-        $validatedData['id'] = $customId; 
+        $validatedData['ins_corso_id'] = $customId; 
 
         // Creazione dell'appello con l'ID calcolato
         Appello::create($validatedData);
