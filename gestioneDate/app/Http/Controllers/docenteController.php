@@ -34,14 +34,17 @@ class docenteController extends Controller
         // Recupera gli insegnamenti assegnati a questo docente
         $insegnamentiCorsi = $this->insAssociati($user);
 
+        $appelli = Appello::where('sessione_id', $sessione_id)
+            ->whereIn('ins_corso_id', $insegnamentiCorsi->pluck('ins_corso_id'))
+            ->orderBy('data')
+            ->orderBy('ora_inizio')
+            ->get();
         // Recupera gli appelli per la sessione specificata
-        $appelli = [];
-        foreach ($insegnamentiCorsi as $insegnamentoCorso) {
-            $appelliForInsegnamento = $insegnamentoCorso->appelli()->where('sessione_id', $sessione_id)->get();
-            $appelli[$insegnamentoCorso->insegnamento->nome] = $appelliForInsegnamento;
+        foreach ($insegnamentiCorsi as $insCorso) {
+            $insCorso->appelliSessione = $appelli->where('ins_corso_id', $insCorso->ins_corso_id);
         }
 
-        return view('docente.calendarioPersonale', compact('appelli', 'sessione_id'));
+        return view('docente.calendarioPersonale', compact('insegnamentiCorsi', 'sessione_id'));
     }
 
     public function viewCalendarioGenerale(int $sessione_id, int $annoCorso, int $corso_id){
@@ -67,7 +70,7 @@ class docenteController extends Controller
             
         // Aggiungi with('insegnamento') per ottimizzare le query
         return InsegnamentiCorso::whereIn('ins_corso_id', $insegnamentiTemp)
-            ->with('insegnamento')
+            ->with('insegnamento','corso')
             ->get();
     }
 }
