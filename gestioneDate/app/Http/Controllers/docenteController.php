@@ -44,9 +44,11 @@ class docenteController extends Controller
 
     public function viewCalendarioGenerale($sessione_id,$annoCorso,$corso_id){
         $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
-        ->where('insegnamento_corso.corso_id', $corso_id)
-        ->where('insegnamento_corso.anno_di_corso', $annoCorso)
-        ->where('appello.sessione_id', $sessione_id)
+        ->where([
+            'insegnamento_corso.corso_id' => $corso_id,
+            'insegnamento_corso.anno_di_corso' => $annoCorso,
+            'appello.sessione_id' => $sessione_id,
+        ])
         ->orderBy('appello.data')
         ->orderBy('appello.ora_inizio')
         ->select('appello.data', 'appello.ora_inizio', 'appello.ora_fine')
