@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class DocenteInsegnamento extends Model
 {
     protected $table = 'docente_insegnamento';
-    protected $primaryKey = 'id';
-    protected $fillable = ['ins_corso_id','utente_id','ruolo'];
+
+    protected $primaryKey = 'Doc_ins_id';
+    protected $fillable = ['ins_corso_id','docente_id','ruolo'];
 
     public function docente()
     {

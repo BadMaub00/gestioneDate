@@ -9,14 +9,14 @@ use App\Http\Controllers\sessioneController;
 
 /*Route::get('/', function () {
     return view('welcome');
-});
+});*/
 
-Route::post('/login', function () {
+/*Route::post('/login', function () {
     return "Form inviato con successo!";
 });*/
 
 Route::get('/', [frontController::class, 'getLogin'])->name('login');
-Route::post('/login', [frontController::class, 'postLogin'])->name('login.perform');
+Route::post('/loginPerform', [frontController::class, 'postLogin'])->name('login.perform');
 Route::post('/logout', [frontController::class, 'logout'])->name('logout');
 
 //routes per il docente
