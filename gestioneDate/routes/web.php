@@ -15,7 +15,7 @@ use App\Http\Controllers\sessioneController;
     return "Form inviato con successo!";
 });*/
 
-Route::get('/login', [frontController::class, 'getLogin'])->name('login');
+Route::get('/', [frontController::class, 'getLogin'])->name('login');
 Route::post('/loginPerform', [frontController::class, 'postLogin'])->name('login.perform');
 Route::post('/logout', [frontController::class, 'logout'])->name('logout');
 
