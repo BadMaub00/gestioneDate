@@ -55,7 +55,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
 
     // 2. Calendario Globale (vede gli appelli di tutti i docenti e corsi)
-    Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewCalendario'])->name('admin.calendario');
+    Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewCalendarioGenerale'])->name('admin.calendario');
 
     // 3. Gestione Sessioni d'Esame (CRUD Sessioni)
     Route::get('/sessioni', [sessioneController::class, 'index'])->name('sessioni.index');

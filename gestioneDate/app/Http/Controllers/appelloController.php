@@ -44,12 +44,18 @@ class appelloController extends Controller
         $numAppelli = Appello::where('ins_corso_id', $validatedData['ins_corso_id'])
                             ->where('sessione_id', $validatedData['sessione_id'])
                             ->count();
-                            
-        if ($numAppelli >= 2) {
-            // Se ci sono già 2 appelli, blocca il salvataggio
-            return back()->withErrors(['ins_corso_id' => 'Ci sono già 2 appelli presenti in questa sessione!'])->withInput();
+
+        // Recupera la sessione per ottenere il numero massimo di appelli consentiti
+        $sessione = Sessione::find($validatedData['sessione_id']);
+
+        // Se la sessione esiste ed ha la variabile numero_appelli definita
+        $maxAppelli = $sessione ? $sessione->numero_appelli : 2; // Usa 2 come fallback se non definita
+
+        if ($numAppelli >= $maxAppelli) {
+            // Se ci sono già il numero massimo di appelli, blocca il salvataggio
+            return back()->withErrors(['ins_corso_id' => 'Ci sono già '.$maxAppelli.' appelli presenti in questa sessione!'])->withInput();
         }
-        
+
         // Controllo sovrapposizione oraria
         $annoCorso = InsegnamentiCorso::where('ins_corso_id', $validatedData['ins_corso_id'])->value('anno_di_corso');
         $insSameAge = InsegnamentiCorso::where('anno_di_corso', $annoCorso)->pluck('id')->toArray();
@@ -65,21 +71,21 @@ class appelloController extends Controller
         }
 
         // --- GENERAZIONE DELL'ID PERSONALIZZATO ---
-        // Se $numAppelli è 0, il suffisso sarà 1. Se è 1, il suffisso sarà 2.
-        $suffisso = $numAppelli + 1; 
-        
+        // Il suffisso sarà banalmente il numero di appelli già presenti + 1
+        $suffisso = $numAppelli + 1;
+
         // Uniamo i valori in una stringa e li castiamo a numero intero ((int))
         $customId = (int) ($validatedData['ins_corso_id'] . $validatedData['sessione_id'] . $suffisso);
 
-        // Iniettiamo l'ID nei dati validati (assicurati che la chiave 'id' corrisponda 
+        // Iniettiamo l'ID nei dati validati (assicurati che la chiave 'id' corrisponda
         // al nome della colonna della chiave primaria nel database per il modello Appello)
-        $validatedData['id'] = $customId; 
+        $validatedData['id'] = $customId;
 
         // Creazione dell'appello con l'ID calcolato
         Appello::create($validatedData);
 
         // 3. Reindirizzamento con messaggio di successo
-        return redirect()->route('docente.dashboard')->with('success', 'Appello creato con successo!');
+        // ...
     }
 
     public function edit(int $id){
@@ -132,7 +138,7 @@ class appelloController extends Controller
         // 2. CONTROLLO SICUREZZA:
         // Verifica che l'appello appartenga a un insegnamento associato al docente loggato
         // (passando per la relazione del tuo Model Utente/Docente)
-        $insegnamentiDocenteIds = DocenteInsegnamento::where('docente_id', $user->getUtenteId())
+        $insegnamentiDocenteIds = DocenteInsegnamento::where('docente_id', $user->getKey())
             ->where('ruolo', 'Primario')
             ->pluck('ins_corso_id')
             ->toArray();

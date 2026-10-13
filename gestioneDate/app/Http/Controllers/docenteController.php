@@ -48,20 +48,32 @@ class docenteController extends Controller
     }
 
     public function viewCalendarioGenerale(int $sessione_id, int $annoCorso, int $corso_id){
-        $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
-        ->where([
-            'insegnamento_corso.corso_id' => $corso_id,
-            'insegnamento_corso.anno_di_corso' => $annoCorso,
-            'appello.sessione_id' => $sessione_id,
-        ])
-        ->orderBy('appello.data')
-        ->orderBy('appello.ora_inizio')
-        ->select('appello.data', 'appello.ora_inizio', 'appello.ora_fine', 'insegnamento_corso.ins_corso_id')
-        ->get();
+    $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
+    ->join('insegnamento', 'insegnamento_corso.insegnamento_id', '=', 'insegnamento.insegnamento_id') 
+    ->join('corso', 'insegnamento_corso.corso_id', '=', 'corso.corso_id') 
+    ->join('sessione_esami', 'appello.sessione_id', '=', 'sessione_esami.sessione_id') // Nuova join con la tabella sessione_esami
+    ->where([
+        'insegnamento_corso.corso_id' => $corso_id,
+        'insegnamento_corso.anno_di_corso' => $annoCorso,
+        'appello.sessione_id' => $sessione_id,
+    ])
+    ->orderBy('appello.data')
+    ->orderBy('appello.ora_inizio')
+    ->select(
+        'appello.data', 
+        'appello.ora_inizio', 
+        'appello.ora_fine', 
+        'insegnamento_corso.ins_corso_id',
+        'insegnamento.nome as nome_insegnamento', 
+        'corso.nome as nome_corso',
+        // Aggiunta dei campi della sessione:
+        'sessione_esami.nome as nome_sessione', // Alias necessario perché anche insegnamento e corso hanno un campo "nome"
+        'sessione_esami.anno as anno_sessione'
+    )
+    ->get();
 
-        return view('docente.calendarioGenerale', compact('appelliAnnoCorso', 'sessione_id', 'annoCorso', 'corso_id'));
-    
-    }
+    return view('docente.calendarioGenerale', compact('appelliAnnoCorso', 'sessione_id', 'annoCorso', 'corso_id'));
+}
 
     private function insAssociati(DatiAccesso $user){
         $insegnamentiTemp = DocenteInsegnamento::where('docente_id', $user->getKey())
