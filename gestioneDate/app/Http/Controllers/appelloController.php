@@ -22,16 +22,22 @@ class appelloController extends Controller
         ];
     }
     public function create(){
-        // Logica per mostrare il form di creazione dell'appello
-        /** @var \App\Models\DatiAccesso $user */
+        /** @var \App\Models\Utente $user */
         $user = Auth::user();
-        // 1. Recupera solo gli insegnamenti associati al docente loggato
-        $insegnamentiCorsi = DocenteInsegnamento::where('docente_id', $user->getKey())
+        
+        // 1. Recupera gli ID degli insegnamenti associati al docente
+        $insegnamentiCorsiIds = DocenteInsegnamento::where('utente_id', $user->getKey())
             ->where('ruolo', 'Primario')
-            ->pluck('ins_corso_id')
-            ->toArray();
-        // 2. Recupera le sessioni d'esame attive
+            ->pluck('ins_corso_id');
+
+        // 2. Recupera i modelli completi di InsegnamentiCorso con le relazioni (Nome insegnamento e Nome corso)
+        $insegnamentiCorsi = InsegnamentiCorso::with(['insegnamento', 'corso'])
+            ->whereIn('ins_corso_id', $insegnamentiCorsiIds)
+            ->get();
+
+        // 3. Recupera le sessioni d'esame attive
         $sessioni = Sessione::all();
+        
         return view('appelli.create', compact('insegnamentiCorsi', 'sessioni'));
     }
 
@@ -131,14 +137,14 @@ class appelloController extends Controller
     }
 
     public function verificaDocenteAppello(Appello $appello, string $msg){
-        /** @var \App\Models\DatiAccesso $user */
+        /** @var \App\Models\Utente $user */
         $user = Auth::user();
 
 
         // 2. CONTROLLO SICUREZZA:
         // Verifica che l'appello appartenga a un insegnamento associato al docente loggato
         // (passando per la relazione del tuo Model Utente/Docente)
-        $insegnamentiDocenteIds = DocenteInsegnamento::where('docente_id', $user->getKey())
+        $insegnamentiDocenteIds = DocenteInsegnamento::where('utente_id', $user->getKey())
             ->where('ruolo', 'Primario')
             ->pluck('ins_corso_id')
             ->toArray();
