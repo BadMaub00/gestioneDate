@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Appello extends Model
 {
     protected $table = 'appello';
-    protected $primaryKey = 'Appello_id';
+    protected $primaryKey = 'appello_id';
     protected $fillable = ['ins_corso_id', 'sessione_id', 'data', 'ora_inizio', 'ora_fine'];
 
     public function sessione()
