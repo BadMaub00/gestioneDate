@@ -8,7 +8,7 @@
     <body>
         <h1>Accedi</h1>
 
-        <form method="POST" action="{{ route(login.perform) }}">
+        <form method="POST" action="{{ route('login.perform') }}">
             @csrf
 
             <label for="username">Username</label>
