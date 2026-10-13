@@ -22,8 +22,4 @@ class DatiAccesso extends Authenticatable
         return $this->belongsTo(Docente::class, 'utente_id', 'docente_id');
     }
 
-    public function getUtenteId(){
-        return $this->utente_id;
-    }
-
 }

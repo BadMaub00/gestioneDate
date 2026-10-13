@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\InsegnamentiCorso;
 use App\Models\DocenteInsegnamento;
+use App\Models\DatiAccesso;
+
 
 class docenteController extends Controller
 {
@@ -26,7 +28,7 @@ class docenteController extends Controller
         return view('docente.dashboard', compact('insegnamentiCorsi'));
     }
 
-    public function viewCalendarioPersonale($sessione_id){
+    public function viewCalendarioPersonale(int $sessione_id){
         $user = Auth::user();
 
         // Recupera gli insegnamenti assegnati a questo docente
@@ -42,7 +44,7 @@ class docenteController extends Controller
         return view('docente.calendarioPersonale', compact('appelli', 'sessione_id'));
     }
 
-    public function viewCalendarioGenerale($sessione_id,$annoCorso,$corso_id){
+    public function viewCalendarioGenerale(int $sessione_id, int $annoCorso, int $corso_id){
         $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
         ->where([
             'insegnamento_corso.corso_id' => $corso_id,
@@ -51,18 +53,21 @@ class docenteController extends Controller
         ])
         ->orderBy('appello.data')
         ->orderBy('appello.ora_inizio')
-        ->select('appello.data', 'appello.ora_inizio', 'appello.ora_fine')
+        ->select('appello.data', 'appello.ora_inizio', 'appello.ora_fine', 'insegnamento_corso.ins_corso_id')
         ->get();
 
         return view('docente.calendarioGenerale', compact('appelliAnnoCorso', 'sessione_id', 'annoCorso', 'corso_id'));
     
     }
-    private function insAssociati($user){
-        $insegnamentiTemp = DocenteInsegnamento::where('docente_id', $user->getUtenteId())
+
+    private function insAssociati(DatiAccesso $user){
+        $insegnamentiTemp = DocenteInsegnamento::where('docente_id', $user->getKey())
             ->pluck('ins_corso_id')
             ->toArray();
-        $insegnamentiCorsi = InsegnamentiCorso::whereIn('ins_corso_id', $insegnamentiTemp)->get();
-        return $insegnamentiCorsi;
-
+            
+        // Aggiungi with('insegnamento') per ottimizzare le query
+        return InsegnamentiCorso::whereIn('ins_corso_id', $insegnamentiTemp)
+            ->with('insegnamento')
+            ->get();
     }
 }
