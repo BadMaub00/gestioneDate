@@ -138,7 +138,7 @@ class appelloController extends Controller
         // 2. CONTROLLO SICUREZZA:
         // Verifica che l'appello appartenga a un insegnamento associato al docente loggato
         // (passando per la relazione del tuo Model Utente/Docente)
-        $insegnamentiDocenteIds = DocenteInsegnamento::where('docente_id', $user->getUtenteId())
+        $insegnamentiDocenteIds = DocenteInsegnamento::where('docente_id', $user->getKey())
             ->where('ruolo', 'Primario')
             ->pluck('ins_corso_id')
             ->toArray();
