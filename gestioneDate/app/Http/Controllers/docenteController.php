@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\InsegnamentiCorso;
 use App\Models\DocenteInsegnamento;
-use App\Models\DatiAccesso;
+use App\Models\Utente;
 
 
 class docenteController extends Controller
@@ -75,8 +75,8 @@ class docenteController extends Controller
     return view('docente.calendarioGenerale', compact('appelliAnnoCorso', 'sessione_id', 'annoCorso', 'corso_id'));
 }
 
-    private function insAssociati(DatiAccesso $user){
-        $insegnamentiTemp = DocenteInsegnamento::where('docente_id', $user->getKey())
+    private function insAssociati(Utente $user){
+        $insegnamentiTemp = DocenteInsegnamento::where('utente_id', $user->getKey())
             ->pluck('ins_corso_id')
             ->toArray();
             

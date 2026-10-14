@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\DatiAccesso;
+use App\Models\Utente;
 
 return [
 
@@ -64,7 +64,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\DatiAccesso::class,
+            'model' => App\Models\Utente::class,
         ],
 
         // 'users' => [
