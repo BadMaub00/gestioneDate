@@ -17,4 +17,11 @@ class Utente extends Authenticatable
         return $this->hasMany(DocenteInsegnamento::class, 'utente_id', 'utente_id');
     }
 
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
+
 }

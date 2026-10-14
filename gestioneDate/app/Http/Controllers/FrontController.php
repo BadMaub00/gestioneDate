@@ -41,7 +41,7 @@ class frontController extends Controller
      * Reindirizza l'utente alla vista corrispondente al suo ruolo.
      */
     private function redirectUserByRole($user){
-        if ($user->ruolo === 'admin') {
+        if ($user->ruolo === 'Amministratore') {
             return redirect()->route('admin.dashboard');
         }
 
