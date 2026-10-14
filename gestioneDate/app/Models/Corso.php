@@ -8,13 +8,10 @@ class Corso extends Model
 {
     protected $table = 'corso';
     protected $primaryKey = 'corso_id';
-    public $incrementing = false;
-    protected $keyType = 'string';
-    protected $fillable = ['nome','tipo corso'];
+    protected $fillable = ['nome', 'tipo_corso'];
 
     public function insegnamenti()
     {
         return $this->hasMany(InsegnamentiCorso::class, 'corso_id', 'corso_id');
     }
-
 }

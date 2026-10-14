@@ -1,0 +1,65 @@
+/* Palette Istituzionale UniBS */
+.bg-unibs { 
+    background-color: #003366 !important; 
+}
+
+.border-unibs { 
+    border-color: #003366 !important; 
+}
+
+.text-unibs { 
+    color: #003366 !important; 
+}
+
+.btn-unibs { 
+    background-color: #003366; 
+    color: #ffffff; 
+    border-color: #003366; 
+}
+
+.btn-unibs:hover,
+.btn-unibs:focus { 
+    background-color: #002244; 
+    color: #ffffff; 
+    border-color: #002244;
+}
+
+/* Palette Istituzionale UniBS */
+.bg-unibs { 
+    background-color: #003366 !important; 
+}
+
+.border-unibs { 
+    border-color: #003366 !important; 
+}
+
+.text-unibs { 
+    color: #003366 !important; 
+}
+
+.btn-unibs { 
+    background-color: #003366; 
+    color: #ffffff; 
+    border-color: #003366; 
+}
+
+.btn-unibs:hover,
+.btn-unibs:focus { 
+    background-color: #002244; 
+    color: #ffffff; 
+    border-color: #002244;
+}
+
+/* Bottone Outline UniBS */
+.btn-outline-unibs {
+    color: #003366;
+    border-color: #003366;
+    background-color: #ffffff;
+}
+
+.btn-outline-unibs:hover,
+.btn-outline-unibs:focus {
+    color: #ffffff;
+    background-color: #003366;
+    border-color: #003366;
+}

@@ -19,5 +19,4 @@ class Appello extends Model
     {
         return $this->belongsTo(InsegnamentiCorso::class, 'ins_corso_id', 'ins_corso_id');
     }
-
 }
