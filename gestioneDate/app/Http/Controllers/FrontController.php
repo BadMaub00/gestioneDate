@@ -13,16 +13,17 @@ class frontController extends Controller
             return $this->redirectUserByRole(Auth::user());
         }
 
-        return view('login');
+        return view('utente.login');
     }
 
     /**
      * Gestisce l'invio del form di login (POST).
      */
     public function postLogin(Request $request){
+        $hidden = [$request->input('password')];
         $credentials = $request->validate([
             'username' => ['required', 'string'],
-            'password' => ['required'],
+            $hidden => ['required'],
         ]);
 
         if (Auth::attempt($credentials)) {
