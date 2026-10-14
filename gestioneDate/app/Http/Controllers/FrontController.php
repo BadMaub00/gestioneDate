@@ -20,10 +20,9 @@ class frontController extends Controller
      * Gestisce l'invio del form di login (POST).
      */
     public function postLogin(Request $request){
-        $hidden = [$request->input('password')];
         $credentials = $request->validate([
             'username' => ['required', 'string'],
-            $hidden => ['required'],
+            'password' => ['required', 'string'],
         ]);
 
         if (Auth::attempt($credentials)) {
