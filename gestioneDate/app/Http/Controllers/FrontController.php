@@ -13,7 +13,7 @@ class frontController extends Controller
             return $this->redirectUserByRole(Auth::user());
         }
 
-        return view('login');
+        return view('utente.login');
     }
 
     /**
@@ -22,7 +22,7 @@ class frontController extends Controller
     public function postLogin(Request $request){
         $credentials = $request->validate([
             'username' => ['required', 'string'],
-            'password' => ['required'],
+            'password' => ['required', 'string'],
         ]);
 
         if (Auth::attempt($credentials)) {
