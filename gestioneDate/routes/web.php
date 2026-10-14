@@ -26,6 +26,7 @@ Route::middleware(['auth'])->prefix('docente')->group(function () {
     Route::get('/dashboard', [docenteController::class, 'dashboard'])->name('docente.dashboard');
 
     // 2. Calendario Personale del Docente
+    Route::get('/docente/dashboard', [DocenteController::class, 'index'])->name('docente.dashboard');
     Route::get('/calendario/{sessione_id}', [docenteController::class, 'viewCalendarioPersonale'])->name('docente.calendario');
 
     // 2.1 Calendario Generale del Docente

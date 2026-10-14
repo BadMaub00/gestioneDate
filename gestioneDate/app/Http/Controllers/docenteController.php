@@ -90,7 +90,7 @@ class docenteController extends Controller
         // Recupera tutte le sessioni dal database
         $sessioni = Sessione::all(); 
 
-        return view('dashboard', compact('sessioni'));
+        return view('docente.dashboard', compact('sessioni'));
     }
     
 }
