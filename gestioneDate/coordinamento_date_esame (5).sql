@@ -229,3 +229,7 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+INSERT INTO `utente` (`username`, `password`, `nome`, `cognome`, `data_nascita`, `ruolo`) VALUES
+('mrossi', 'password123', 'Mario', 'Rossi', '1985-05-20', 'Docente'),
+('admin_mverdi', 'adminPass2026!', 'Maria', 'Verdi', '1990-11-12', 'Amministratore');
