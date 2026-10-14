@@ -29,20 +29,18 @@ class docenteController extends Controller
     }
 
     public function viewCalendarioPersonale(int $sessione_id){
+        /** @var \App\Models\Utente $user */
         $user = Auth::user();
 
-        // Recupera gli insegnamenti assegnati a questo docente
+        // 1. Recupera la base degli insegnamenti usando la tua funzione
         $insegnamentiCorsi = $this->insAssociati($user);
 
-        $appelli = Appello::where('sessione_id', $sessione_id)
-            ->whereIn('ins_corso_id', $insegnamentiCorsi->pluck('ins_corso_id'))
-            ->orderBy('data')
-            ->orderBy('ora_inizio')
-            ->get();
-        // Recupera gli appelli per la sessione specificata
-        foreach ($insegnamentiCorsi as $insCorso) {
-            $insCorso->appelliSessione = $appelli->where('ins_corso_id', $insCorso->ins_corso_id);
-        }
+        // 2. Carica in differita (Lazy Eager Loading) gli appelli filtrati per quella sessione
+        $insegnamentiCorsi->load(['appelli' => function($query) use ($sessione_id) {
+            $query->where('sessione_id', $sessione_id)
+                  ->orderBy('data')
+                  ->orderBy('ora_inizio');
+        }]);
 
         return view('docente.calendarioPersonale', compact('insegnamentiCorsi', 'sessione_id'));
     }

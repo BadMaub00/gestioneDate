@@ -9,7 +9,7 @@ class Sessione extends Model
     protected $table = 'sessione_esami';
     protected $primaryKey = 'sessione_id';
     public $incrementing = false;
-    protected $keyType = 'string';
+    protected $keyType = 'int';
     protected $fillable = ['data_inizio','data_fine','nome','anno', 'numero_appelli'];
 
     public function appelli()
