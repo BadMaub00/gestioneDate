@@ -12,6 +12,12 @@
             <nav>
                 <ul>
                     <li><a href="{{ route('docente.dashboard') }}">Home</a></li>
+                    <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                        @csrf
+                        <button type="submit" class="btn btn-link" style="padding: 0; border: none; background: none; color: red; cursor: pointer;">
+                            Logout
+                        </button>
+                    </form>
                 </ul>
             </nav>
         </header>
