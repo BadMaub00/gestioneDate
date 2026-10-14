@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Dashboard Docente</title>
         <link rel="stylesheet" href="../../resources/css/bootstrap_v2.min.css">
+        
+        <link rel="stylesheet" href="../../bootstrap-icons/bootstrap-icons.css">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
     <body>
@@ -45,7 +47,9 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{{ route('docente.dashboard') }}">Home</a>
+                        <a class="nav-link" aria-current="page" href="{{ route('docente.dashboard') }}">
+                            <span class="bi bi-house me-1"></span>Home
+                        </a>
                     </li>
                     <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
