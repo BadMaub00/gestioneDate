@@ -67,7 +67,7 @@ class docenteController extends Controller
         'insegnamento.nome as nome_insegnamento', 
         'corso.nome as nome_corso',
         // Aggiunta dei campi della sessione:
-        'sessione_esami.nome as nome_sessione', // Alias necessario perché anche insegnamento e corso hanno un campo "nome"
+        'sessione_esami.nome as nome_sessione', 
         'sessione_esami.anno as anno_sessione'
     )
     ->get();
