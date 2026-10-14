@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 14, 2026 alle 14:52
+-- Creato il: Ott 14, 2026 alle 15:57
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `appello` (
   `Appello_id` int(11) NOT NULL,
   `ins_corso_id` int(100) NOT NULL,
-  `sessione_id` varchar(100) NOT NULL,
+  `sessione_id` int(11) NOT NULL,
   `data` date NOT NULL,
   `ora_inizio` time NOT NULL,
   `ora_fine` time NOT NULL
@@ -57,7 +57,7 @@ CREATE TABLE `corso` (
 CREATE TABLE `docente_insegnamento` (
   `Doc_ins_id` int(100) NOT NULL,
   `ins_corso_id` int(11) NOT NULL,
-  `docente_id` int(11) NOT NULL,
+  `utente_id` int(11) NOT NULL,
   `ruolo` enum('Primario','Secondario') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -94,7 +94,7 @@ CREATE TABLE `insegnamento_corso` (
 --
 
 CREATE TABLE `sessione_esami` (
-  `sessione_id` varchar(100) NOT NULL,
+  `sessione_id` int(11) NOT NULL,
   `data_inizio` date NOT NULL,
   `data_fine` date NOT NULL,
   `nome` varchar(150) NOT NULL,
@@ -142,7 +142,7 @@ ALTER TABLE `corso`
 ALTER TABLE `docente_insegnamento`
   ADD PRIMARY KEY (`Doc_ins_id`),
   ADD KEY `ins_corso_id` (`ins_corso_id`),
-  ADD KEY `docente_id` (`docente_id`);
+  ADD KEY `docente_id` (`utente_id`);
 
 --
 -- Indici per le tabelle `insegnamento`
@@ -195,10 +195,16 @@ ALTER TABLE `insegnamento_corso`
   MODIFY `ins_corso_id` int(100) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT per la tabella `sessione_esami`
+--
+ALTER TABLE `sessione_esami`
+  MODIFY `sessione_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT per la tabella `utente`
 --
 ALTER TABLE `utente`
-  MODIFY `utente_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `utente_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Limiti per le tabelle scaricate
@@ -216,7 +222,7 @@ ALTER TABLE `appello`
 --
 ALTER TABLE `docente_insegnamento`
   ADD CONSTRAINT `docente_insegnamento_ibfk_1` FOREIGN KEY (`ins_corso_id`) REFERENCES `insegnamento_corso` (`ins_corso_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `docente_insegnamento_ibfk_2` FOREIGN KEY (`docente_id`) REFERENCES `utente` (`utente_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `docente_insegnamento_ibfk_2` FOREIGN KEY (`utente_id`) REFERENCES `utente` (`utente_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `insegnamento_corso`
