@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\InsegnamentiCorso;
 use App\Models\DocenteInsegnamento;
 use App\Models\Utente;
+use App\Models\Sessione;
 
 
 class docenteController extends Controller
@@ -83,4 +84,13 @@ class docenteController extends Controller
             ->with('insegnamento','corso')
             ->get();
     }
+
+    public function index()
+    {
+        // Recupera tutte le sessioni dal database
+        $sessioni = Sessione::all(); 
+
+        return view('dashboard', compact('sessioni'));
+    }
+    
 }
