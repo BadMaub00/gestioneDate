@@ -120,11 +120,23 @@ class docenteController extends Controller
 
     public function viewcalendario_generale(int $sessione_id, int $annoCorso, int $corso_id)
     {
+        /** @var \App\Models\Utente $user */
+        $user = Auth::user();
+
+        // 1. Recupera tutti gli ins_corso_id associati al docente loggato (sia Primario che Secondario)
+        $mieiInsCorsoIds = DocenteInsegnamento::where('utente_id', $user->getKey())
+            ->pluck('ins_corso_id')
+            ->toArray();
+
+        // 2. Query per gli appelli della sessione/corso/anno con docente Primario
         $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
             ->join('insegnamento', 'insegnamento_corso.insegnamento_id', '=', 'insegnamento.insegnamento_id') 
             ->join('corso', 'insegnamento_corso.corso_id', '=', 'corso.corso_id') 
             ->join('sessione_esami', 'appello.sessione_id', '=', 'sessione_esami.sessione_id')
-            ->leftJoin('docente_insegnamento', 'insegnamento_corso.ins_corso_id', '=', 'docente_insegnamento.ins_corso_id')
+            ->leftJoin('docente_insegnamento', function($join) {
+                $join->on('insegnamento_corso.ins_corso_id', '=', 'docente_insegnamento.ins_corso_id')
+                    ->where('docente_insegnamento.ruolo', '=', 'Primario');
+            })
             ->leftJoin('utente', 'docente_insegnamento.utente_id', '=', 'utente.utente_id')
             ->where([
                 'insegnamento_corso.corso_id' => $corso_id,
@@ -134,6 +146,7 @@ class docenteController extends Controller
             ->orderBy('appello.data')
             ->orderBy('appello.ora_inizio')
             ->select(
+                'appello.appello_id',
                 'appello.data', 
                 'appello.ora_inizio', 
                 'appello.ora_fine', 
@@ -147,7 +160,13 @@ class docenteController extends Controller
             )
             ->get();
 
-        // Recupera i dettagli di Corso e Sessione per l'intestazione
+        // 3. Registra l'attributo dinamico 'is_mio_appello' tramite setAttribute per includerlo nella serializzazione JSON
+        $appelliAnnoCorso->transform(function ($appello) use ($mieiInsCorsoIds) {
+            $appello->setAttribute('is_mio_appello', in_array($appello->ins_corso_id, $mieiInsCorsoIds));
+            return $appello;
+        });
+
+        // 4. Recupera i dettagli di Corso e Sessione per le intestazioni
         $corso = \App\Models\Corso::find($corso_id);
         $sessione = \App\Models\Sessione::find($sessione_id);
 
@@ -161,20 +180,50 @@ class docenteController extends Controller
         ));
     }
 
+    public function dettaglioInsegnamento(int $ins_corso_id)
+    {
+        /** @var \App\Models\Utente $user */
+        $user = Auth::user();
+
+        // 1. Cerca l'insegnamento all'interno della collection restituita da insAssociati()
+        $insegnamentoCorso = $this->insAssociati($user)->firstWhere('ins_corso_id', $ins_corso_id);
+
+        // Se l'ID non è presente tra le materie del docente, blocca l'accesso
+        if (!$insegnamentoCorso) {
+            abort(404, 'Insegnamento non trovato o non associato a questo docente.');
+        }
+
+        // 2. Recupera il ruolo (Primario/Secondario) per questo specifico insegnamento
+        $docenteInsegnamento = DocenteInsegnamento::where('ins_corso_id', $ins_corso_id)
+            ->where('utente_id', $user->getKey())
+            ->first();
+
+        return view('docente.dettaglio_insegnamento', compact('insegnamentoCorso', 'docenteInsegnamento'));
+    }
+
     private function insAssociati(Utente $user)
     {
-        $insegnamentiTemp = DocenteInsegnamento::where('utente_id', $user->getKey())
-            ->pluck('ins_corso_id')
-            ->toArray();
+        // 1. Interroghiamo la tabella docente_insegnamento (dove risiede la colonna 'ruolo')
+        $docenteInsegnamenti = DocenteInsegnamento::where('utente_id', $user->getKey())
+            ->with(['insegnamentiCorso.insegnamento', 'insegnamentiCorso.corso'])
+            ->get();
 
-        return InsegnamentiCorso::whereIn('ins_corso_id', $insegnamentiTemp)
-            ->with(['insegnamento', 'corso'])
-            ->get()
-            ->sortBy([
-                ['corso.nome', 'asc'],
-                ['insegnamento.nome', 'asc'],
-            ])
-            ->values(); // Ripristina le chiavi numeriche dell'array
+        // 2. Mappiamo i risultati legando il ruolo al rispettivo InsegnamentiCorso
+        return $docenteInsegnamenti->map(function ($docIns) {
+            $insCorso = $docIns->insegnamentiCorso;
+            
+            if ($insCorso) {
+                // Assegniamo alla proprietà dell'oggetto il ruolo letto direttamente dal record di docente_insegnamento
+                $insCorso->ruolo_docente = $docIns->ruolo; 
+            }
+            
+            return $insCorso;
+        })
+        ->filter() // Rimuove eventuali record nulli
+        ->sortBy(function ($insC) {
+            return ($insC->corso->nome ?? '') . ' ' . ($insC->insegnamento->nome ?? '');
+        })
+        ->values();
     }
 
     public function index()

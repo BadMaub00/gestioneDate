@@ -92,6 +92,17 @@
                     </a>
                 </div>
 
+                <!-- Legenda Colori -->
+                <div class="mb-3 d-flex align-items-center gap-3 fs-7">
+                    <span class="fw-bold text-dark">Legenda:</span>
+                    <span class="badge bg-warning-subtle text-dark border border-warning px-2 py-1 rounded-2 fw-semibold">
+                        <i class="bi bi-star-fill text-warning me-1"></i> Tuo insegnamento (Primario o Secondario)
+                    </span>
+                    <span class="badge bg-light text-dark border px-2 py-1 rounded-2 fw-normal">
+                        Altri insegnamenti
+                    </span>
+                </div>
+
                 <!-- LAYOUT REATTIVO AFFIANCATO -->
                 <div class="row g-4 align-items-start">
                     
@@ -145,7 +156,7 @@
                                         </thead>
                                         <tbody>
                                             @forelse ($appelliAnnoCorso as $appello)
-                                                <tr>
+                                                <tr class="{{ $appello->is_mio_appello ? 'table-warning' : '' }}">
                                                     <!-- Data -->
                                                     <td class="ps-3 py-2.5 fw-bold text-dark fs-7">
                                                         <i class="bi bi-calendar-event text-unibs me-1"></i>
@@ -160,7 +171,12 @@
 
                                                     <!-- Insegnamento e Docente -->
                                                     <td class="py-2.5 pe-3 text-dark">
-                                                        <div class="fw-semibold text-dark">{{ $appello->nome_insegnamento }}</div>
+                                                        <div class="fw-semibold text-dark d-flex align-items-center justify-content-between">
+                                                            <span>{{ $appello->nome_insegnamento }}</span>
+                                                            @if($appello->is_mio_appello)
+                                                                <i class="bi bi-star-fill text-warning ms-1" title="Tuo insegnamento"></i>
+                                                            @endif
+                                                        </div>
                                                         <div class="small text-muted fst-italic">
                                                             @if ($appello->docente_nome && $appello->docente_cognome)
                                                                 <i class="bi bi-person-fill me-1 text-unibs"></i>Prof. {{ $appello->docente_nome }} {{ $appello->docente_cognome }}

@@ -97,20 +97,40 @@
                             <div class="card-body p-0">
                                 <div class="table-responsive">
                                     <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light border-bottom">
+                                            <tr>
+                                                <th class="ps-4 py-3 text-unibs" style="width: 35%;">Insegnamento</th>
+                                                <th class="py-3 text-unibs" style="width: 25%;">Corso di Studi</th>
+                                                <th class="py-3 text-unibs" style="width: 20%;">Ruolo</th>
+                                                <th class="pe-4 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
+                                            </tr>
+                                        </thead>
                                         <tbody>
                                             @forelse($insegnamentiCorsi as $insC)
                                                 <tr>
-                                                    <td class="ps-4 py-3 fw-bold text-dark" style="width: 45%;">
+                                                    <!-- Nome Insegnamento -->
+                                                    <td class="ps-4 py-3 fw-bold text-dark" style="width: 35%;">
                                                         {{ $insC->insegnamento->nome }}
                                                     </td>
-                                                    <td class="py-3 text-dark fw-medium" style="width: 35%;">
+
+                                                    <!-- Nome Corso -->
+                                                    <td class="py-3 text-dark fw-medium" style="width: 25%;">
                                                         {{ $insC->corso->nome }}
                                                     </td>
+
+                                                    <!-- Ruolo Docente (Testo Semplice) -->
+                                                    <td class="py-3 text-dark fw-medium" style="width: 20%;">
+                                                        {{ $insC->ruolo_docente ?? 'Secondario' }}
+                                                    </td>
+
+                                                    <!-- Azioni -->
                                                     <td class="text-end pe-4 py-3" style="width: 20%;">
                                                         <div class="btn-group shadow-sm" role="group" aria-label="Azioni insegnamento">
-                                                            <a href="#" class="btn btn-unibs text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
+                                                            <a href="{{ route('docente.dettaglioInsegnamento', $insC->ins_corso_id) }}" 
+                                                               class="btn btn-unibs text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" 
+                                                               style="width: 90px;">
                                                                 <i class="bi bi-eye fs-5 mb-1"></i>
-                                                                <span style="font-size: 0.75rem;">Visualizza</span>
+                                                                <span style="font-size: 0.75rem;">VISUALIZZA</span>
                                                             </a>
                                                             <a href="#" class="btn btn-success text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
                                                                 <i class="bi bi-calendar-event fs-5 mb-1"></i>
@@ -121,7 +141,7 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="3" class="text-center py-4 text-muted fw-bold">
+                                                    <td colspan="4" class="text-center py-4 text-muted fw-bold">
                                                         Nessun insegnamento associato a questo docente.
                                                     </td>
                                                 </tr>
@@ -136,7 +156,7 @@
                         <div class="row g-2 mt-3">
                             <div class="col-12 col-md-6">
                                 <a href="{{ route('docente.selezionaSessione') }}" 
-                                class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                                   class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
                                     <i class="bi bi-calendar-check-fill me-2 fs-6"></i>Calendario Personale
                                 </a>
                             </div>

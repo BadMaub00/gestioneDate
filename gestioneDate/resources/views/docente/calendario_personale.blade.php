@@ -69,7 +69,6 @@
             </div>
         </nav>
 
-
         <!-- Estrazione e Formattazione Dati Appelli per JS -->
         @php
             $appelliArray = [];
@@ -82,6 +81,7 @@
                         'ora_fine' => $appello->ora_fine,
                         'nome_insegnamento' => $insC->insegnamento->nome,
                         'nome_corso' => $insC->corso->nome,
+                        'ruolo_docente' => $insC->ruolo_docente ?? 'Secondario',
                     ];
                 }
             }
@@ -185,28 +185,51 @@
                                                             </div>
                                                         </td>
 
-                                                        <!-- Pulsanti Modifica / Elimina -->
+                                                        <!-- Pulsanti Modifica / Elimina gestiti per Ruolo -->
                                                         <td class="text-end pe-3 py-2.5">
                                                             <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Azioni appello">
-                                                                <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
-                                                                   class="btn btn-unibs text-white fw-semibold d-inline-flex align-items-center px-2 py-1" 
-                                                                   title="Modifica Appello">
-                                                                    <i class="bi bi-pencil-square me-1"></i> Modifica
-                                                                </a>
+                                                                @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
+                                                                    <!-- MODIFICA (Giallo Warning) - Abilitato -->
+                                                                    <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
+                                                                       class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1" 
+                                                                       style="width: 90px;"
+                                                                       title="Modifica Appello">
+                                                                        <i class="bi bi-pencil-square me-1"></i> Modifica
+                                                                    </a>
 
-                                                                <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
-                                                                      method="POST" 
-                                                                      class="d-inline"
-                                                                      onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" 
-                                                                            class="btn btn-danger text-white fw-semibold d-inline-flex align-items-center px-2 py-1" 
-                                                                            style="border-top-left-radius: 0; border-bottom-left-radius: 0;" 
-                                                                            title="Elimina Appello">
-                                                                        <i class="bi bi-trash me-1"></i> Elimina
+                                                                    <!-- ELIMINA (Rosso Danger) - Abilitato -->
+                                                                    <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
+                                                                          method="POST" 
+                                                                          class="d-inline m-0 p-0"
+                                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" 
+                                                                                class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1" 
+                                                                                style="width: 90px; border-top-left-radius: 0; border-bottom-left-radius: 0;" 
+                                                                                title="Elimina Appello">
+                                                                            <i class="bi bi-trash me-1"></i> Elimina
+                                                                        </button>
+                                                                    </form>
+                                                                @else
+                                                                    <!-- MODIFICA (Giallo Warning) - Disabilitato con Sbarramento -->
+                                                                    <button type="button" 
+                                                                            class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1 opacity-50" 
+                                                                            disabled 
+                                                                            style="width: 90px; cursor: not-allowed;"
+                                                                            title="Azione riservata al docente primario dell'insegnamento">
+                                                                        <i class="bi bi-slash-circle me-1"></i> Modifica
                                                                     </button>
-                                                                </form>
+
+                                                                    <!-- ELIMINA (Rosso Danger) - Disabilitato con Sbarramento -->
+                                                                    <button type="button" 
+                                                                            class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1 opacity-50" 
+                                                                            disabled 
+                                                                            style="width: 90px; border-top-left-radius: 0; border-bottom-left-radius: 0; cursor: not-allowed;" 
+                                                                            title="Azione riservata al docente primario dell'insegnamento">
+                                                                        <i class="bi bi-slash-circle me-1"></i> Elimina
+                                                                    </button>
+                                                                @endif
                                                             </div>
                                                         </td>
                                                     </tr>

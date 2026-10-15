@@ -24,13 +24,17 @@ Route::post('/logout', [frontController::class, 'logout'])->name('logout');
 // Routes per il docente
 Route::middleware(['auth'])->prefix('docente')->group(function () {
 
-    // 1. Dashboard del Docente
+    // Dashboard del Docente
     Route::get('/dashboard', [docenteController::class, 'dashboard'])->name('docente.dashboard');
 
+    // Dettaglio Insegnamento 
+    Route::get('/insegnamento/{ins_corso_id}', [docenteController::class, 'dettaglioInsegnamento'])->name('docente.dettaglioInsegnamento');
+
+    // Calendario Personale
     Route::get('/calendario-personale/seleziona', [docenteController::class, 'selezionaSessione'])->name('docente.selezionaSessione');
     Route::post('/calendario-personale/seleziona', [docenteController::class, 'procediCalendarioPersonale'])->name('docente.procediCalendario');
 
-    // Calendario Generale (Nuove Rotte)
+    // Calendario Generale 
     Route::get('/calendario-generale/seleziona', [docenteController::class, 'selezionaFiltriGenerale'])->name('docente.selezionaFiltriGenerale');
     Route::post('/calendario-generale/seleziona', [docenteController::class, 'procedicalendario_generale'])->name('docente.procedicalendario_generale');
     Route::get('/api/anni-corso/{corso_id}', [docenteController::class, 'getAnniCorsoPerDocente'])->name('docente.api.anniCorso');
@@ -41,7 +45,7 @@ Route::middleware(['auth'])->prefix('docente')->group(function () {
     ->whereNumber('annoCorso')
     ->name('docente.calendario.generale');
         
-    // 4. Gestione Appelli (CRUD)
+    // Gestione Appelli (CRUD)
     Route::get('/appelli/crea', [appelloController::class, 'create'])->name('appelli.create');
     Route::post('/appelli', [appelloController::class, 'store'])->name('appelli.store');
     Route::get('/appelli/{id}/modifica', [appelloController::class, 'edit'])->name('appelli.edit');
