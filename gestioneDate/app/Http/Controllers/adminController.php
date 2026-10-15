@@ -9,7 +9,8 @@ use App\Models\Appello;
 class adminController extends Controller
 {
     public function dashboard(){
-        return view('admin.dashboard');
+        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        return view('admin.dashboard', compact('sessioni'));
     }
 
     public function viewCalendarioGenerale($sessione_id = null){
