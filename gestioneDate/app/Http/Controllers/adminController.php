@@ -13,7 +13,7 @@ class adminController extends Controller
         return view('admin.dashboard', compact('sessioni'));
     }
 
-    public function viewCalendarioGenerale($sessione_id = null){
+    public function viewcalendario_generale($sessione_id = null){
         // 1. Recupera tutte le sessioni d'esame per popolare il menu/selettore nella vista
         $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
 
