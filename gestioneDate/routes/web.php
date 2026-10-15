@@ -21,9 +21,10 @@ Route::post('/logout', [frontController::class, 'logout'])->name('logout');
 
 //routes per il docente
 // Routes per il docente
+// Routes per il docente
 Route::middleware(['auth'])->prefix('docente')->group(function () {
 
-    // 1. Dashboard del Docente (MANTIENI SOLO QUESTA)
+    // 1. Dashboard del Docente
     Route::get('/dashboard', [docenteController::class, 'dashboard'])->name('docente.dashboard');
 
     // 2. Dettagli Insegnamento e Appelli
@@ -31,7 +32,12 @@ Route::middleware(['auth'])->prefix('docente')->group(function () {
     Route::get('/insegnamento/{ins_corso_id}/appelli', [docenteController::class, 'gestioneAppelli'])->name('docente.gestioneAppelli');
 
     // 3. Calendari
+    Route::get('/calendario-personale/seleziona', [docenteController::class, 'selezionaSessione'])->name('docente.selezionaSessione');
+    Route::post('/calendario-personale/seleziona', [docenteController::class, 'procediCalendarioPersonale'])->name('docente.procediCalendario');
+
+    // === AGGIUNGI QUESTA RIGA CHE MANCA ===
     Route::get('/calendario/{sessione_id}', [docenteController::class, 'viewCalendarioPersonale'])->name('docente.calendario');
+
     Route::get('/calendario-generale/{sessione_id}/{annoCorso}/{corso_id}', [docenteController::class, 'viewCalendarioGenerale'])
         ->whereNumber('annoCorso')
         ->name('docente.calendario.generale');

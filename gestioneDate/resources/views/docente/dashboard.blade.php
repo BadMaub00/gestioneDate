@@ -6,18 +6,18 @@
         <title>Dashboard Docente</title>
 
         <!-- CSS Bootstrap & Icone -->
-        <link rel="stylesheet" href="../../resources/css/bootstrap_v2.min.css">
-        <link rel="stylesheet" href="../../bootstrap-icons/bootstrap-icons.css">
+        <link rel="stylesheet" href="{{ asset('css/bootstrap_v2.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('bootstrap-icons/bootstrap-icons.css') }}">
         
         <!-- CSS Personalizzati -->
-        <link rel="stylesheet" href="../../resources/css/style.css">
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
     <body class="bg-light min-vh-100">
 
         <!-- Script Bootstrap & Popper -->
-        <script src="../../js/popper.min.js"></script>
-        <script src="../../js/bootstrap.min.js"></script>
+        <script src="{{ asset('js/popper.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
         <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
@@ -25,7 +25,7 @@
                 
                 <!-- Logo Università -->
                 <a class="navbar-brand py-0" href="#">
-                    <img class="img-logo" src="../../images/unibsLogo.png" alt="Unibs" style="max-height: 70px;">
+                    <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
                 <!-- Toggler Mobile -->
@@ -135,7 +135,8 @@
                         <!-- Bottoni Calendari a tutta larghezza (50% ciascuno) -->
                         <div class="row g-2 mt-3">
                             <div class="col-12 col-md-6">
-                                <a href="calendarioPersonale.html" class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                                <a href="{{ route('docente.selezionaSessione') }}" 
+                                class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
                                     <i class="bi bi-calendar-check-fill me-2 fs-6"></i>Calendario Personale
                                 </a>
                             </div>

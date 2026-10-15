@@ -29,21 +29,44 @@ class docenteController extends Controller
         return view('docente.dashboard', compact('insegnamentiCorsi'));
     }
 
-    public function viewCalendarioPersonale(int $sessione_id){
+    public function selezionaSessione()
+    {
+        // Recupera tutte le sessioni d'esame disponibili, ordinate per data
+        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+
+        return view('docente.selezionaSessione', compact('sessioni'));
+    }
+
+    // Elabora la scelta dal form e reindirizza alla vista calendario con l'id scelto
+    public function procediCalendarioPersonale(Request $request)
+    {
+        $request->validate([
+            'sessione_id' => 'required|exists:sessione_esami,sessione_id',
+        ]);
+
+        return redirect()->route('docente.calendario', ['sessione_id' => $request->sessione_id]);
+    }
+
+    // Vista del Calendario Personale (rimane pulita e con parametro obbligatorio)
+    public function viewCalendarioPersonale(int $sessione_id)
+    {
         /** @var \App\Models\Utente $user */
         $user = Auth::user();
 
-        // 1. Recupera la base degli insegnamenti usando la tua funzione
+        // 1. Recupera i dati della sessione selezionata (es. nome e anno)
+        $sessione = Sessione::findOrFail($sessione_id);
+
+        // 2. Recupera gli insegnamenti associati al docente
         $insegnamentiCorsi = $this->insAssociati($user);
 
-        // 2. Carica in differita (Lazy Eager Loading) gli appelli filtrati per quella sessione
+        // 3. Carica gli appelli filtrati per questa sessione
         $insegnamentiCorsi->load(['appelli' => function($query) use ($sessione_id) {
             $query->where('sessione_id', $sessione_id)
-                  ->orderBy('data')
-                  ->orderBy('ora_inizio');
+                ->orderBy('data')
+                ->orderBy('ora_inizio');
         }]);
 
-        return view('docente.calendarioPersonale', compact('insegnamentiCorsi', 'sessione_id'));
+        return view('docente.calendario_personale', compact('insegnamentiCorsi', 'sessione'));
     }
 
     public function viewCalendarioGenerale(int $sessione_id, int $annoCorso, int $corso_id){
