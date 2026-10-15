@@ -62,9 +62,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     
     Route::get('/corsi', [adminController::class, 'indexCorsi'])->name('admin.corsi.index');
     Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.pianoDiStudi');
-    
+
+    //gestione del personale
+    Route::get('/personale', [adminController::class, 'indexPersonale'])->name('admin.personale.index');
+
+    // Rotte per Associazione Docente - Insegnamento
+    Route::get('/personale/associa', [adminController::class, 'createAssociazioneDocente'])->name('admin.personale.associa');
+    Route::post('/personale/associa', [adminController::class, 'storeAssociazioneDocente'])->name('admin.personale.storeAssocia');
+
     // 2. Calendario Globale (vede gli appelli di tutti i docenti e corsi)
     Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewcalendario_generale'])->name('admin.calendario');
+
+    // Gestione/Intervento diretto sugli appelli lato Admin
+    Route::get('/appelli/{id}/modifica', [adminController::class, 'editAppello'])->name('admin.appelli.edit');
+    Route::put('/appelli/{id}', [adminController::class, 'updateAppello'])->name('admin.appelli.update');
+    Route::delete('/appelli/{id}', [adminController::class, 'destroyAppello'])->name('admin.appelli.destroy');
 
     // 3. Gestione Sessioni d'Esame (CRUD Sessioni)
     Route::get('/sessioni', [sessioneController::class, 'index'])->name('sessioni.index');
@@ -75,7 +87,3 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::delete('/sessioni/{id}', [sessioneController::class, 'destroy'])->name('sessioni.destroy');
 
 });
-
-
-
-

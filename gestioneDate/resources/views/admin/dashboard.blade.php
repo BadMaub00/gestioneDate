@@ -120,11 +120,17 @@
                                     </a>
                                 </div>
 
-                                <!-- Riga 2: Personale universitario (Centrato nella sua riga) -->
                                 <div class="col-4">
-                                    <a href="#" class="dash-tile">   {{-- poi: route('personale.index') --}}
+                                    <a href="{{ route('admin.personale.index') }}" class="dash-tile">
                                         <i class="bi bi-people-fill text-unibs"></i>
                                         <span>Personale universitario</span>
+                                    </a>
+                                </div>
+
+                                <div class="col-4">
+                                    <a href="{{ route('admin.personale.associa') }}" class="dash-tile">
+                                        <i class="bi bi-people-fill text-unibs"></i>
+                                        <span>Associa</span>
                                     </a>
                                 </div>
 
