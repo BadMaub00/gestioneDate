@@ -9,6 +9,7 @@ use App\Models\Corso;
 use App\Models\Utente;
 use App\Models\InsegnamentiCorso;
 use App\Models\DocenteInsegnamento;
+use App\Models\Insegnamento;
 
 class adminController extends Controller
 {
@@ -67,6 +68,24 @@ class adminController extends Controller
         return view('admin.personale.associa', compact('docenti', 'insegnamentiCorso'));
     }
 
+    public function indexAssociazioni() {
+        $associazioni = DocenteInsegnamento::with([
+            'docente', 
+            'insegnamentiCorso.insegnamento', 
+            'insegnamentiCorso.corso'
+        ])->get();
+
+        return view('admin.personale.associazioni_index', compact('associazioni'));
+    }
+
+    // Elimina un'associazione docente-insegnamento
+    public function destroyAssociazioneDocente($id) {
+        $associazione = DocenteInsegnamento::findOrFail($id);
+        $associazione->delete();
+
+        return redirect()->back()->with('success', 'Associazione rimossa con successo.');
+    }
+
     // Salva l'associazione nel database
     public function storeAssociazioneDocente(Request $request) {
         $request->validate([
@@ -119,6 +138,52 @@ class adminController extends Controller
 
         return redirect()->route('admin.calendario', $sessione_id)
             ->with('success', 'Appello eliminato con successo.');
+    }
+
+    public function createInsegnamento(Request $request) {
+        $corsi = Corso::orderBy('nome', 'asc')->get();
+        
+        // Recupera corso_id e anno_di_corso dall'URL se presenti (se si arriva dal piano di studi)
+        $selectedCorsoId = $request->query('corso_id');
+        $selectedAnno = $request->query('anno_di_corso');
+
+        return view('admin.insegnamenti.create', compact('corsi', 'selectedCorsoId', 'selectedAnno'));
+    }
+
+    // Salva l'insegnamento e lo collega al corso scelto
+    public function storeInsegnamento(Request $request) {
+        $request->validate([
+            'insegnamento_id' => 'required|string|max:100|unique:insegnamento,insegnamento_id',
+            'nome'            => 'required|string|max:150',
+            'corso_id'        => 'required|exists:corso,corso_id',
+            'durata'          => 'required|integer|min:1',
+            'cfu'             => 'required|integer|min:1',
+            'anno_di_corso'   => 'required|integer|min:1|max:5',
+        ]);
+
+        // 1. Inserisce l'insegnamento nella tabella 'insegnamento'
+        Insegnamento::create([
+            'insegnamento_id' => $request->insegnamento_id,
+            'nome'            => $request->nome,
+        ]);
+
+        // 2. Associa l'insegnamento al corso nella tabella 'insegnamento_corso'
+        InsegnamentiCorso::create([
+            'corso_id'        => $request->corso_id,
+            'insegnamento_id' => $request->insegnamento_id,
+            'durata'          => $request->durata,
+            'cfu'             => $request->cfu,
+            'anno_di_corso'   => $request->anno_di_corso,
+        ]);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Insegnamento creato e inserito nel piano di studi con successo!');
+    }
+
+    public function destroyInsegnamento($insegnamento_id) {
+        $insegnamento = Insegnamento::findOrFail($insegnamento_id);
+        $insegnamento->delete();
+
+        return redirect()->back()->with('success', 'Insegnamento eliminato con successo.');
     }
 
     public function viewcalendario_generale($sessione_id = null){

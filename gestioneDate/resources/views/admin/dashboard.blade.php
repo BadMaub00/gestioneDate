@@ -129,7 +129,7 @@
                                 </div>
 
                                 <div class="col-4">
-                                    <a href="{{ route('admin.personale.associa') }}" class="dash-tile">
+                                    <a href="{{ route('admin.personale.associazioni') }}" class="dash-tile">
                                         <i class="bi bi-people-fill text-unibs"></i>
                                         <span>Associa</span>
                                     </a>
@@ -147,6 +147,12 @@
                                     <a href="{{ route('sessioni.index') }}" class="dash-tile">
                                         <i class="bi bi-calendar-range text-unibs"></i>
                                         <span>Sessioni</span>
+                                    </a>
+                                </div>
+                                <div class="col-4">
+                                    <a href="{{ route('admin.insegnamenti.create') }}" class="dash-tile">
+                                        <i class="bi bi-journal-plus text-unibs"></i>
+                                        <span>Nuovo Insegnamento</span>
                                     </a>
                                 </div>
 

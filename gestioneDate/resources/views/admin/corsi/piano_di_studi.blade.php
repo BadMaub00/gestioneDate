@@ -58,30 +58,50 @@
             <!-- Anni del corso (3, 2 o 5 anni) -->
             @for ($anno = 1; $anno <= $durataAnni; $anno++)
                 <div class="card shadow-sm mb-4 border-0 rounded-3 overflow-hidden">
-                    <div class="card-header bg-unibs text-white fw-bold py-2">
+                <!-- Header Anno con Pulsante Aggiungi -->
+                <div class="card-header bg-unibs text-white fw-bold py-2 d-flex align-items-center justify-content-between">
+                    <div>
                         <i class="bi bi-calendar3 me-2"></i>{{ $anno }}° Anno di Corso
                     </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
-                            @forelse($insegnamentiPerAnno->get($anno, []) as $ic)
-                                <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
-                                    <div>
-                                        <strong class="fs-6 text-dark">{{ $ic->insegnamento->nome ?? 'Insegnamento N/D' }}</strong>
-                                        <span class="text-muted d-block small">Codice: {{ $ic->insegnamento_id }}</span>
-                                    </div>
-                                    <div class="text-end">
-                                        <span class="badge bg-secondary rounded-pill px-3 py-2 me-1">{{ $ic->cfu }} CFU</span>
-                                        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">{{ $ic->durata }} ore</span>
-                                    </div>
-                                </li>
-                            @empty
-                                <li class="list-group-item text-muted fst-italic py-3 px-4">
-                                    Nessun insegnamento inserito per il {{ $anno }}° anno.
-                                </li>
-                            @endforelse
-                        </ul>
-                    </div>
+                    <a href="{{ route('admin.insegnamenti.create', ['corso_id' => $corso->getKey(), 'anno_di_corso' => $anno]) }}" 
+                    class="btn btn-sm btn-light text-unibs fw-bold rounded-pill shadow-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Aggiungi Insegnamento
+                    </a>
                 </div>
+
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @forelse($insegnamentiPerAnno->get($anno, []) as $ic)
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                                <div>
+                                    <strong class="fs-6 text-dark">{{ $ic->insegnamento->nome ?? 'Insegnamento N/D' }}</strong>
+                                    <span class="text-muted d-block small">Codice: {{ $ic->insegnamento_id }}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-secondary rounded-pill px-3 py-2">{{ $ic->cfu }} CFU</span>
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2 me-2">{{ $ic->durata }} ore</span>
+                                    
+                                    <!-- Form eliminazione insegnamento -->
+                                    <form action="{{ route('admin.insegnamenti.destroy', $ic->insegnamento_id) }}" 
+                                        method="POST" 
+                                        onsubmit="return confirm('Sei sicuro di voler eliminare questo insegnamento? Verranno rimosse anche le associazioni e gli appelli correlati.');" 
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Elimina Insegnamento" style="width: 32px; height: 32px; padding: 3px 0;">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        @empty
+                            <li class="list-group-item text-muted fst-italic py-3 px-4">
+                                Nessun insegnamento inserito per il {{ $anno }}° anno.
+                            </li>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
             @endfor
         </div>
 

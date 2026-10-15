@@ -67,8 +67,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/personale', [adminController::class, 'indexPersonale'])->name('admin.personale.index');
 
     // Rotte per Associazione Docente - Insegnamento
+    Route::get('/associazioni', [adminController::class, 'indexAssociazioni'])->name('admin.personale.associazioni');
     Route::get('/personale/associa', [adminController::class, 'createAssociazioneDocente'])->name('admin.personale.associa');
     Route::post('/personale/associa', [adminController::class, 'storeAssociazioneDocente'])->name('admin.personale.storeAssocia');
+    Route::delete('/associazioni/{id}', [adminController::class, 'destroyAssociazioneDocente'])->name('admin.personale.destroyAssocia');
 
     // 2. Calendario Globale (vede gli appelli di tutti i docenti e corsi)
     Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewcalendario_generale'])->name('admin.calendario');
@@ -77,6 +79,11 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/appelli/{id}/modifica', [adminController::class, 'editAppello'])->name('admin.appelli.edit');
     Route::put('/appelli/{id}', [adminController::class, 'updateAppello'])->name('admin.appelli.update');
     Route::delete('/appelli/{id}', [adminController::class, 'destroyAppello'])->name('admin.appelli.destroy');
+
+    //gestione degli insegnamenti
+    Route::get('/insegnamenti/crea', [adminController::class, 'createInsegnamento'])->name('admin.insegnamenti.create');
+    Route::post('/insegnamenti', [adminController::class, 'storeInsegnamento'])->name('admin.insegnamenti.store');
+    Route::delete('/insegnamenti/{insegnamento_id}', [adminController::class, 'destroyInsegnamento'])->name('admin.insegnamenti.destroy');
 
     // 3. Gestione Sessioni d'Esame (CRUD Sessioni)
     Route::get('/sessioni', [sessioneController::class, 'index'])->name('sessioni.index');
