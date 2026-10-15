@@ -19,30 +19,46 @@
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
-        <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
+                
+                <!-- Logo Università -->
                 <a class="navbar-brand py-0" href="#">
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
-                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <!-- Toggler Mobile -->
+                <button class="navbar-toggler border-0 shadow-none" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#navbarSupportedContent" 
+                        aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" 
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
+                <!-- Menu di Navigazione -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
+                        <!-- Pulsante Home -->
                         <li class="nav-item">
                             <a class="btn btn-unibs btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" 
-                               href="{{ route('docente.dashboard') }}" style="width: 115px;">
+                               aria-current="page" 
+                               href="{{ route('docente.dashboard') }}"
+                               style="width: 115px;">
                                 <i class="bi bi-house-door-fill text-center me-2" style="width: 18px;"></i>
                                 <span>Home</span>
                             </a>
                         </li>
+
+                        <!-- Pulsante Logout -->
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
+                                <button type="submit" 
+                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
+                                        style="width: 115px;">
                                     <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
                                     <span>Logout</span>
                                 </button>
@@ -53,83 +69,131 @@
             </div>
         </nav>
 
+
+        <!-- Estrazione e Formattazione Dati Appelli per JS -->
+        @php
+            $appelliArray = [];
+            foreach($insegnamentiCorsi as $insC) {
+                foreach($insC->appelli as $appello) {
+                    $appelliArray[] = [
+                        'appello_id' => $appello->appello_id,
+                        'data' => $appello->data,
+                        'ora_inizio' => $appello->ora_inizio,
+                        'ora_fine' => $appello->ora_fine,
+                        'nome_insegnamento' => $insC->insegnamento->nome,
+                        'nome_corso' => $insC->corso->nome,
+                    ];
+                }
+            }
+        @endphp
+
         <!-- Contenuto Principale -->
         <div class="py-3">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-12 col-xl-10">
-                        
-                        <!-- Titolo Intestazione Docente -->
-                        <div class="mb-4">
-                            <h1 class="h3 fw-bold text-unibs mb-1 d-flex align-items-center">
-                                <i class="bi bi-calendar-check-fill me-2"></i>Calendario Personale Appelli
-                            </h1>
-                            <p class="text-dark mb-2 small">
-                                Docente: <strong>Prof. {{ Auth::user()->nome }} {{ Auth::user()->cognome }}</strong>
-                            </p>
-                            <hr class="border-unibs border-2 opacity-100 my-0">
-                        </div>
+            <div class="container-fluid px-md-4 px-lg-5">
+                
+                <!-- Header Intestazione Docente -->
+                <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <h1 class="h3 fw-bold text-unibs mb-1 d-flex align-items-center">
+                            <i class="bi bi-calendar-check-fill me-2"></i>Calendario Personale Appelli
+                        </h1>
+                        <p class="text-muted mb-0 fw-medium">
+                            <strong>Docente:</strong> Prof. {{ Auth::user()->nome }} {{ Auth::user()->cognome }} | 
+                            <strong>Sessione:</strong> {{ $sessione->nome }} ({{ $sessione->anno }})
+                        </p>
+                    </div>
 
-                        <!-- Card Principale Calendario Appelli -->
-                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
-                            
-                            <!-- Intestazione Card con Nome e Anno della Sessione -->
-                            <div class="card-header bg-unibs text-white py-3 px-4 border-0 d-flex justify-content-between align-items-center">
-                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                                    <i class="bi bi-calendar-event-fill me-2 fs-5"></i> Appelli Programmati: {{ $sessione->nome }} ({{ $sessione->anno }})
-                                </h5>
-                                <!--<a href="{{ route('appelli.create') }}" class="btn btn-light btn-sm text-unibs fw-bold px-3 py-1 rounded-pill shadow-sm">
-                                    <i class="bi bi-plus-lg me-1"></i> Nuovo Appello
-                                </a>-->
+                    <a href="{{ route('docente.selezionaSessione') }}" class="btn btn-outline-unibs fw-bold rounded-3 shadow-sm px-3 py-2">
+                        <i class="bi bi-arrow-left me-1"></i> Cambia Sessione
+                    </a>
+                </div>
+
+                <!-- LAYOUT REATTIVO AFFIANCATO -->
+                <div class="row g-4 align-items-start">
+                    
+                    <!-- 1. VISTA CALENDARIO A GRIGLIA (COLONNA DI SINISTRA) -->
+                    <div class="col-12 col-xl-7 col-xxl-8 order-2 order-xl-1">
+                        
+                        <!-- Card Calendario con Header Navigazione Settimanale -->
+                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                            <div class="card-header bg-unibs text-white px-4 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2" style="min-height: 62px;">
+                                <button id="btn-prev-week" class="btn btn-outline-light btn-sm fw-bold px-3 py-1 rounded-2">
+                                    <i class="bi bi-chevron-left me-1"></i> Settimana Precedente
+                                </button>
+
+                                <span id="label-current-week" class="fw-bold text-white fs-5 mb-0">
+                                    Caricamento settimane...
+                                </span>
+
+                                <button id="btn-next-week" class="btn btn-outline-light btn-sm fw-bold px-3 py-1 rounded-2">
+                                    Settimana Successiva <i class="bi bi-chevron-right ms-1"></i>
+                                </button>
                             </div>
 
                             <div class="card-body p-0">
-                                <div class="table-responsive">
+                                <div id="calendar-container" 
+                                     data-appelli='@json($appelliArray)' 
+                                     data-inizio="{{ $sessione->data_inizio }}" 
+                                     data-fine="{{ $sessione->data_fine }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. TABELLA RIASSUNTIVA CON AZIONI (COLONNA DI DESTRA) -->
+                    <div class="col-12 col-xl-5 col-xxl-4 order-1 order-xl-2">
+                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                            <div class="card-header bg-unibs text-white px-4 border-0 d-flex justify-content-between align-items-center" style="min-height: 62px;">
+                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
+                                    <i class="bi bi-list-check me-2 fs-5"></i> I Miei Appelli
+                                </h5>
+                            </div>
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive" style="max-height: 680px; overflow-y: auto;">
                                     <table class="table table-hover align-middle mb-0">
-                                        <thead class="bg-light border-bottom">
+                                        <thead class="table-light border-bottom sticky-top">
                                             <tr>
-                                                <th class="ps-4 py-3 text-unibs fw-bold">Insegnamento</th>
-                                                <th class="py-3 text-unibs fw-bold">Corso di Laurea</th>
-                                                <th class="py-3 text-unibs fw-bold text-center">Data</th>
-                                                <th class="py-3 text-unibs fw-bold text-center">Orario</th>
-                                                <th class="pe-4 py-3 text-unibs fw-bold text-end">Azioni</th>
+                                                <th class="ps-3 py-3 text-unibs" style="width: 32%;">Data & Orario</th>
+                                                <th class="py-3 text-unibs" style="width: 38%;">Insegnamento</th>
+                                                <th class="pe-3 py-3 text-unibs text-end" style="width: 30%;">Azioni</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @php $hasAppelli = false; @endphp
-
                                             @foreach($insegnamentiCorsi as $insC)
                                                 @foreach($insC->appelli as $appello)
                                                     @php $hasAppelli = true; @endphp
                                                     <tr>
-                                                        <td class="ps-4 py-3 fw-bold text-dark">
-                                                            {{ $insC->insegnamento->nome }}
-                                                        </td>
-                                                        <td class="py-3 text-dark fw-medium">
-                                                            {{ $insC->corso->nome }}
-                                                        </td>
-                                                        <td class="py-3 text-center">
-                                                            <span class="badge bg-white text-unibs border border-unibs fw-bold px-2.5 py-1.5 rounded-pill shadow-sm">
-                                                                <i class="bi bi-calendar3 me-1"></i>
+                                                        <!-- Data e Orario -->
+                                                        <td class="ps-3 py-2.5 text-dark fs-7">
+                                                            <div class="fw-bold">
+                                                                <i class="bi bi-calendar-event text-unibs me-1"></i>
                                                                 {{ \Carbon\Carbon::parse($appello->data)->format('d/m/Y') }}
-                                                            </span>
+                                                            </div>
+                                                            <div class="small text-muted fw-medium mt-0.5">
+                                                                <i class="bi bi-clock me-1"></i>
+                                                                {{ \Carbon\Carbon::parse($appello->ora_inizio)->format('H:i') }} - {{ \Carbon\Carbon::parse($appello->ora_fine)->format('H:i') }}
+                                                            </div>
                                                         </td>
-                                                        <td class="py-3 text-center text-dark fw-medium">
-                                                            <i class="bi bi-clock me-1 text-dark"></i>
-                                                            {{ \Carbon\Carbon::parse($appello->ora_inizio)->format('H:i') }} - {{ \Carbon\Carbon::parse($appello->ora_fine)->format('H:i') }}
+
+                                                        <!-- Insegnamento e Corso -->
+                                                        <td class="py-2.5 text-dark">
+                                                            <div class="fw-semibold text-dark">{{ $insC->insegnamento->nome }}</div>
+                                                            <div class="small text-muted fst-italic">
+                                                                <i class="bi bi-mortarboard me-1 text-unibs"></i>{{ $insC->corso->nome }}
+                                                            </div>
                                                         </td>
-                                                        <td class="text-end pe-4 py-3">
-                                                            <div class="btn-group shadow-sm" role="group" aria-label="Azioni appello">
-                                                                <!-- Pulsante Modifica -->
+
+                                                        <!-- Pulsanti Modifica / Elimina -->
+                                                        <td class="text-end pe-3 py-2.5">
+                                                            <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Azioni appello">
                                                                 <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
-                                                                   class="btn btn-unibs text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-1.5" 
-                                                                   style="width: 80px;" 
+                                                                   class="btn btn-unibs text-white fw-semibold d-inline-flex align-items-center px-2 py-1" 
                                                                    title="Modifica Appello">
-                                                                    <i class="bi bi-pencil-square fs-6 mb-0.5"></i>
-                                                                    <span style="font-size: 0.7rem;">Modifica</span>
+                                                                    <i class="bi bi-pencil-square me-1"></i> Modifica
                                                                 </a>
 
-                                                                <!-- Form e Pulsante Elimina -->
                                                                 <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
                                                                       method="POST" 
                                                                       class="d-inline"
@@ -137,11 +201,10 @@
                                                                     @csrf
                                                                     @method('DELETE')
                                                                     <button type="submit" 
-                                                                            class="btn btn-danger text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-1.5 h-100" 
-                                                                            style="width: 80px; border-top-left-radius: 0; border-bottom-left-radius: 0;" 
+                                                                            class="btn btn-danger text-white fw-semibold d-inline-flex align-items-center px-2 py-1" 
+                                                                            style="border-top-left-radius: 0; border-bottom-left-radius: 0;" 
                                                                             title="Elimina Appello">
-                                                                        <i class="bi bi-trash fs-6 mb-0.5"></i>
-                                                                        <span style="font-size: 0.7rem;">Elimina</span>
+                                                                        <i class="bi bi-trash me-1"></i> Elimina
                                                                     </button>
                                                                 </form>
                                                             </div>
@@ -152,8 +215,8 @@
 
                                             @if(!$hasAppelli)
                                                 <tr>
-                                                    <td colspan="5" class="text-center py-5 text-dark fw-bold">
-                                                        <i class="bi bi-calendar-x fs-2 d-block mb-2 text-unibs"></i>
+                                                    <td colspan="3" class="text-center py-5 text-muted fw-bold">
+                                                        <i class="bi bi-calendar-x fs-3 d-block mb-2 text-secondary"></i>
                                                         Nessun appello fissato per le tue materie in questa sessione.
                                                     </td>
                                                 </tr>
@@ -163,27 +226,30 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Bottoni di Navigazione Inferiori -->
-                        <div class="row g-2">
-                            <div class="col-12 col-md-6">
-                                <a href="{{ route('docente.dashboard') }}" 
-                                   class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                                    <i class="bi bi-arrow-left me-2 fs-6"></i>Torna alla Dashboard
-                                </a>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <a href="{{ route('docente.selezionaSessione') }}" 
-                                   class="btn btn-unibs text-white fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                                    <i class="bi bi-calendar-event me-2 fs-6"></i>Seleziona Un'Altra Sessione
-                                </a>
-                            </div>
-                        </div>
+                </div>
 
+                <!-- Bottoni di Navigazione Inferiori -->
+                <div class="row g-2 mt-4">
+                    <div class="col-12 col-md-6">
+                        <a href="{{ route('docente.dashboard') }}" 
+                           class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                            <i class="bi bi-arrow-left me-2 fs-6"></i>Torna alla Dashboard
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="{{ route('docente.selezionaSessione') }}" 
+                           class="btn btn-unibs text-white fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                            <i class="bi bi-calendar-event me-2 fs-6"></i>Seleziona Un'Altra Sessione
+                        </a>
                     </div>
                 </div>
+
             </div>
         </div>
 
+        <!-- Script JS Calendario Personale -->
+        <script src="{{ asset('js/calendarioPersonale.js') }}"></script>
     </body>
 </html>

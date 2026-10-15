@@ -141,7 +141,7 @@
                                 </a>
                             </div>
                             <div class="col-12 col-md-6">
-                                <a href="calendarioGenerale.html" class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                                <a href="{{ route('docente.selezionaFiltriGenerale') }}" class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
                                     <i class="bi bi-calendar3 me-2 fs-6"></i>Calendario Generale
                                 </a>
                             </div>
