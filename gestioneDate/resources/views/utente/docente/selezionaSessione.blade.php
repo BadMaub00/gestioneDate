@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Selezione Calendario Generale</title>
+        <title>Dashboard Docente</title>
 
         <!-- CSS Bootstrap & Icone -->
         <link rel="stylesheet" href="{{ asset('css/bootstrap_v2.min.css') }}">
@@ -11,14 +11,14 @@
         
         <!-- CSS Personalizzati -->
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
+        <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
                 
@@ -69,67 +69,37 @@
             </div>
         </nav>
 
-
         <!-- Contenuto Principale -->
         <div class="py-4">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-8 col-lg-6">
                         
-                        <!-- Card Selezione Filtri Calendario Generale -->
+                        <!-- Card Selezione Sessione -->
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                             <div class="card-header bg-unibs text-white py-3 px-4 border-0">
                                 <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                                    <i class="bi bi-calendar3 me-2 fs-5"></i> Selezione Calendario Generale
+                                    <i class="bi bi-calendar-range-fill me-2 fs-5"></i> Selezione Sessione d'Esame
                                 </h5>
                             </div>
 
                             <div class="card-body p-4 bg-white">
-                                <form action="{{ route('docente.procedicalendario_generale') }}" method="POST">
+                                <form action="{{ route('docente.procediCalendario') }}" method="POST">
                                     @csrf
 
-                                    <!-- 1. SELECT CORSO -->
-                                    <div class="mb-3">
-                                        <label for="corso_id" class="form-label fw-bold text-dark mb-1">
-                                            1. Corso di Studi:
-                                        </label>
-                                        <select class="form-select border-2 border-unibs shadow-none py-2" 
-                                                id="corso_id" 
-                                                name="corso_id" 
-                                                data-url-template="{{ route('docente.api.anniCorso', ['corso_id' => ':id']) }}" 
-                                                required>
-                                            <option value="" selected disabled>-- Seleziona Corso --</option>
-                                            @forelse ($corsi as $corso)
-                                                <option value="{{ $corso->corso_id }}">{{ $corso->nome }}</option>
-                                            @empty
-                                                <option value="" disabled>Nessun corso disponibile</option>
-                                            @endforelse
-                                        </select>
-                                    </div>
-
-                                    <!-- 2. SELECT ANNO DI CORSO -->
-                                    <div class="mb-3">
-                                        <label for="annoCorso" class="form-label fw-bold text-dark mb-1">
-                                            2. Anno di Corso:
-                                        </label>
-                                        <select class="form-select border-2 border-unibs shadow-none py-2" id="annoCorso" name="annoCorso" disabled required>
-                                            <option value="" selected disabled>-- Seleziona prima un Corso --</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- 3. SELECT SESSIONE -->
                                     <div class="mb-4">
-                                        <label for="sessione_id" class="form-label fw-bold text-dark mb-1">
-                                            3. Sessione d'Esame:
+                                        <label for="sessione_id" class="form-label fw-bold text-dark mb-2">
+                                            Scegli una sessione disponibile:
                                         </label>
+                                        
                                         <select class="form-select border-2 border-unibs shadow-none py-2" id="sessione_id" name="sessione_id" required>
                                             <option value="" selected disabled>-- Seleziona Sessione --</option>
-                                            @forelse ($sessioni as $sessione)
+                                            @forelse($sessioni as $sessione)
                                                 <option value="{{ $sessione->sessione_id }}">
                                                     {{ $sessione->nome }} ({{ $sessione->anno }}) - [dal {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}]
                                                 </option>
                                             @empty
-                                                <option value="" disabled>Nessuna sessione disponibile</option>
+                                                <option value="" disabled>Nessuna sessione d'esame trovata</option>
                                             @endforelse
                                         </select>
                                     </div>
@@ -151,7 +121,5 @@
             </div>
         </div>
 
-        <!-- Script JS Esterno -->
-        <script src="{{ asset('js/selezionaFiltriGenerale.js') }}"></script>
     </body>
 </html>

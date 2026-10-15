@@ -11,9 +11,8 @@
         
         <!-- CSS Personalizzati -->
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
@@ -146,7 +145,7 @@
 
                             <div class="card-body p-0">
                                 <div class="table-responsive" style="max-height: 680px; overflow-y: auto;">
-                                    <table class="table table-hover align-middle mb-0">
+                                    <table class="table table-hover table-striped align-middle mb-0">
                                         <thead class="table-light border-bottom sticky-top">
                                             <tr>
                                                 <th class="ps-3 py-3 text-unibs" style="width: 28%;">Data</th>
@@ -207,6 +206,7 @@
         </div>
 
         <!-- Script JS Calendario -->
-        <script src="{{ asset('js/calendarioGenerale.js') }}"></script>
+        <!-- Sostituisci la riga dello script in fondo con questa: -->
+<script src="{{ asset('js/calendarioGenerale.js') }}?v={{ time() }}"></script>
     </body>
 </html>

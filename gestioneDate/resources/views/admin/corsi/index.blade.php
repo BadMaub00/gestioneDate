@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
@@ -46,7 +46,7 @@
                 <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                     <i class="bi bi-mortarboard-fill me-2"></i>Seleziona un Corso di Laurea
                 </h1>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
                 </a>
             </div>
@@ -61,7 +61,7 @@
                                     <h5 class="card-title fw-bold text-unibs mb-2">{{ $corso->nome }}</h5>
                                     <p class="text-muted small mb-3">Codice: {{ $corso->codice ?? 'N/D' }}</p>
                                 </div>
-                                <a href="{{ route('admin.corsi.pianoDiStudi', $corso->corso_id) }}" class="btn btn-unibs text-white w-100 rounded-pill shadow-sm mt-3">
+                                <a href="{{ route('admin.corsi.pianoDiStudi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
                                     Visualizza Piano di Studi <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>

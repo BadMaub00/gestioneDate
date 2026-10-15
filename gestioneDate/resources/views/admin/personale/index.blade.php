@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
@@ -46,7 +46,7 @@
                 <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                     <i class="bi bi-people-fill me-2"></i>Elenco Personale Universitario
                 </h1>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
                 </a>
             </div>
@@ -54,7 +54,7 @@
 
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover table-striped align-middle mb-0">
                         <thead class="bg-unibs text-white">
                             <tr>
                                 <th class="py-3 px-4">Nome</th>
@@ -68,11 +68,9 @@
                                     <td class="py-3 px-4 fw-semibold">{{ $p->nome }}</td>
                                     <td class="py-3 px-4 fw-semibold">{{ $p->cognome }}</td>
                                     <td class="py-3 px-4 text-center">
-                                        @if($p->ruolo === 'Amministratore')
-                                            <span class="badge bg-danger rounded-pill px-3 py-1.5">Amministratore</span>
-                                        @else
-                                            <span class="badge bg-primary rounded-pill px-3 py-1.5">Docente</span>
-                                        @endif
+                                        <span class="badge border border-unibs text-unibs bg-transparent rounded-pill py-2 fw-bold d-inline-block" style="width: 135px;">
+                                            {{ $p->ruolo }}
+                                        </span>
                                     </td>
                                 </tr>
                             @empty

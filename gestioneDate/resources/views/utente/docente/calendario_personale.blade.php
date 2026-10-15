@@ -11,14 +11,14 @@
         
         <!-- CSS Personalizzati -->
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
+        <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
                 
@@ -151,7 +151,7 @@
 
                             <div class="card-body p-0">
                                 <div class="table-responsive" style="max-height: 680px; overflow-y: auto;">
-                                    <table class="table table-hover align-middle mb-0">
+                                    <table class="table table-hover table-striped align-middle mb-0">
                                         <thead class="table-light border-bottom sticky-top">
                                             <tr>
                                                 <th class="ps-3 py-3 text-unibs" style="width: 32%;">Data & Orario</th>
@@ -191,7 +191,7 @@
                                                                 @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
                                                                     <!-- MODIFICA (Giallo Warning) - Abilitato -->
                                                                     <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
-                                                                       class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1" 
+                                                                       class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5" 
                                                                        style="width: 90px;"
                                                                        title="Modifica Appello">
                                                                         <i class="bi bi-pencil-square me-1"></i> Modifica
@@ -205,7 +205,7 @@
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit" 
-                                                                                class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1" 
+                                                                                class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5" 
                                                                                 style="width: 90px; border-top-left-radius: 0; border-bottom-left-radius: 0;" 
                                                                                 title="Elimina Appello">
                                                                             <i class="bi bi-trash me-1"></i> Elimina
@@ -214,7 +214,7 @@
                                                                 @else
                                                                     <!-- MODIFICA (Giallo Warning) - Disabilitato con Sbarramento -->
                                                                     <button type="button" 
-                                                                            class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1 opacity-50" 
+                                                                            class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5 opacity-50" 
                                                                             disabled 
                                                                             style="width: 90px; cursor: not-allowed;"
                                                                             title="Azione riservata al docente primario dell'insegnamento">
@@ -223,7 +223,7 @@
 
                                                                     <!-- ELIMINA (Rosso Danger) - Disabilitato con Sbarramento -->
                                                                     <button type="button" 
-                                                                            class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1 opacity-50" 
+                                                                            class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5 opacity-50" 
                                                                             disabled 
                                                                             style="width: 90px; border-top-left-radius: 0; border-bottom-left-radius: 0; cursor: not-allowed;" 
                                                                             title="Azione riservata al docente primario dell'insegnamento">
@@ -273,6 +273,7 @@
         </div>
 
         <!-- Script JS Calendario Personale -->
-        <script src="{{ asset('js/calendarioPersonale.js') }}"></script>
+         <!-- Sostituisci la riga dello script in fondo con questa: -->
+        <script src="{{ asset('js/calendarioPersonale.js') }}?v={{ time() }}"></script>
     </body>
 </html>
