@@ -19,19 +19,18 @@
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
-        <!-- Navbar Istituzionale con Logo -->
-        <nav class="navbar bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
-            <div class="container-fluid px-3 px-md-5 justify-content-center justify-content-md-start">
-                <a class="navbar-brand py-0 me-0" href="#">
-                    <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="UniBS" style="max-height: 70px;">
-                </a>
-            </div>
-        </nav>
 
         <!-- Contenuto Principale: Card di Login Centrata -->
         <div class="my-auto py-4">
             <div class="container">
                 <div class="row justify-content-center">
+                    <!-- Logo Ingrandito e Centrato -->
+                    <div class="text-center mb-5">
+                        <img class="img-fluid" 
+                            src="{{ asset('images/unibsLogo.png') }}" 
+                            alt="Unibs" 
+                            style="max-height: 110px;">
+                    </div>
                     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
                         
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
@@ -103,7 +102,7 @@
         <!-- Footer Istituzionale Discreto -->
         <footer class="py-3 text-center small">
             <div class="container">
-                <span class="fw-semibold text-dark">&copy; Università degli Studi di Brescia - Coordinamento Date d'Esame</span>
+                <span class="fw-semibold text-dark">&copy; Università degli Studi di Brescia - Portale del Personale Universitario</span>
             </div>
         </footer>
 
