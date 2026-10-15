@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Helper per conversione date senza problemi di fuso orario
+    // Helper per conversione date
     function parseLocalDate(dateStr) {
         const [year, month, day] = dateStr.split('-').map(Number);
         return new Date(year, month - 1, day);
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tempStart = new Date(currentWeekStart);
     while (tempStart <= endDateSession) {
         const tempEnd = new Date(tempStart);
-        tempEnd.setDate(tempEnd.getDate() + 5); // Da Lunedì a Sabato
+        tempEnd.setDate(tempEnd.getDate() + 5); // Lunedì -> Sabato
         
         weeks.push({
             start: new Date(tempStart),
@@ -57,12 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let currentWeekIndex = 0;
-
-    // Slot orari e giorni di lezione
-    const ore = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
     const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
 
-    // 3. Renderizzazione del Calendario a Griglia Oraria
+    // 3. Renderizzazione del Calendario con rowspan
     function renderWeek(index) {
         if (weeks.length === 0) {
             calendarContainer.innerHTML = `<div class="p-4 text-center text-muted">Nessuna settimana trovata per questa sessione.</div>`;
@@ -82,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnPrevWeek.disabled = (index === 0);
         btnNextWeek.disabled = (index === weeks.length - 1);
 
-        // Genera array dei 6 giorni (Lunedì -> Sabato)
         const days = [];
         for (let i = 0; i < 6; i++) {
             const d = new Date(week.start);
@@ -113,65 +109,99 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tbody>
         `;
 
-        ore.forEach(ora => {
+        // Tracciamento celle coperte da rowspan
+        const occupied = new Set();
+
+        // Ciclo dalle 08:00 alle 18:00 (lo slot 18:00 copre fino alle 19:00)
+        for (let hour = 8; hour <= 18; hour++) {
+            const timeSlot = `${String(hour).padStart(2, '0')}:00`;
+
             html += `
                 <tr>
-                    <td class="fw-bold text-secondary bg-light small py-3">${ora}</td>
+                    <td class="fw-bold text-secondary bg-light small py-2 align-middle">${timeSlot}</td>
             `;
 
             days.forEach(day => {
                 const dayYMD = formatDateToYMD(day);
+                const cellKey = `${dayYMD}_${hour}`;
 
-                // Trova gli appelli che iniziano in questa fascia oraria
+                // Se la cella è già coperta da un rowspan precedente, salta la creazione del td
+                if (occupied.has(cellKey)) {
+                    return;
+                }
+
+                // Trova gli appelli che iniziano in questa ora
                 const appelliSlot = appelli.filter(app => {
                     if (app.data !== dayYMD) return false;
-                    const oraInizioHH = app.ora_inizio.substring(0, 2);
-                    const oraSlotHH = ora.substring(0, 2);
-                    return oraInizioHH === oraSlotHH;
+                    const oraInizioHH = parseInt(app.ora_inizio.split(':')[0], 10);
+                    return oraInizioHH === hour;
                 });
 
-                html += `<td class="p-1 align-top" style="height: 65px; position: relative;">`;
+                if (appelliSlot.length > 0) {
+                    let maxDuration = 1;
 
-                appelliSlot.forEach(appello => {
-                    const oraInizio = appello.ora_inizio.substring(0, 5);
-                    const oraFine = appello.ora_fine.substring(0, 5);
-                    const docente = appello.docente_nome 
-                        ? `Prof. ${appello.docente_nome} ${appello.docente_cognome}` 
-                        : 'Non assegnato';
+                    appelliSlot.forEach(appello => {
+                        const hInizio = parseInt(appello.ora_inizio.split(':')[0], 10);
+                        let hFine = parseInt(appello.ora_fine.split(':')[0], 10);
+                        if (appello.ora_fine.includes(':') && parseInt(appello.ora_fine.split(':')[1], 10) > 0) {
+                            hFine += 1;
+                        }
+                        const duration = Math.max(1, hFine - hInizio);
+                        if (duration > maxDuration) maxDuration = duration;
+                    });
 
-                    if (appello.is_mio_appello) {
-                        // TUO INSEGNAMENTO: Giallo tenue (bg-warning-subtle) identico alla tabella
-                        html += `
-                            <div class="p-2 text-start rounded-3 shadow-sm bg-warning-subtle border border-warning text-dark mb-1" 
-                                 style="font-size: 0.82rem; line-height: 1.3;">
-                                <div class="fw-bold mb-1 d-flex justify-content-between align-items-center">
-                                    <span>${appello.nome_insegnamento}</span>
-                                    <i class="bi bi-star-fill text-warning ms-1" title="Tuo insegnamento"></i>
-                                </div>
-                                <div class="small text-dark fw-medium opacity-90"><i class="bi bi-clock me-1 text-muted"></i>${oraInizio} - ${oraFine}</div>
-                                <div class="small text-muted fst-italic mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
-                            </div>
-                        `;
-                    } else {
-                        // ALTRI INSEGNAMENTI: Blu scuro originale (#002b49)
-                        html += `
-                            <div class="p-2 text-start rounded-3 shadow-sm text-white mb-1" 
-                                 style="background-color: #002b49; font-size: 0.82rem; line-height: 1.3;">
-                                <div class="fw-bold mb-1">
-                                    ${appello.nome_insegnamento}
-                                </div>
-                                <div class="small opacity-90"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
-                                <div class="small opacity-90 fst-italic mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
-                            </div>
-                        `;
+                    // Segna le slot ore successive come occupate
+                    for (let d = 1; d < maxDuration; d++) {
+                        if (hour + d <= 18) {
+                            occupied.add(`${dayYMD}_${hour + d}`);
+                        }
                     }
-                });
 
-                html += `</td>`;
+                    html += `<td rowspan="${maxDuration}" class="p-1 align-top" style="height: 1px;">`;
+
+                    appelliSlot.forEach(appello => {
+                        const oraInizio = appello.ora_inizio.substring(0, 5);
+                        const oraFine = appello.ora_fine.substring(0, 5);
+                        const docente = appello.docente_nome 
+                            ? `Prof. ${appello.docente_nome} ${appello.docente_cognome}` 
+                            : 'Non assegnato';
+
+                        if (appello.is_mio_appello) {
+                            html += `
+                                <div class="p-2 text-start rounded-3 shadow-sm bg-warning-subtle border border-warning text-dark h-100 d-flex flex-column justify-content-between mb-1" 
+                                     style="font-size: 0.82rem; line-height: 1.3;">
+                                    <div>
+                                        <div class="fw-bold mb-1 d-flex justify-content-between align-items-center">
+                                            <span>${appello.nome_insegnamento}</span>
+                                            <i class="bi bi-star-fill text-warning ms-1" title="Tuo insegnamento"></i>
+                                        </div>
+                                        <div class="small text-dark fw-medium opacity-90"><i class="bi bi-clock me-1 text-muted"></i>${oraInizio} - ${oraFine}</div>
+                                    </div>
+                                    <div class="small text-muted fst-italic mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
+                                </div>
+                            `;
+                        } else {
+                            html += `
+                                <div class="p-2 text-start rounded-3 shadow-sm text-white h-100 d-flex flex-column justify-content-between mb-1" 
+                                     style="background-color: #002b49; font-size: 0.82rem; line-height: 1.3;">
+                                    <div>
+                                        <div class="fw-bold mb-1">${appello.nome_insegnamento}</div>
+                                        <div class="small opacity-90"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
+                                    </div>
+                                    <div class="small opacity-90 fst-italic mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    html += `</td>`;
+                } else {
+                    html += `<td class="p-1 align-top" style="height: 65px;"></td>`;
+                }
             });
 
             html += `</tr>`;
-        });
+        }
 
         html += `
                     </tbody>

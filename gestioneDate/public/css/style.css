@@ -1,3 +1,10 @@
+
+
+/* Sfondo personalizzato per la dashboard docente */
+body.bg-dashboard {
+    background-color: #f0f4f8 !important;
+}
+
 /* Palette Istituzionale UniBS */
 .bg-unibs { 
     background-color: #003366 !important; 
