@@ -55,7 +55,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // 1. Dashboard Generale Admin
     Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
-
+    
+    Route::get('/corsi', [adminController::class, 'indexCorsi'])->name('admin.corsi.index');
+    Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.pianoDiStudi');
+    
     // 2. Calendario Globale (vede gli appelli di tutti i docenti e corsi)
     Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewcalendario_generale'])->name('admin.calendario');
 

@@ -75,7 +75,31 @@
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-12 col-xl-10">
-                        
+
+                        <style>
+                            .dash-grid { max-width: 720px; margin: 0 auto; }
+                            .dash-tile {
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                justify-content: center;
+                                gap: .6rem;
+                                min-height: 150px;
+                                height: 100%;
+                                padding: .75rem;
+                                background: #f3f5fa;
+                                border-radius: 14px;
+                                box-shadow: 0 3px 8px rgba(0, 0, 0, .18);
+                                color: #212529;
+                                font-weight: 500;
+                                text-align: center;
+                                text-decoration: none;
+                                transition: transform .15s ease, box-shadow .15s ease;
+                            }
+                            .dash-tile i { font-size: 3rem; line-height: 1; }
+                            .dash-tile:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0, 0, 0, .25); color: #212529; }
+                        </style>
+
                         <!-- Titolo Intestazione Amministratore Dinamico -->
                         <div class="mb-4">
                             <h1 class="h3 fw-bold text-unibs mt-3 mb-2 d-flex align-items-center">
@@ -84,75 +108,42 @@
                             <hr class="border-unibs border-2 opacity-100 my-0">
                         </div>
 
-                        <!-- Card Gestione Insegnamenti -->
-                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                            
-                            <!-- Intestazione Card Blu Istituzionale -->
-                            <div class="card-header bg-unibs text-white py-3 px-4 border-0">
-                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                                    <i class="bi bi-journal-bookmark-fill me-2 fs-4"></i> Gestione Sessioni
-                                </h5>
-                            </div>
+                        <!-- Riquadri (3 colonne, disposizione richiesta) -->
+                        <!-- Riquadri (Centrati nello schermo) -->
+                        <div class="dash-grid mx-auto mb-5">
+                            <div class="row g-3 justify-content-center">
 
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <tbody>
-                                            @forelse($sessioni as $sessione)
-                                                <tr>
-                                                    <td class="ps-4 py-3 fw-bold text-dark" style="width: 35%;">
-                                                        {{ $sessione->nome }}
-                                                    </td>
-                                                    <td class="py-3 text-dark fw-medium" style="width: 25%;">
-                                                        {{ $sessione->anno }}
-                                                    </td>
-                                                    <td class="text-end pe-4 py-3" style="width: 40%;">
-                                                        <div class="d-inline-flex gap-2 align-items-center">
-                                                            <div class="btn-group shadow-sm" role="group" aria-label="Azioni sessione">
-                                                                <a href="{{ route('admin.calendario', $sessione->getKey()) }}" class="btn btn-unibs text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
-                                                                    <i class="bi bi-eye fs-5 mb-1"></i>
-                                                                    <span style="font-size: 0.75rem;">Visualizza</span>
-                                                                </a>
-                                                                <a href="{{ route('sessioni.edit', $sessione->getKey()) }}" class="btn btn-warning text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
-                                                                    <i class="bi bi-pencil-square fs-5 mb-1"></i>
-                                                                    <span style="font-size: 0.75rem;">Modifica</span>
-                                                                </a>
-                                                            </div>
-                                                            <form action="{{ route('sessioni.destroy', $sessione->getKey()) }}" method="POST" class="m-0" onsubmit="return confirm('Eliminare la sessione {{ $sessione->nome }} {{ $sessione->anno }}?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-danger text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2 shadow-sm" style="width: 90px;">
-                                                                    <i class="bi bi-trash fs-5 mb-1"></i>
-                                                                    <span style="font-size: 0.75rem;">Elimina</span>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="3" class="text-center py-4 text-muted fw-bold">
-                                                        Nessuna sessione ancora programmata.
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                <!-- Riga 1: Corsi (Sx), Insegnamenti (Centro) -->
+                                <div class="col-4">
+                                    <a href="{{route('admin.corsi.index')}}" class="dash-tile">   
+                                        <i class="bi bi-mortarboard-fill text-unibs"></i>
+                                        <span>Corsi</span>
+                                    </a>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Bottoni Calendari a tutta larghezza (50% ciascuno) -->
-                        <div class="row g-2 mt-3">
-                            <div class="col-12 col-md-6">
-                                <a href="{{ route('sessioni.create') }}" class="btn btn-unibs text-white fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                                    <i class="bi bi-plus-circle-fill me-2 fs-6"></i>Nuova sessione
-                                </a>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <a href="{{ route('admin.calendario') }}" class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                                    <i class="bi bi-calendar3 me-2 fs-6"></i>Calendario generale
-                                </a>
+                                <!-- Riga 2: Personale universitario (Centrato nella sua riga) -->
+                                <div class="col-4">
+                                    <a href="#" class="dash-tile">   {{-- poi: route('personale.index') --}}
+                                        <i class="bi bi-people-fill text-unibs"></i>
+                                        <span>Personale universitario</span>
+                                    </a>
+                                </div>
+
+                                <!-- Riga 3: Appelli (Sx), Sessioni (Centro) -->
+                                <div class="w-100"></div> {{-- Forza l'andata a capo pulita --}}
+                                <div class="col-4">
+                                    <a href="{{ route('admin.calendario') }}" class="dash-tile">
+                                        <i class="bi bi-calendar-check text-unibs"></i>
+                                        <span>Appelli</span>
+                                    </a>
+                                </div>
+                                <div class="col-4">
+                                    <a href="{{ route('sessioni.index') }}" class="dash-tile">
+                                        <i class="bi bi-calendar-range text-unibs"></i>
+                                        <span>Sessioni</span>
+                                    </a>
+                                </div>
+
                             </div>
                         </div>
 
