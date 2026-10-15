@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 14, 2026 alle 23:06
+-- Creato il: Ott 15, 2026 alle 10:42
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -94,7 +94,8 @@ INSERT INTO `corso` (`corso_id`, `nome`, `tipo_corso`) VALUES
 (2, 'Informatica', 'Triennale'),
 (3, 'Ingegneria Elettronica', 'Triennale'),
 (4, 'Artificial Intelligence Engineering', 'Magistrale'),
-(5, 'Ingegneria dell Automazione', 'Triennale');
+(5, 'Ingegneria dell''Automazione', 'Triennale'),
+(7, 'Ingegneria Elettronica', 'Magistrale');
 
 -- --------------------------------------------------------
 
@@ -120,7 +121,8 @@ INSERT INTO `docente_insegnamento` (`doc_ins_id`, `ins_corso_id`, `utente_id`, `
 (4, 4, 7, 'Primario'),
 (5, 5, 7, 'Primario'),
 (6, 6, 7, 'Secondario'),
-(8, 7, 6, 'Primario');
+(8, 7, 6, 'Primario'),
+(9, 8, 7, 'Primario');
 
 -- --------------------------------------------------------
 
@@ -159,7 +161,7 @@ INSERT INTO `insegnamento` (`insegnamento_id`, `nome`) VALUES
 (3, 'Architettura dei Calcolatori'),
 (4, 'Machine Learning e Data Mining'),
 (5, 'Cybersecurity e Sicurezza delle Reti'),
-(6, 'Robottica e Sistemi Intelligenti'),
+(6, 'Robotica e Sistemi Intelligenti'),
 (8, 'Programmazione Web');
 
 -- --------------------------------------------------------
@@ -188,7 +190,8 @@ INSERT INTO `insegnamento_corso` (`ins_corso_id`, `corso_id`, `insegnamento_id`,
 (4, 4, 4, 60, 9, 1),
 (5, 4, 5, 60, 6, 2),
 (6, 5, 6, 60, 9, 2),
-(7, 1, 8, 60, 6, 2);
+(7, 1, 8, 60, 6, 2),
+(8, 7, 8, 60, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -301,7 +304,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('BHhMztD5OX1s0DhiPzaFjsEtrYqOplj4I0t7Yo43', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiM3k0REVNV25jOG5UTjM5NjdTOUN0bmlkQ0QxTjY4eE1RSmZNZW1HZiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo2NzoiaHR0cDovL2xvY2FsaG9zdC9nZXN0aW9uZURhdGUvZ2VzdGlvbmVEYXRlL3B1YmxpYy9kb2NlbnRlL2Rhc2hib2FyZCI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjY3OiJodHRwOi8vbG9jYWxob3N0L2dlc3Rpb25lRGF0ZS9nZXN0aW9uZURhdGUvcHVibGljL2RvY2VudGUvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjE3OiJkb2NlbnRlLmRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjY7fQ==', 1792011964);
+('6q13CFoutRI2TOmv6suu30C8bqcoFKdO5r4L7GL1', 7, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiQ1NUNUF3aWVLNWpZQzVoT2YzbUVVYkdRRGhhNmZvandldVVqdjM3NSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo2NzoiaHR0cDovL2xvY2FsaG9zdC9nZXN0aW9uZURhdGUvZ2VzdGlvbmVEYXRlL3B1YmxpYy9kb2NlbnRlL2Rhc2hib2FyZCI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjY3OiJodHRwOi8vbG9jYWxob3N0L2dlc3Rpb25lRGF0ZS9nZXN0aW9uZURhdGUvcHVibGljL2RvY2VudGUvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjE3OiJkb2NlbnRlLmRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjc7fQ==', 1792053623),
+('9Gt3Vj4sFJt8wCujTh4q5bVlT6lLtdXiAXe1B0cD', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZXBjSjJpbG5TczFjTldpaklHdWRrUDEyNUxmUjZ1VDR4azhTVEhFbCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NzA6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMvZG9jZW50ZS9jYWxlbmRhcmlvLzEiO3M6NToicm91dGUiO3M6MTg6ImRvY2VudGUuY2FsZW5kYXJpbyI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjY7fQ==', 1792016942);
 
 -- --------------------------------------------------------
 
@@ -474,13 +478,13 @@ ALTER TABLE `appello`
 -- AUTO_INCREMENT per la tabella `corso`
 --
 ALTER TABLE `corso`
-  MODIFY `corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT per la tabella `docente_insegnamento`
 --
 ALTER TABLE `docente_insegnamento`
-  MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT per la tabella `failed_jobs`
@@ -492,13 +496,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT per la tabella `insegnamento`
 --
 ALTER TABLE `insegnamento`
-  MODIFY `insegnamento_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `insegnamento_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT per la tabella `insegnamento_corso`
 --
 ALTER TABLE `insegnamento_corso`
-  MODIFY `ins_corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `ins_corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT per la tabella `jobs`
