@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
@@ -63,9 +63,12 @@
                 <!-- Form selezione sessione -->
                 <form action="" method="GET" class="d-flex align-items-center gap-2">
                     <label for="sessione_id" class="form-label fw-bold text-nowrap mb-0">Sessione:</label>
-                    <select name="sessione_id" id="sessione_id" class="form-select form-select-sm shadow-sm" onchange="window.location.href='{{ url('admin/calendario') }}/' + this.value">
+                    <select name="sessione_id" 
+                            id="sessione_id" 
+                            class="form-select form-select-sm shadow-sm" 
+                            onchange="window.location.href=`{{ route('admin.calendario') }}/${this.value}`">
                         @foreach($sessioni as $sessione)
-                            <option value="{{ $sessione->getKey() }}" {{ $sessione_id == $sessione->getKey() ? 'selected' : '' }}>
+                            <option value="{{ $sessione->sessione_id }}" {{ ($sessione_id ?? null) == $sessione->sessione_id ? 'selected' : '' }}>
                                 {{ $sessione->nome }} ({{ $sessione->anno }})
                             </option>
                         @endforeach
@@ -78,7 +81,7 @@
             <!-- Tabella degli Appelli -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover table-striped align-middle mb-0">
                         <thead class="bg-unibs text-white">
                             <tr>
                                 <th class="py-3 px-4">Insegnamento</th>

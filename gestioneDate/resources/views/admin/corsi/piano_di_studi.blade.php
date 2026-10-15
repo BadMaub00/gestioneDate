@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
@@ -49,7 +49,7 @@
                     </h1>
                     <span class="badge bg-unibs text-white mt-1">{{ $corso->tipo_corso }}</span>
                 </div>
-                <a href="{{ route('admin.corsi.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <a href="{{ route('admin.corsi.index') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i>Torna ai Corsi
                 </a>
             </div>
@@ -64,7 +64,7 @@
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush">
                             @forelse($insegnamentiPerAnno->get($anno, []) as $ic)
-                                <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4">
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3 px-4 {{ $loop->even ? 'bg-light' : '' }}">
                                     <div>
                                         <strong class="fs-6 text-dark">{{ $ic->insegnamento->nome ?? 'Insegnamento N/D' }}</strong>
                                         <span class="text-muted d-block small">Codice: {{ $ic->insegnamento_id }}</span>
