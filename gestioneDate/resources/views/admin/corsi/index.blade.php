@@ -22,18 +22,48 @@
         <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
+                
+                <!-- Logo Università -->
                 <a class="navbar-brand py-0" href="#">
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
+                <!-- Toggler Mobile -->
+                <button class="navbar-toggler border-0 shadow-none" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#navbarSupportedContent" 
+                        aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" 
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Menu di Navigazione -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
+                        <!-- Pulsante Home -->
                         <li class="nav-item">
                             <a class="btn btn-unibs btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" 
-                               href="{{ route('admin.dashboard') }}" style="width: 115px;">
+                               aria-current="page" 
+                               href="{{ route('admin.dashboard') }}"
+                               style="width: 115px;">
                                 <i class="bi bi-house-door-fill text-center me-2" style="width: 18px;"></i>
                                 <span>Home</span>
                             </a>
+                        </li>
+
+                        <!-- Pulsante Logout -->
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" 
+                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
+                                        style="width: 115px;">
+                                    <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -52,15 +82,54 @@
             </div>
             <hr class="border-unibs border-2 opacity-100 mb-4">
 
+            <!-- Pulsante Aggiungi Corso -->
+            <!-- Pulsante Aggiungi Corso -->
+            <div class="mb-4">
+                <a href="{{ route('admin.corsi.create') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                    <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Corso
+                </a>
+            </div>
+
+            <!-- Griglia dei Corsi -->
             <div class="row g-4">
                 @forelse($corsi as $corso)
                     <div class="col-12 col-md-6 col-lg-4">
                         <div class="card h-100 shadow-sm border-0 rounded-3">
                             <div class="card-body d-flex flex-column justify-content-between p-4">
                                 <div>
-                                    <h5 class="card-title fw-bold text-unibs mb-2">{{ $corso->nome }}</h5>
+                                    <!-- Titolo e Bottoni Azione in alto a destra -->
+                                    <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                                        <h5 class="card-title fw-bold text-unibs m-0 pe-2">{{ $corso->nome }}</h5>
+                                        
+                                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                                            <!-- Tasto Modifica (Sfondo bianco, bordo e icona blu Unibs) -->
+                                            <a href="#" 
+                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                               style="width: 36px; height: 36px;" 
+                                               title="Modifica Corso">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+
+                                            <!-- Tasto Elimina (Sfondo bianco, bordo e icona rossa) -->
+                                            <form action="#" 
+                                                  method="POST" 
+                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo corso?');" 
+                                                  class="d-inline m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                        style="width: 36px; height: 36px;" 
+                                                        title="Elimina Corso">
+                                                    <i class="bi bi-trash-fill"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
                                     <p class="text-muted small mb-3">Codice: {{ $corso->codice ?? 'N/D' }}</p>
                                 </div>
+
                                 <a href="{{ route('admin.corsi.pianoDiStudi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
                                     Visualizza Piano di Studi <i class="bi bi-arrow-right ms-1"></i>
                                 </a>

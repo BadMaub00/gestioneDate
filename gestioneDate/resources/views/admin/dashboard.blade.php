@@ -11,6 +11,7 @@
         
         <!-- CSS Personalizzati -->
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
     <body class="min-vh-100" style="background-color: #e1edf7;">
 
@@ -75,30 +76,6 @@
                 <div class="row justify-content-center">
                     <div class="col-12 col-xl-10">
 
-                        <style>
-                            .dash-grid { max-width: 720px; margin: 0 auto; }
-                            .dash-tile {
-                                display: flex;
-                                flex-direction: column;
-                                align-items: center;
-                                justify-content: center;
-                                gap: .6rem;
-                                min-height: 150px;
-                                height: 100%;
-                                padding: .75rem;
-                                background: #f3f5fa;
-                                border-radius: 14px;
-                                box-shadow: 0 3px 8px rgba(0, 0, 0, .18);
-                                color: #212529;
-                                font-weight: 500;
-                                text-align: center;
-                                text-decoration: none;
-                                transition: transform .15s ease, box-shadow .15s ease;
-                            }
-                            .dash-tile i { font-size: 3rem; line-height: 1; }
-                            .dash-tile:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0, 0, 0, .25); color: #212529; }
-                        </style>
-
                         <!-- Titolo Intestazione Amministratore Dinamico -->
                         <div class="mb-4">
                             <h1 class="h3 fw-bold text-unibs mt-3 mb-2 d-flex align-items-center">
@@ -108,49 +85,54 @@
                         </div>
 
                         <!-- Riquadri (Centrati nello schermo) -->
-                        <div class="dash-grid mx-auto mb-5">
+                        <div class="mx-auto mb-5" style="max-width: 720px;">
                             <div class="row g-3 justify-content-center">
 
-                                <!-- Riga 1: Corsi (Sx), Insegnamenti (Centro) -->
-                                <div class="col-4">
-                                    <a href="{{route('admin.corsi.index')}}" class="dash-tile">   
-                                        <i class="bi bi-mortarboard-fill text-unibs"></i>
-                                        <span>Corsi</span>
+                                <!-- 1. Corsi -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.corsi.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">   
+                                        <i class="bi bi-mortarboard-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Corsi</span>
                                     </a>
                                 </div>
 
-                                <div class="col-4">
-                                    <a href="{{ route('admin.personale.index') }}" class="dash-tile">
-                                        <i class="bi bi-people-fill text-unibs"></i>
-                                        <span>Personale universitario</span>
+                                <!-- 2. Insegnamenti -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.insegnamenti.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-journal-bookmark-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Insegnamenti</span>
                                     </a>
                                 </div>
 
-                                <div class="col-4">
-                                    <a href="{{ route('admin.personale.associazioni') }}" class="dash-tile">
-                                        <i class="bi bi-people-fill text-unibs"></i>
-                                        <span>Associa</span>
+                                <!-- 3. Personale Universitario -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.personale.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Personale universitario</span>
                                     </a>
                                 </div>
 
-                                <!-- Riga 3: Appelli (Sx), Sessioni (Centro) -->
-                                <div class="w-100"></div> {{-- Forza l'andata a capo pulita --}}
-                                <div class="col-4">
-                                    <a href="{{ route('admin.calendario') }}" class="dash-tile">
-                                        <i class="bi bi-calendar-check text-unibs"></i>
-                                        <span>Appelli</span>
+                                <!-- 4. Associa -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.personale.associazioni') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Associa</span>
                                     </a>
                                 </div>
-                                <div class="col-4">
-                                    <a href="{{ route('sessioni.index') }}" class="dash-tile">
-                                        <i class="bi bi-calendar-range text-unibs"></i>
-                                        <span>Sessioni</span>
+
+                                <!-- 5. Appelli -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.calendario') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-calendar-check text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Appelli</span>
                                     </a>
                                 </div>
-                                <div class="col-4">
-                                    <a href="{{ route('admin.insegnamenti.create') }}" class="dash-tile">
-                                        <i class="bi bi-journal-plus text-unibs"></i>
-                                        <span>Nuovo Insegnamento</span>
+
+                                <!-- 6. Sessioni -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('sessioni.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-calendar-range text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Sessioni</span>
                                     </a>
                                 </div>
 

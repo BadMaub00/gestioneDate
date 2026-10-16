@@ -72,6 +72,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/personale/associa', [adminController::class, 'storeAssociazioneDocente'])->name('admin.personale.storeAssocia');
     Route::delete('/associazioni/{id}', [adminController::class, 'destroyAssociazioneDocente'])->name('admin.personale.destroyAssocia');
 
+    // Gestione Corsi
+    Route::get('/corsi', [adminController::class, 'indexCorsi'])->name('admin.corsi.index');
+    Route::get('/corsi/crea', [adminController::class, 'createCorso'])->name('admin.corsi.create');
+    Route::post('/corsi', [adminController::class, 'storeCorso'])->name('admin.corsi.store');
+    Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.pianoDiStudi');
+
+    // Rotte per aggiungere un insegnamento a uno specifico piano di studi
+    Route::get('/corsi/{corso_id}/insegnamenti/crea', [adminController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
+    Route::post('/corsi/{corso_id}/insegnamenti', [adminController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
+    
     // 2. Calendario Globale (vede gli appelli di tutti i docenti e corsi)
     Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewcalendario_generale'])->name('admin.calendario');
 
@@ -80,7 +90,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/appelli/{id}', [adminController::class, 'updateAppello'])->name('admin.appelli.update');
     Route::delete('/appelli/{id}', [adminController::class, 'destroyAppello'])->name('admin.appelli.destroy');
 
-    //gestione degli insegnamenti
+    // Gestione degli insegnamenti
+    Route::get('/insegnamenti', [adminController::class, 'indexInsegnamenti'])->name('admin.insegnamenti.index');
     Route::get('/insegnamenti/crea', [adminController::class, 'createInsegnamento'])->name('admin.insegnamenti.create');
     Route::post('/insegnamenti', [adminController::class, 'storeInsegnamento'])->name('admin.insegnamenti.store');
     Route::delete('/insegnamenti/{insegnamento_id}', [adminController::class, 'destroyInsegnamento'])->name('admin.insegnamenti.destroy');

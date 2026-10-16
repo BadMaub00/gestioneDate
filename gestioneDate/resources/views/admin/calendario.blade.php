@@ -22,25 +22,55 @@
         <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
+                
+                <!-- Logo Università -->
                 <a class="navbar-brand py-0" href="#">
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
+                <!-- Toggler Mobile -->
+                <button class="navbar-toggler border-0 shadow-none" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#navbarSupportedContent" 
+                        aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" 
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Menu di Navigazione -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
+                        <!-- Pulsante Home -->
                         <li class="nav-item">
                             <a class="btn btn-unibs btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" 
-                               href="{{ route('admin.dashboard') }}" style="width: 115px;">
+                               aria-current="page" 
+                               href="{{ route('admin.dashboard') }}"
+                               style="width: 115px;">
                                 <i class="bi bi-house-door-fill text-center me-2" style="width: 18px;"></i>
                                 <span>Home</span>
                             </a>
+                        </li>
+
+                        <!-- Pulsante Logout -->
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf
+                                <button type="submit" 
+                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
+                                        style="width: 115px;">
+                                    <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <!-- Contenuto Principale -->
+<!-- Contenuto Principale -->
         <div class="container py-3">
             
             <!-- Alert messaggi di successo -->
@@ -66,9 +96,9 @@
                     <select name="sessione_id" 
                             id="sessione_id" 
                             class="form-select form-select-sm shadow-sm" 
-                            onchange="window.location.href=`{{ route('admin.calendario') }}/${this.value}`">
+                            onchange="if(this.value) window.location.href = this.value;">
                         @foreach($sessioni as $sessione)
-                            <option value="{{ $sessione->sessione_id }}" {{ ($sessione_id ?? null) == $sessione->sessione_id ? 'selected' : '' }}>
+                            <option value="{{ route('admin.calendario', $sessione->sessione_id) }}" {{ (isset($sessione_id) && $sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
                                 {{ $sessione->nome }} ({{ $sessione->anno }})
                             </option>
                         @endforeach
@@ -82,38 +112,38 @@
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped align-middle mb-0">
-                        <thead class="bg-unibs text-white">
+                        <thead class="bg-white border-bottom">
                             <tr>
-                                <th class="py-3 px-4">Insegnamento</th>
-                                <th class="py-3 px-4">Corso di Laurea</th>
-                                <th class="py-3 px-4 text-center">Data</th>
-                                <th class="py-3 px-4 text-center">Orario</th>
-                                <th class="py-3 px-4 text-center">Azioni</th>
+                                <th class="py-3 px-4 text-dark fw-bold">Insegnamento</th>
+                                <th class="py-3 px-4 text-dark fw-bold">Corso di Laurea</th>
+                                <th class="py-3 px-4 text-center text-dark fw-bold">Data</th>
+                                <th class="py-3 px-4 text-center text-dark fw-bold">Orario</th>
+                                <th class="py-3 px-4 text-center text-dark fw-bold">Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($appelli as $appello)
                                 <tr>
                                     <!-- Insegnamento -->
-                                    <td class="py-3 px-4 fw-semibold">
+                                    <td class="py-3 px-4 fw-semibold text-dark">
                                         {{ $appello->insegnamentoCorso->insegnamento->nome ?? 'N/D' }}
                                     </td>
 
                                     <!-- Corso -->
-                                    <td class="py-3 px-4 text-muted">
+                                    <td class="py-3 px-4 text-dark">
                                         {{ $appello->insegnamentoCorso->corso->nome ?? 'N/D' }}
                                     </td>
 
                                     <!-- Data -->
                                     <td class="py-3 px-4 text-center text-nowrap">
-                                        <span class="badge bg-light text-dark border px-3 py-1.5 rounded-pill">
+                                        <span class="badge border border-unibs text-unibs bg-transparent px-3 py-1.5 rounded-pill fw-bold">
                                             <i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($appello->data)->format('d/m/Y') }}
                                         </span>
                                     </td>
 
                                     <!-- Orario -->
                                     <td class="py-3 px-4 text-center text-nowrap">
-                                        <span class="badge bg-secondary px-3 py-1.5 rounded-pill">
+                                        <span class="badge border border-unibs text-unibs bg-transparent px-3 py-1.5 rounded-pill fw-bold">
                                             <i class="bi bi-clock me-1"></i>{{ substr($appello->ora_inizio, 0, 5) }} - {{ substr($appello->ora_fine, 0, 5) }}
                                         </span>
                                     </td>
@@ -123,8 +153,9 @@
                                         <div class="d-flex justify-content-center gap-2">
                                             <!-- Modifica -->
                                             <a href="{{ route('admin.appelli.edit', $appello->getKey()) }}" 
-                                               class="btn btn-sm btn-outline-primary rounded-circle" 
-                                               title="Modifica Appello" style="width: 32px; height: 32px; padding: 3px 0;">
+                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                               style="width: 36px; height: 36px;" 
+                                               title="Modifica Appello">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
@@ -132,12 +163,13 @@
                                             <form action="{{ route('admin.appelli.destroy', $appello->getKey()) }}" 
                                                   method="POST" 
                                                   onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');" 
-                                                  class="d-inline">
+                                                  class="d-inline m-0">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 
-                                                        class="btn btn-sm btn-outline-danger rounded-circle" 
-                                                        title="Elimina Appello" style="width: 32px; height: 32px; padding: 3px 0;">
+                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                        style="width: 36px; height: 36px;" 
+                                                        title="Elimina Appello">
                                                     <i class="bi bi-trash-fill"></i>
                                                 </button>
                                             </form>
