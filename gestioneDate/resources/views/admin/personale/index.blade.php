@@ -76,9 +76,14 @@
                 <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                     <i class="bi bi-people-fill me-2"></i>Elenco Personale Universitario
                 </h1>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                    <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
-                </a>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('admin.personale.create') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
+                        <i class="bi bi-person-plus-fill me-1"></i>Nuovo Utente
+                    </a>
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
+                    </a>
+                </div>
             </div>
             <hr class="border-unibs border-2 opacity-100 mb-4">
 

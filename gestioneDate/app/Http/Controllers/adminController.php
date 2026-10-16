@@ -53,6 +53,33 @@ class adminController extends Controller
         return view('admin.personale.index', compact('personale'));
     }
 
+    public function createPersonale() {
+        return view('admin.personale.create');
+    }
+
+    public function storePersonale(Request $request) {
+        $request->validate([
+            'username'     => 'required|string|max:100|unique:utente,username',
+            'password'     => 'required|string|min:6',
+            'nome'         => 'required|string|max:100',
+            'cognome'      => 'required|string|max:100',
+            'data_nascita' => 'required|date',
+            'ruolo'        => 'required|in:Docente,Amministratore',
+        ]);
+
+        Utente::create([
+            'username'     => $request->username,
+            'password'     => Hash::make($request->password), // Cifratura Hash sicura
+            'nome'         => $request->nome,
+            'cognome'      => $request->cognome,
+            'data_nascita' => $request->data_nascita,
+            'ruolo'        => $request->ruolo,
+        ]);
+
+        return redirect()->route('admin.personale.index')
+            ->with('success', 'Membro del personale creato con successo!');
+    }
+
     public function createAssociazioneDocente() {
         // Recupera solo gli utenti con ruolo Docente
         $docenti = Utente::where('ruolo', 'Docente')
