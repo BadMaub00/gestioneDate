@@ -65,6 +65,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     //gestione del personale
     Route::get('/personale', [adminController::class, 'indexPersonale'])->name('admin.personale.index');
+    Route::get('/personale/crea', [adminController::class, 'createPersonale'])->name('admin.personale.create');
+    Route::post('/personale', [adminController::class, 'storePersonale'])->name('admin.personale.store');
 
     // Rotte per Associazione Docente - Insegnamento
     Route::get('/associazioni', [adminController::class, 'indexAssociazioni'])->name('admin.personale.associazioni');
