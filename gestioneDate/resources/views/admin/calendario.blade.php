@@ -70,7 +70,7 @@
             </div>
         </nav>
 
-<!-- Contenuto Principale -->
+        <!-- Contenuto Principale -->
         <div class="container py-3">
             
             <!-- Alert messaggi di successo -->
@@ -81,7 +81,7 @@
                 </div>
             @endif
 
-            <!-- Intestazione e Selettore Sessione -->
+            <!-- Intestazione e Pulsante Torna alla Dashboard -->
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
                 <div>
                     <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
@@ -90,25 +90,33 @@
                     <p class="text-muted small m-0 mt-1">Supervisione e gestione globale di tutti gli appelli d'esame</p>
                 </div>
 
-                <!-- Form selezione sessione -->
-                <form action="" method="GET" class="d-flex align-items-center gap-2">
-                    <label for="sessione_id" class="form-label fw-bold text-nowrap mb-0">Sessione:</label>
-                    <select name="sessione_id" 
-                            id="sessione_id" 
-                            class="form-select form-select-sm shadow-sm" 
-                            onchange="if(this.value) window.location.href = this.value;">
-                        @foreach($sessioni as $sessione)
-                            <option value="{{ route('admin.calendario', $sessione->sessione_id) }}" {{ (isset($sessione_id) && $sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
-                                {{ $sessione->nome }} ({{ $sessione->anno }})
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase">
+                    <i class="bi bi-arrow-left me-2"></i>TORNA ALLA DASHBOARD
+                </a>
             </div>
 
             <hr class="border-unibs border-2 opacity-100 mb-4">
 
-            <!-- Tabella degli Appelli -->
+            <!-- Form selezione sessione (Posizionata sopra la tabella) -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                <div class="card-body p-3">
+                    <form action="" method="GET" class="d-flex align-items-center gap-2">
+                        <label for="sessione_id" class="form-label fw-bold text-nowrap mb-0">Sessione:</label>
+                        <select name="sessione_id" 
+                                id="sessione_id" 
+                                class="form-select form-select-sm shadow-sm" 
+                                onchange="if(this.value) window.location.href = this.value;">
+                            @foreach($sessioni as $sessione)
+                                <option value="{{ route('admin.calendario', $sessione->sessione_id) }}" {{ (isset($sessione_id) && $sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
+                                    {{ $sessione->nome }} ({{ $sessione->anno }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tabella degli Appelli (Invariata) -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped align-middle mb-0">

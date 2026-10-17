@@ -74,7 +74,7 @@
         <div class="py-3">
             <div class="container">
                 <div class="row justify-content-center">
-                    <div class="col-12 col-xl-10">
+                    <div class="col-12 col-lg-10 col-xl-9">
 
                         <!-- Titolo Intestazione Amministratore Dinamico -->
                         <div class="mb-4">
@@ -84,8 +84,8 @@
                             <hr class="border-unibs border-2 opacity-100 my-0">
                         </div>
 
-                        <!-- Riquadri (Centrati nello schermo) -->
-                        <div class="mx-auto mb-5" style="max-width: 720px;">
+                        <!-- Riquadri (Centrati nello schermo e più ampi) -->
+                        <div class="mx-auto mb-5" style="max-width: 960px;">
                             <div class="row g-3 justify-content-center">
 
                                 <!-- 1. Corsi -->
@@ -116,7 +116,7 @@
                                 <div class="col-12 col-sm-4">
                                     <a href="{{ route('admin.personale.associazioni') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
-                                        <span class="fw-semibold">Associa</span>
+                                        <span class="fw-semibold">Incarichi Docenti</span>
                                     </a>
                                 </div>
 

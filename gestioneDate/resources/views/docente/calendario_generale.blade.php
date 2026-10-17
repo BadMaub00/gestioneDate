@@ -68,7 +68,6 @@
             </div>
         </nav>
 
-
         <!-- Contenuto Principale -->
         <div class="py-3">
             <div class="container-fluid px-md-4 px-lg-5">
@@ -202,11 +201,20 @@
 
                 </div>
 
+                <!-- Bottone di Navigazione Inferiore Unico a Tutta Larghezza -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <a href="{{ route('docente.dashboard') }}" 
+                           class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                            <i class="bi bi-arrow-left me-2 fs-6"></i>Torna alla Dashboard
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
 
         <!-- Script JS Calendario -->
-        <!-- Sostituisci la riga dello script in fondo con questa: -->
-<script src="{{ asset('js/calendarioGenerale.js') }}?v={{ time() }}"></script>
+        <script src="{{ asset('js/calendarioGenerale.js') }}?v={{ time() }}"></script>
     </body>
 </html>

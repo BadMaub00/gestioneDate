@@ -32,4 +32,9 @@ class InsegnamentiCorso extends Model
     {
         return $this->belongsTo(Insegnamento::class, 'insegnamento_id', 'insegnamento_id');
     }
+
+    public function appelli()
+    {
+        return $this->hasMany(Appello::class, 'ins_corso_id', 'ins_corso_id');
+    }
 }

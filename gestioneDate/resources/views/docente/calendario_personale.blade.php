@@ -185,19 +185,19 @@
                                                             </div>
                                                         </td>
 
-                                                        <!-- Pulsanti Modifica / Elimina gestiti per Ruolo -->
-                                                        <td class="text-end pe-3 py-2.5">
-                                                            <div class="btn-group btn-group-sm shadow-sm" role="group" aria-label="Azioni appello">
+                                                        <!-- Pulsanti Modifica / Elimina Minimale -->
+                                                        <td class="text-end pe-3 py-2.5 text-nowrap">
+                                                            <div class="d-flex justify-content-end gap-1">
                                                                 @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
-                                                                    <!-- MODIFICA (Giallo Warning) - Abilitato -->
+                                                                    <!-- MODIFICA - Abilitato -->
                                                                     <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
-                                                                       class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5" 
-                                                                       style="width: 90px;"
+                                                                       class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
+                                                                       style="width: 32px; height: 32px;" 
                                                                        title="Modifica Appello">
-                                                                        <i class="bi bi-pencil-square me-1"></i> Modifica
+                                                                        <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                                     </a>
 
-                                                                    <!-- ELIMINA (Rosso Danger) - Abilitato -->
+                                                                    <!-- ELIMINA - Abilitato -->
                                                                     <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
                                                                           method="POST" 
                                                                           class="d-inline m-0 p-0"
@@ -205,29 +205,29 @@
                                                                         @csrf
                                                                         @method('DELETE')
                                                                         <button type="submit" 
-                                                                                class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5" 
-                                                                                style="width: 90px; border-top-left-radius: 0; border-bottom-left-radius: 0;" 
+                                                                                class="btn btn-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
+                                                                                style="width: 32px; height: 32px;" 
                                                                                 title="Elimina Appello">
-                                                                            <i class="bi bi-trash me-1"></i> Elimina
+                                                                            <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                                         </button>
                                                                     </form>
                                                                 @else
-                                                                    <!-- MODIFICA (Giallo Warning) - Disabilitato con Sbarramento -->
+                                                                    <!-- MODIFICA - Disabilitato -->
                                                                     <button type="button" 
-                                                                            class="btn btn-warning text-dark fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5 opacity-50" 
+                                                                            class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
                                                                             disabled 
-                                                                            style="width: 90px; cursor: not-allowed;"
+                                                                            style="width: 32px; height: 32px; cursor: not-allowed;"
                                                                             title="Azione riservata al docente primario dell'insegnamento">
-                                                                        <i class="bi bi-slash-circle me-1"></i> Modifica
+                                                                        <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                                     </button>
 
-                                                                    <!-- ELIMINA (Rosso Danger) - Disabilitato con Sbarramento -->
+                                                                    <!-- ELIMINA - Disabilitato -->
                                                                     <button type="button" 
-                                                                            class="btn btn-danger text-white fw-bold d-inline-flex align-items-center justify-content-center px-2 py-1.5 opacity-50" 
+                                                                            class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
                                                                             disabled 
-                                                                            style="width: 90px; border-top-left-radius: 0; border-bottom-left-radius: 0; cursor: not-allowed;" 
+                                                                            style="width: 32px; height: 32px; cursor: not-allowed;" 
                                                                             title="Azione riservata al docente primario dell'insegnamento">
-                                                                        <i class="bi bi-slash-circle me-1"></i> Elimina
+                                                                        <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                                     </button>
                                                                 @endif
                                                             </div>
@@ -253,18 +253,12 @@
 
                 </div>
 
-                <!-- Bottoni di Navigazione Inferiori -->
-                <div class="row g-2 mt-4">
-                    <div class="col-12 col-md-6">
+                <!-- Bottone di Navigazione Inferiore Unico a Tutta Larghezza -->
+                <div class="row mt-4">
+                    <div class="col-12">
                         <a href="{{ route('docente.dashboard') }}" 
                            class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
                             <i class="bi bi-arrow-left me-2 fs-6"></i>Torna alla Dashboard
-                        </a>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <a href="{{ route('docente.selezionaSessione') }}" 
-                           class="btn btn-unibs text-white fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                            <i class="bi bi-calendar-event me-2 fs-6"></i>Seleziona Un'Altra Sessione
                         </a>
                     </div>
                 </div>
@@ -273,7 +267,6 @@
         </div>
 
         <!-- Script JS Calendario Personale -->
-         <!-- Sostituisci la riga dello script in fondo con questa: -->
         <script src="{{ asset('js/calendarioPersonale.js') }}?v={{ time() }}"></script>
     </body>
 </html>

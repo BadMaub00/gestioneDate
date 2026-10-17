@@ -15,7 +15,7 @@ use Carbon\Carbon;
 
 class adminController extends Controller
 {
-    public function dashboard(){
+    public function dashboard() {
         $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
         return view('admin.dashboard', compact('sessioni'));
     }
@@ -26,27 +26,17 @@ class adminController extends Controller
     }
 
     public function viewPianoDiStudi($corso_id) {
-        $corso = Corso::with(['insegnamenti' => function($query) {
-            $query->orderBy('anno_di_corso', 'asc');
-        }])->findOrFail($corso_id);
-
+        $corso = Corso::with(['insegnamenti' => fn($q) => $q->orderBy('anno_di_corso', 'asc')])->findOrFail($corso_id);
         $insegnamentiPerAnno = $corso->insegnamenti->groupBy('anno_di_corso');
-
-        $durataAnni = match ($corso->tipo_corso) {
-            'Magistrale' => 2,
-            'Magistrale a ciclo unico' => 5,
-            default => 3,
-        };
+        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
 
         return view('admin.corsi.piano_di_studi', compact('corso', 'insegnamentiPerAnno', 'durataAnni'));
     }
 
-    public function indexPersonale() {
-        $personale = Utente::select('nome', 'cognome', 'ruolo')
-            ->orderBy('cognome', 'asc')
-            ->orderBy('nome', 'asc')
-            ->get();
+    // --- PERSONALE ---
 
+    public function indexPersonale() {
+        $personale = Utente::orderBy('cognome', 'asc')->orderBy('nome', 'asc')->get();
         return view('admin.personale.index', compact('personale'));
     }
 
@@ -55,7 +45,7 @@ class adminController extends Controller
     }
 
     public function storePersonale(Request $request) {
-        $request->validate([
+        $data = $request->validate([
             'username'     => 'required|string|max:100|unique:utente,username',
             'password'     => 'required|string|min:6',
             'nome'         => 'required|string|max:100',
@@ -64,77 +54,84 @@ class adminController extends Controller
             'ruolo'        => 'required|in:Docente,Amministratore',
         ]);
 
-        Utente::create([
-            'username'     => $request->username,
-            'password'     => Hash::make($request->password),
-            'nome'         => $request->nome,
-            'cognome'      => $request->cognome,
-            'data_nascita' => $request->data_nascita,
-            'ruolo'        => $request->ruolo,
-        ]);
+        $data['password'] = Hash::make($data['password']);
+        Utente::create($data);
 
-        return redirect()->route('admin.personale.index')
-            ->with('success', 'Membro del personale creato con successo!');
+        return redirect()->route('admin.personale.index')->with('success', 'Membro del personale creato con successo!');
     }
 
-    public function createAssociazioneDocente() {
-        $docenti = Utente::where('ruolo', 'Docente')
-            ->orderBy('cognome', 'asc')
-            ->orderBy('nome', 'asc')
-            ->get();
+    public function destroyPersonale($id) {
+        Utente::findOrFail($id)->delete();
+        return redirect()->route('admin.personale.index')->with('success', 'Membro del personale eliminato con successo!');
+    }
 
-        $insegnamentiCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])
-            ->orderBy('corso_id', 'asc')
-            ->get();
+    // --- ASSOCIAZIONI DOCENTE ---
+
+    public function createAssociazioneDocente() {
+        $docenti = Utente::where('ruolo', 'Docente')->orderBy('cognome', 'asc')->orderBy('nome', 'asc')->get();
+        $insegnamentiCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->orderBy('corso_id', 'asc')->get();
 
         return view('admin.personale.associa', compact('docenti', 'insegnamentiCorso'));
     }
 
     public function indexAssociazioni() {
-        $associazioni = DocenteInsegnamento::with([
-            'docente', 
-            'insegnamentiCorso.insegnamento', 
-            'insegnamentiCorso.corso'
-        ])->get();
-
+        $associazioni = DocenteInsegnamento::with(['docente', 'insegnamentiCorso.insegnamento', 'insegnamentiCorso.corso'])->get();
         return view('admin.personale.associazioni_index', compact('associazioni'));
     }
 
-    public function destroyAssociazioneDocente($id) {
-        $associazione = DocenteInsegnamento::findOrFail($id);
-        $associazione->delete();
-
-        return redirect()->back()->with('success', 'Associazione rimossa con successo.');
-    }
-
     public function storeAssociazioneDocente(Request $request) {
-        $request->validate([
+        $validated = $request->validate([
             'ins_corso_id' => 'required|exists:insegnamento_corso,ins_corso_id',
             'utente_id'    => 'required|exists:utente,utente_id',
             'ruolo'        => 'required|in:Primario,Secondario',
         ]);
 
-        DocenteInsegnamento::create([
-            'ins_corso_id' => $request->ins_corso_id,
-            'utente_id'    => $request->utente_id,
-            'ruolo'        => $request->ruolo,
-        ]);
+        // 1. Controllo che l'utente sia effettivamente un Docente (impedisce l'assegnazione ad Amministratori)
+        $utente = Utente::findOrFail($validated['utente_id']);
+        if ($utente->ruolo !== 'Docente') {
+            return back()->withErrors(['utente_id' => 'Solo gli utenti con ruolo "Docente" possono essere associati ad un insegnamento!'])->withInput();
+        }
 
-        return redirect()->route('admin.dashboard')->with('success', 'Docente associato all\'insegnamento con successo!');
+        // 2. Controllo associazione duplicata (impedisce che il docente sia sia Primario che Secondario per lo stesso insegnamento)
+        $giaAssociato = DocenteInsegnamento::where('ins_corso_id', $validated['ins_corso_id'])
+            ->where('utente_id', $validated['utente_id'])
+            ->exists();
+
+        if ($giaAssociato) {
+            return back()->withErrors(['utente_id' => 'Questo docente è già associato a questo insegnamento!'])->withInput();
+        }
+
+        // 3. Controllo presenza di un solo Docente Primario per insegnamento
+        if ($validated['ruolo'] === 'Primario') {
+            $haGiaPrimario = DocenteInsegnamento::where('ins_corso_id', $validated['ins_corso_id'])
+                ->where('ruolo', 'Primario')
+                ->exists();
+
+            if ($haGiaPrimario) {
+                return back()->withErrors(['ruolo' => 'Questo insegnamento ha già un docente con ruolo Primario!'])->withInput();
+            }
+        }
+
+        DocenteInsegnamento::create($validated);
+        return redirect()->route('admin.personale.associazioni.index')->with('success', 'Docente associato con successo!');
     }
+
+    public function destroyAssociazioneDocente($id) {
+        DocenteInsegnamento::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Associazione rimossa con successo.');
+    }
+
+    // --- APPELLI ---
 
     public function editAppello($id) {
         $appello = Appello::with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])->findOrFail($id);
         $sessioni = Sessione::all();
-
         return view('admin.appelli.edit', compact('appello', 'sessioni'));
     }
 
-    // Salva le modifiche all'appello garantendo i controlli di sicurezza
     public function updateAppello(Request $request, $id) {
         $appello = Appello::findOrFail($id);
 
-        // 1. Validazione base degli orari (08:00 - 19:00 e ora_fine > ora_inizio)
         $validatedData = $request->validate([
             'data'       => 'required|date',
             'ora_inizio' => 'required|date_format:H:i|after_or_equal:08:00|before_or_equal:18:00',
@@ -143,45 +140,18 @@ class adminController extends Controller
 
         $sessione = Sessione::findOrFail($appello->sessione_id);
 
-        // 2. Controllo che la data ricada nei limiti della sessione d'esame
         if ($validatedData['data'] < $sessione->data_inizio || $validatedData['data'] > $sessione->data_fine) {
             return back()->withErrors([
-                'data' => 'La data dell\'appello deve essere compresa tra l\'inizio (' . Carbon::parse($sessione->data_inizio)->format('d/m/Y') . ') e la fine (' . Carbon::parse($sessione->data_fine)->format('d/m/Y') . ') della sessione.'
+                'data' => 'La data dev\'essere compresa tra l\'inizio (' . Carbon::parse($sessione->data_inizio)->format('d/m/Y') . ') e la fine (' . Carbon::parse($sessione->data_fine)->format('d/m/Y') . ') della sessione.'
             ])->withInput();
         }
 
-        // 3. Controllo sovrapposizione per lo STESSO insegnamento nello stesso slot (escludendo l'appello corrente)
-        $stessoInsegnamentoSovrapposto = Appello::where('ins_corso_id', $appello->ins_corso_id)
-            ->where('appello_id', '!=', $id)
-            ->where('data', $validatedData['data'])
-            ->where('ora_inizio', '<', $validatedData['ora_fine'])
-            ->where('ora_fine', '>', $validatedData['ora_inizio'])
-            ->exists();
-
-        if ($stessoInsegnamentoSovrapposto) {
-            return back()->withErrors(['ora_inizio' => 'Esiste già un appello per questo stesso insegnamento nello stesso intervallo orario!'])->withInput();
+        if ($erroreSovrapposizione = $this->verificaSovrapposizioneAppello($appello, $validatedData, $id)) {
+            return back()->withErrors($erroreSovrapposizione)->withInput();
         }
 
-        // 4. Controllo sovrapposizione oraria per insegnamenti dello STESSO ANNO di corso (escludendo l'appello corrente)
-        $annoCorso = InsegnamentiCorso::where('ins_corso_id', $appello->ins_corso_id)->value('anno_di_corso');
-        $insSameAge = InsegnamentiCorso::where('anno_di_corso', $annoCorso)->pluck('ins_corso_id')->toArray();
-
-        $orarioNonDisponibile = Appello::where('data', $validatedData['data'])
-            ->where('appello_id', '!=', $id)
-            ->whereIn('ins_corso_id', $insSameAge)
-            ->where('ora_inizio', '<', $validatedData['ora_fine'])
-            ->where('ora_fine', '>', $validatedData['ora_inizio'])
-            ->exists();
-
-        if ($orarioNonDisponibile) {
-            return back()->withErrors(['data' => 'Esiste già un appello per un insegnamento dello stesso anno di corso in questa data e orario!'])->withInput();
-        }
-
-        // Aggiornamento dati
         $appello->update($validatedData);
-
-        return redirect()->route('admin.calendario', $appello->sessione_id)
-            ->with('success', 'Appello modificato con successo.');
+        return redirect()->route('admin.calendario', $appello->sessione_id)->with('success', 'Appello modificato con successo.');
     }
 
     public function destroyAppello($id) {
@@ -189,13 +159,13 @@ class adminController extends Controller
         $sessione_id = $appello->sessione_id;
         $appello->delete();
 
-        return redirect()->route('admin.calendario', $sessione_id)
-            ->with('success', 'Appello eliminato con successo.');
+        return redirect()->route('admin.calendario', $sessione_id)->with('success', 'Appello eliminato con successo.');
     }
+
+    // --- INSEGNAMENTI E CORSI ---
 
     public function indexInsegnamenti() {
         $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
-
         return view('admin.insegnamenti.index', compact('insegnamenti'));
     }
 
@@ -204,22 +174,12 @@ class adminController extends Controller
     }
 
     public function storeInsegnamento(Request $request) {
-        $request->validate([
-            'nome' => 'required|string|max:150',
-        ]);
-
-        Insegnamento::create([
-            'nome' => $request->nome,
-        ]);
-
-        return redirect()->route('admin.insegnamenti.index')
-            ->with('success', 'Insegnamento creato con successo!');
+        Insegnamento::create($request->validate(['nome' => 'required|string|max:150']));
+        return redirect()->route('admin.insegnamenti.index')->with('success', 'Insegnamento creato con successo!');
     }
 
     public function destroyInsegnamento($insegnamento_id) {
-        $insegnamento = Insegnamento::findOrFail($insegnamento_id);
-        $insegnamento->delete();
-
+        Insegnamento::findOrFail($insegnamento_id)->delete();
         return redirect()->back()->with('success', 'Insegnamento eliminato con successo.');
     }
 
@@ -228,65 +188,96 @@ class adminController extends Controller
     }
 
     public function storeCorso(Request $request) {
-        $request->validate([
+        Corso::create($request->validate([
             'nome'       => 'required|string|max:150',
             'tipo_corso' => 'required|in:Triennale,Magistrale,Magistrale a ciclo unico',
-        ]);
-
-        Corso::create([
-            'nome'       => $request->nome,
-            'tipo_corso' => $request->tipo_corso,
-        ]);
-
+        ]));
         return redirect()->route('admin.corsi.index')->with('success', 'Corso di laurea creato con successo!');
     }
 
     public function createInsegnamentoCorso($corso_id) {
         $corso = Corso::findOrFail($corso_id);
-        
-        $durataAnni = match ($corso->tipo_corso) {
-            'Magistrale' => 2,
-            'Magistrale a ciclo unico' => 5,
-            default => 3,
-        };
-
+        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
         $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
 
         return view('admin.corsi.createInsCorso', compact('corso', 'durataAnni', 'insegnamenti'));
     }
 
     public function storeInsegnamentoCorso(Request $request, $corso_id) {
-        $request->validate([
+        $data = $request->validate([
             'insegnamento_id' => 'required|exists:insegnamento,insegnamento_id',
             'anno_di_corso'   => 'required|integer|min:1|max:5',
             'cfu'             => 'required|integer|min:1|max:30',
             'durata'          => 'required|integer|min:1',
         ]);
 
-        InsegnamentiCorso::create([
-            'corso_id'        => $corso_id,
-            'insegnamento_id' => $request->insegnamento_id,
-            'anno_di_corso'   => $request->anno_di_corso,
-            'cfu'             => $request->cfu,
-            'durata'          => $request->durata,
-        ]);
+        // Controllo se l'insegnamento è già presente nel piano di studi di questo corso
+        $giaPresente = InsegnamentiCorso::where('corso_id', $corso_id)
+            ->where('insegnamento_id', $data['insegnamento_id'])
+            ->exists();
+
+        if ($giaPresente) {
+            return back()
+                ->withErrors(['insegnamento_id' => 'Questo insegnamento fa già parte del piano di studi di questo corso!'])
+                ->withInput();
+        }
+
+        $data['corso_id'] = $corso_id;
+        InsegnamentiCorso::create($data);
 
         return redirect()->route('admin.corsi.pianoDiStudi', $corso_id)
             ->with('success', 'Insegnamento aggiunto al piano di studi con successo!');
     }
 
-    public function viewcalendario_generale($sessione_id = null){
+    public function viewcalendario_generale($sessione_id = null) {
         $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        $sessione_id = $sessione_id ?? $sessioni->first()?->getKey();
 
-        if (!$sessione_id && $sessioni->isNotEmpty()) {
-            $sessione_id = $sessioni->first()->getKey(); 
-        }
-
-        $appelli = Appello::where('sessione_id', $sessione_id)->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])
+        $appelli = Appello::where('sessione_id', $sessione_id)
+            ->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])
             ->orderBy('data', 'asc')
             ->orderBy('ora_inizio', 'asc')
             ->get();
 
         return view('admin.calendario', compact('appelli', 'sessioni', 'sessione_id'));
+    }
+
+    // --- METODI HELPER PRIVATI ---
+
+    private function getDurataAnni(string $tipoCorso): int {
+        return match ($tipoCorso) {
+            'Magistrale' => 2,
+            'Magistrale a ciclo unico' => 5,
+            default => 3,
+        };
+    }
+
+    private function verificaSovrapposizioneAppello(Appello $appello, array $data, int $appelloId): ?array {
+        $stessoInsegnamento = Appello::where('ins_corso_id', $appello->ins_corso_id)
+            ->where('appello_id', '!=', $appelloId)
+            ->where('data', $data['data'])
+            ->where('ora_inizio', '<', $data['ora_fine'])
+            ->where('ora_fine', '>', $data['ora_inizio'])
+            ->exists();
+
+        if ($stessoInsegnamento) {
+            return ['ora_inizio' => 'Esiste già un appello per questo stesso insegnamento nello stesso intervallo orario!'];
+        }
+
+        $annoCorso = InsegnamentiCorso::where('ins_corso_id', $appello->ins_corso_id)->value('anno_di_corso');
+        $insSameAge = InsegnamentiCorso::where('anno_di_corso', $annoCorso)->pluck('ins_corso_id')->toArray();
+
+        $stessoAnno = Appello::where('data', $data['data'])
+            ->where('appello_id', '!=', $appelloId)
+            ->whereIn('ins_corso_id', $insSameAge)
+            ->where('ora_inizio', '<', $data['ora_fine'])
+            ->where('ora_fine', '>', $data['ora_inizio'])
+            ->exists();
+
+        if ($stessoAnno) {
+            return ['data' => 'Esiste già un appello per un insegnamento dello stesso anno di corso in questa data e orario!'];
+        }
+
+        return null;
     }
 }
