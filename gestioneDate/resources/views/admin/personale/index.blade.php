@@ -63,8 +63,8 @@
             </div>
         </nav>
 
-        <!-- Contenuto Principale -->
-        <div class="container py-3">
+        <!-- Contenuto Principale con Larghezza Ridotta -->
+        <div class="container py-3" style="max-width: 900px;">
             
             <!-- Messaggi di Feedback -->
             @if(session('success'))

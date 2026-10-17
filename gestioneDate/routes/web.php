@@ -30,6 +30,9 @@ Route::middleware(['auth'])->prefix('docente')->group(function () {
     // Dettaglio Insegnamento 
     Route::get('/insegnamento/{ins_corso_id}', [docenteController::class, 'dettaglioInsegnamento'])->name('docente.dettaglioInsegnamento');
 
+    // Gestione Appelli per specifico InsegnamentoCorso
+    Route::get('/insegnamento/{ins_corso_id}/appelli', [docenteController::class, 'gestioneAppelliInsegnamento'])->name('docente.appelliInsegnamento');
+    
     // Calendario Personale
     Route::get('/calendario-personale/seleziona', [docenteController::class, 'selezionaSessione'])->name('docente.selezionaSessione');
     Route::post('/calendario-personale/seleziona', [docenteController::class, 'procediCalendarioPersonale'])->name('docente.procediCalendario');
