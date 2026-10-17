@@ -8,34 +8,33 @@ use App\Models\Sessione;
 use App\Models\Appello;
 use App\Models\DocenteInsegnamento;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class appelloController extends Controller
 {
     private function validationData(){
         return [
-            'data' => 'required|date|after_or_equal:today',
-            'ora_inizio' => 'required|date_format:H:i',
-            'ora_fine' => 'required|date_format:H:i|after:ora_inizio',
-            'luogo' => 'required|string|max:255',
-            'ins_corso_id' => 'required|exists:insegnamento_corso,id', 
-            'sessione_id' => 'required|exists:sessioni_esami,sessione_id', 
+            'data'         => 'required|date|after_or_equal:today',
+            'ora_inizio'   => 'required|date_format:H:i|after_or_equal:08:00|before_or_equal:18:00',
+            'ora_fine'     => 'required|date_format:H:i|after:ora_inizio|before_or_equal:19:00',
+            //luogo??
+            'ins_corso_id' => 'required|exists:insegnamento_corso,ins_corso_id', 
+            'sessione_id'  => 'required|exists:sessione_esami,sessione_id', 
         ];
     }
+
     public function create(){
         /** @var \App\Models\Utente $user */
         $user = Auth::user();
         
-        // 1. Recupera gli ID degli insegnamenti associati al docente
         $insegnamentiCorsiIds = DocenteInsegnamento::where('utente_id', $user->getKey())
             ->where('ruolo', 'Primario')
             ->pluck('ins_corso_id');
 
-        // 2. Recupera i modelli completi di InsegnamentiCorso con le relazioni (Nome insegnamento e Nome corso)
         $insegnamentiCorsi = InsegnamentiCorso::with(['insegnamento', 'corso'])
             ->whereIn('ins_corso_id', $insegnamentiCorsiIds)
             ->get();
 
-        // 3. Recupera le sessioni d'esame attive
         $sessioni = Sessione::all();
         
         return view('appelli.create', compact('insegnamentiCorsi', 'sessioni'));
@@ -43,28 +42,51 @@ class appelloController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validazione dei dati ricevuti dal form
+        // 1. Validazione base dei campi e orari
         $validatedData = $request->validate($this->validationData());
 
-        // 2. Controllo del numero di appelli esistenti per questo insegnamento e sessione
+        $sessione = Sessione::findOrFail($validatedData['sessione_id']);
+
+        // 2. Controllo preavviso 30 giorni prima dell'inizio della sessione
+        $limiteCreazione = Carbon::parse($sessione->data_inizio)->subDays(30);
+        if (Carbon::today()->gte($limiteCreazione)) {
+            return back()->withErrors([
+                'sessione_id' => 'Non è più possibile inserire appelli per questa sessione: devono essere creati almeno 30 giorni prima del suo inizio (' . $limiteCreazione->format('d/m/Y') . ').'
+            ])->withInput();
+        }
+
+        // 3. Controllo data compresa nei limiti della sessione
+        if ($validatedData['data'] < $sessione->data_inizio || $validatedData['data'] > $sessione->data_fine) {
+            return back()->withErrors([
+                'data' => 'La data dell\'appello deve essere compresa tra l\'inizio (' . Carbon::parse($sessione->data_inizio)->format('d/m/Y') . ') e la fine (' . Carbon::parse($sessione->data_fine)->format('d/m/Y') . ') della sessione.'
+            ])->withInput();
+        }
+
+        // 4. Controllo numero massimo appelli dinamico basato su $sessione->numero_appelli
         $numAppelli = Appello::where('ins_corso_id', $validatedData['ins_corso_id'])
                             ->where('sessione_id', $validatedData['sessione_id'])
                             ->count();
 
-        // Recupera la sessione per ottenere il numero massimo di appelli consentiti
-        $sessione = Sessione::find($validatedData['sessione_id']);
-
-        // Se la sessione esiste ed ha la variabile numero_appelli definita
-        $maxAppelli = $sessione ? $sessione->numero_appelli : 2; // Usa 2 come fallback se non definita
+        $maxAppelli = $sessione->numero_appelli;
 
         if ($numAppelli >= $maxAppelli) {
-            // Se ci sono già il numero massimo di appelli, blocca il salvataggio
             return back()->withErrors(['ins_corso_id' => 'Ci sono già '.$maxAppelli.' appelli presenti in questa sessione!'])->withInput();
         }
 
-        // Controllo sovrapposizione oraria
+        // 5. Controllo sovrapposizione per lo STESSO insegnamento nello stesso slot
+        $stessoInsegnamentoSovrapposto = Appello::where('ins_corso_id', $validatedData['ins_corso_id'])
+            ->where('data', $validatedData['data'])
+            ->where('ora_inizio', '<', $validatedData['ora_fine'])
+            ->where('ora_fine', '>', $validatedData['ora_inizio'])
+            ->exists();
+
+        if ($stessoInsegnamentoSovrapposto) {
+            return back()->withErrors(['ora_inizio' => 'Esiste già un appello per questo stesso insegnamento nello stesso intervallo orario!'])->withInput();
+        }
+
+        // 6. Controllo sovrapposizione oraria tra insegnamenti dello stesso anno di corso
         $annoCorso = InsegnamentiCorso::where('ins_corso_id', $validatedData['ins_corso_id'])->value('anno_di_corso');
-        $insSameAge = InsegnamentiCorso::where('anno_di_corso', $annoCorso)->pluck('id')->toArray();
+        $insSameAge = InsegnamentiCorso::where('anno_di_corso', $annoCorso)->pluck('ins_corso_id')->toArray();
 
         $orarioNonDisponibile = Appello::where('data', $validatedData['data'])
             ->whereIn('ins_corso_id', $insSameAge)
@@ -73,53 +95,55 @@ class appelloController extends Controller
             ->exists();
 
         if ($orarioNonDisponibile) {
-            return back()->withErrors(['data' => 'Esiste già un appello per un insegnamento dello stesso anno in questa data!'])->withInput();
+            return back()->withErrors(['data' => 'Esiste già un appello per un insegnamento dello stesso anno di corso in questa data e orario!'])->withInput();
         }
 
-        // --- GENERAZIONE DELL'ID PERSONALIZZATO ---
-        // Il suffisso sarà banalmente il numero di appelli già presenti + 1
-        $suffisso = $numAppelli + 1;
-
-        // Uniamo i valori in una stringa e li castiamo a numero intero ((int))
-        $customId = (int) ($validatedData['ins_corso_id'] . $validatedData['sessione_id'] . $suffisso);
-
-        // Iniettiamo l'ID nei dati validati (assicurati che la chiave 'id' corrisponda
-        // al nome della colonna della chiave primaria nel database per il modello Appello)
-        $validatedData['id'] = $customId;
-
-        // Creazione dell'appello con l'ID calcolato
+        // Salvataggio dell'appello
         Appello::create($validatedData);
 
-        // 3. Reindirizzamento con messaggio di successo
-        // ...
+        return redirect()->route('docente.dashboard')->with('success', 'Appello creato con successo!');
     }
 
     public function edit(int $id){
-
         $appello = Appello::findOrFail($id);
 
         $this->verificaDocenteAppello($appello, 'Non sei autorizzato a modificare questo appello.');
 
-        // 3. Recupera le sessioni attive da mostrare nel menu a tendina
         $sessioni = Sessione::all(); 
 
-        // 4. Passa tutti i dati necessari alla vista Blade
         return view('appelli.edit', compact('appello', 'sessioni'));
     }
 
-    public function update(Request $request,int $id){
-       
+    public function update(Request $request, int $id){
         $appello = Appello::findOrFail($id);
         
         $this->verificaDocenteAppello($appello, 'Non sei autorizzato a modificare questo appello.');
         
-        // 3. Validazione dei dati ricevuti dal form
         $validatedData = $request->validate($this->validationData());
 
-        // 4. Aggiornamento dell'appello
+        $sessione = Sessione::findOrFail($validatedData['sessione_id']);
+
+        // Controllo data compresa nella sessione
+        if ($validatedData['data'] < $sessione->data_inizio || $validatedData['data'] > $sessione->data_fine) {
+            return back()->withErrors([
+                'data' => 'La data dell\'appello deve essere compresa nella sessione selezionata.'
+            ])->withInput();
+        }
+
+        // Controllo sovrapposizione per lo STESSO insegnamento nello stesso slot (escludendo l'appello corrente)
+        $stessoInsegnamentoSovrapposto = Appello::where('ins_corso_id', $validatedData['ins_corso_id'])
+            ->where('appello_id', '!=', $id)
+            ->where('data', $validatedData['data'])
+            ->where('ora_inizio', '<', $validatedData['ora_fine'])
+            ->where('ora_fine', '>', $validatedData['ora_inizio'])
+            ->exists();
+
+        if ($stessoInsegnamentoSovrapposto) {
+            return back()->withErrors(['ora_inizio' => 'Esiste già un appello per questo insegnamento nello stesso intervallo orario!'])->withInput();
+        }
+
         $appello->update($validatedData);
 
-        // 5. Reindirizzamento con messaggio di successo
         return redirect()->route('docente.dashboard')->with('success', 'Appello aggiornato con successo!');
     }
 
@@ -128,10 +152,8 @@ class appelloController extends Controller
 
         $this->verificaDocenteAppello($appello, 'Non sei autorizzato a cancellare questo appello.');
 
-        // 3. Cancellazione dell'appello
         $appello->delete();
 
-        // 4. Reindirizzamento con messaggio di successo
         return redirect()->route('docente.dashboard')
             ->with('success', 'Appello cancellato con successo!');
     }
@@ -140,17 +162,12 @@ class appelloController extends Controller
         /** @var \App\Models\Utente $user */
         $user = Auth::user();
 
-
-        // 2. CONTROLLO SICUREZZA:
-        // Verifica che l'appello appartenga a un insegnamento associato al docente loggato
-        // (passando per la relazione del tuo Model Utente/Docente)
         $insegnamentiDocenteIds = DocenteInsegnamento::where('utente_id', $user->getKey())
             ->where('ruolo', 'Primario')
             ->pluck('ins_corso_id')
             ->toArray();
             
         if (!in_array($appello->ins_corso_id, $insegnamentiDocenteIds)) {
-            // Blocca l'accesso se l'appello appartiene a un altro docente
             abort(403, $msg);
         }
     }

@@ -50,7 +50,7 @@ class docenteController extends Controller
     // Vista del Calendario Personale (rimane pulita e con parametro obbligatorio)
     public function viewCalendarioPersonale(int $sessione_id)
     {
-        /** @var \App\Models\Utente $user */
+        /** @var Utente $user */
         $user = Auth::user();
 
         // 1. Recupera i dati della sessione selezionata (es. nome e anno)
@@ -70,7 +70,7 @@ class docenteController extends Controller
     }
     public function selezionaFiltriGenerale()
     {
-        /** @var \App\Models\Utente $user */
+        /** @var Utente $user */
         $user = Auth::user();
 
         // Recupera solo i corsi in cui il docente loggato insegna
@@ -86,7 +86,7 @@ class docenteController extends Controller
     // Endpoint AJAX per recuperare gli anni di corso in cui il docente insegna per il corso scelto
     public function getAnniCorsoPerDocente(int $corso_id)
     {
-        /** @var \App\Models\Utente $user */
+        /** @var Utente $user */
         $user = Auth::user();
 
         $insCorsoIds = DocenteInsegnamento::where('utente_id', $user->getKey())
@@ -120,7 +120,7 @@ class docenteController extends Controller
 
     public function viewcalendario_generale(int $sessione_id, int $annoCorso, int $corso_id)
     {
-        /** @var \App\Models\Utente $user */
+        /** @var Utente $user */
         $user = Auth::user();
 
         // 1. Recupera tutti gli ins_corso_id associati al docente loggato (sia Primario che Secondario)
@@ -168,7 +168,7 @@ class docenteController extends Controller
 
         // 4. Recupera i dettagli di Corso e Sessione per le intestazioni
         $corso = \App\Models\Corso::find($corso_id);
-        $sessione = \App\Models\Sessione::find($sessione_id);
+        $sessione = Sessione::find($sessione_id);
 
         return view('docente.calendario_generale', compact(
             'appelliAnnoCorso', 
@@ -182,7 +182,7 @@ class docenteController extends Controller
 
     public function dettaglioInsegnamento(int $ins_corso_id)
     {
-        /** @var \App\Models\Utente $user */
+        /** @var Utente $user */
         $user = Auth::user();
 
         // 1. Cerca l'insegnamento all'interno della collection restituita da insAssociati()
