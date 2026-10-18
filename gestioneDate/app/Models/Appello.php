@@ -5,15 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
 class Appello extends Model
 {
     use HasFactory;
 
     protected $table = 'appello';
     protected $primaryKey = 'appello_id';
-
-    // Disabilita la gestione automatica delle colonne created_at e updated_at
     public $timestamps = false;
 
     protected $fillable = [
@@ -21,7 +18,8 @@ class Appello extends Model
         'sessione_id', 
         'data', 
         'ora_inizio', 
-        'ora_fine'
+        'ora_fine',
+        'aula_id',
     ];
 
     public function sessione()
@@ -32,5 +30,10 @@ class Appello extends Model
     public function insegnamentoCorso()
     {
         return $this->belongsTo(InsegnamentiCorso::class, 'ins_corso_id', 'ins_corso_id');
+    }
+
+    public function aula()
+    {
+        return $this->belongsTo(Aula::class, 'aula_id', 'aula_id');
     }
 }

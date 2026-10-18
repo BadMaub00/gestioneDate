@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let html = `
             <div class="table-responsive">
-                <table class="table table-bordered align-middle text-center mb-0 calendar-table" style="table-layout: fixed;">
+                <table class="table table-bordered align-middle text-center mb-0 calendar-table" style="table-layout: fixed; min-width: 750px;">
                     <thead class="table-light">
                         <tr>
                             <th style="width: 10%;" class="bg-light text-muted fw-bold">Orario</th>`;
@@ -115,29 +115,59 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
 
-                    // Cella relativa per contenere l'elemento posizionato in modo assoluto
                     html += `<td rowspan="${maxDuration}" class="align-top p-1 text-start" style="position: relative;">`;
 
                     matches.forEach(app => {
                         const oraInizio = app.ora_inizio.substring(0, 5);
                         const oraFine = app.ora_fine.substring(0, 5);
                         const corsoStr = app.nome_corso || 'Corso non specificato';
+                        const aulaStr = app.nome_aula || 'Aula N/D';
+                        const edificioStr = app.nome_edificio || 'Edificio N/D';
 
-                        html += `
-                            <div class="card border-0 shadow-sm bg-unibs text-white p-2 rounded-2 d-flex flex-column justify-content-between" 
-                                 style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; overflow: hidden;">
-                                <div>
-                                    <div class="fw-bold text-truncate" style="font-size: 0.85rem;" title="${app.nome_insegnamento}">
-                                        ${app.nome_insegnamento}
+                        const isCompact = (maxDuration === 1);
+
+                        if (isCompact) {
+                            // Riquadro singolo (1 Ora): Edificio affiancato all'aula
+                            html += `
+                                <div class="card border-0 shadow-sm bg-unibs text-white p-1.5 rounded-2 d-flex flex-column justify-content-center overflow-hidden" 
+                                     style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.72rem; line-height: 1.15;" 
+                                     title="${app.nome_insegnamento} - ${aulaStr} (${edificioStr})">
+                                    <div>
+                                        <div class="fw-bold text-truncate" style="font-size: 0.78rem;" title="${app.nome_insegnamento}">
+                                            ${app.nome_insegnamento}
+                                        </div>
+                                        <div class="opacity-75 text-truncate my-0.5">
+                                            <i class="bi bi-clock"></i> ${oraInizio} - ${oraFine}
+                                        </div>
                                     </div>
-                                    <div class="small opacity-75 d-flex align-items-center gap-1 my-1">
-                                        <i class="bi bi-clock"></i> ${oraInizio} - ${oraFine}
+                                    <div class="fw-semibold text-truncate opacity-90" style="font-size: 0.70rem;">
+                                        <i class="bi bi-geo-alt-fill me-1"></i><strong>${aulaStr}</strong> <span class="text-white-50">(${edificioStr})</span>
                                     </div>
-                                </div>
-                                <div class="small fst-italic text-truncate opacity-90 mt-1" style="font-size: 0.75rem;" title="${corsoStr}">
-                                    <i class="bi bi-mortarboard"></i> ${corsoStr}
-                                </div>
-                            </div>`;
+                                </div>`;
+                        } else {
+                            // Riquadro esteso (2+ Ore): Edificio a capo sotto l'aula
+                            html += `
+                                <div class="card border-0 shadow-sm bg-unibs text-white p-2 rounded-2 d-flex flex-column justify-content-between overflow-hidden" 
+                                     style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.80rem; line-height: 1.25;">
+                                    <div>
+                                        <div class="fw-bold text-truncate" style="font-size: 0.85rem;" title="${app.nome_insegnamento}">
+                                            ${app.nome_insegnamento}
+                                        </div>
+                                        <div class="small opacity-75 d-flex align-items-center gap-1 my-1">
+                                            <i class="bi bi-clock"></i> ${oraInizio} - ${oraFine}
+                                        </div>
+                                        <div class="small fw-bold opacity-100 text-truncate mt-1" title="${aulaStr}">
+                                            <i class="bi bi-geo-alt-fill me-1"></i>${aulaStr}
+                                        </div>
+                                        <div class="small text-white-50 fw-normal text-truncate" style="font-size: 0.72rem;" title="${edificioStr}">
+                                            ${edificioStr}
+                                        </div>
+                                    </div>
+                                    <div class="small fst-italic text-truncate opacity-90 mt-1" style="font-size: 0.75rem;" title="${corsoStr}">
+                                        <i class="bi bi-mortarboard"></i> ${corsoStr}
+                                    </div>
+                                </div>`;
+                        }
                     });
 
                     html += `</td>`;

@@ -97,101 +97,153 @@
 
             <hr class="border-unibs border-2 opacity-100 mb-4">
 
-            <!-- Form selezione sessione (Posizionata sopra la tabella) -->
+            <!-- Form Selezione Sessione e Corso -->
             <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-body p-3">
-                    <form action="" method="GET" class="d-flex align-items-center gap-2">
-                        <label for="sessione_id" class="form-label fw-bold text-nowrap mb-0">Sessione:</label>
-                        <select name="sessione_id" 
-                                id="sessione_id" 
-                                class="form-select form-select-sm shadow-sm" 
-                                onchange="if(this.value) window.location.href = this.value;">
-                            @foreach($sessioni as $sessione)
-                                <option value="{{ route('admin.calendario', $sessione->sessione_id) }}" {{ (isset($sessione_id) && $sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
-                                    {{ $sessione->nome }} ({{ $sessione->anno }})
-                                </option>
-                            @endforeach
-                        </select>
+                    <form action="{{ route('admin.calendario') }}" method="GET" class="row g-3 align-items-end">
+                        
+                        <!-- Selezione Sessione -->
+                        <div class="col-12 col-md-5">
+                            <label for="sessione_id" class="form-label fw-bold text-dark small mb-1">Sessione:</label>
+                            <select name="sessione_id" id="sessione_id" class="form-select form-select-sm shadow-sm" required>
+                                <option value="" disabled {{ empty($sessione_id) ? 'selected' : '' }}>-- Seleziona Sessione --</option>
+                                @foreach($sessioni as $sessione)
+                                    <option value="{{ $sessione->sessione_id }}" {{ ($sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
+                                        {{ $sessione->nome }} ({{ $sessione->anno }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Selezione Corso -->
+                        <div class="col-12 col-md-5">
+                            <label for="corso_id" class="form-label fw-bold text-dark small mb-1">Corso di Laurea:</label>
+                            <select name="corso_id" id="corso_id" class="form-select form-select-sm shadow-sm" required>
+                                <option value="" disabled {{ empty($corso_id) ? 'selected' : '' }}>-- Seleziona Corso --</option>
+                                @foreach($corsi as $corso)
+                                    <option value="{{ $corso->corso_id }}" {{ ($corso_id == $corso->corso_id) ? 'selected' : '' }}>
+                                        {{ $corso->nome }} - {{ $corso->tipo_corso }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Pulsante Filtra -->
+                        <div class="col-12 col-md-2">
+                            <button type="submit" class="btn btn-unibs btn-sm text-white fw-bold w-100 shadow-sm rounded-2">
+                                <i class="bi bi-funnel-fill me-1"></i> Mostra
+                            </button>
+                        </div>
+
                     </form>
                 </div>
             </div>
 
-            <!-- Tabella degli Appelli (Invariata) -->
+            <!-- Tabella degli Appelli Divisi per Anno di Corso -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0">
                         <thead class="bg-white border-bottom">
                             <tr>
                                 <th class="py-3 px-4 text-dark fw-bold">Insegnamento</th>
-                                <th class="py-3 px-4 text-dark fw-bold">Corso di Laurea</th>
-                                <th class="py-3 px-4 text-center text-dark fw-bold">Data</th>
-                                <th class="py-3 px-4 text-center text-dark fw-bold">Orario</th>
+                                <th class="py-3 px-4 text-dark fw-bold">Anno di corso</th>
+                                <th class="py-3 px-4 text-center text-dark fw-bold">Data e Orario</th>
+                                <th class="py-3 px-4 text-center text-dark fw-bold">Sede</th>
                                 <th class="py-3 px-4 text-center text-dark fw-bold">Azioni</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($appelli as $appello)
-                                <tr>
-                                    <!-- Insegnamento -->
-                                    <td class="py-3 px-4 fw-semibold text-dark">
-                                        {{ $appello->insegnamentoCorso->insegnamento->nome ?? 'N/D' }}
-                                    </td>
+                            @if($appelliGrouped->isNotEmpty())
+                                @foreach($appelliGrouped as $anno => $appelli)
+                                    <!-- Intestazione Gruppo Anno di Corso -->
+                                    <tr class="table-light">
+                                        <td colspan="5" class="py-2 px-4 fw-bold text-unibs border-top border-bottom">
+                                            <i class="bi bi-mortarboard-fill me-2"></i>
+                                            @if(is_numeric($anno))
+                                                {{ $anno }}° Anno
+                                            @else
+                                                {{ $anno }}
+                                            @endif
+                                        </td>
+                                    </tr>
 
-                                    <!-- Corso -->
-                                    <td class="py-3 px-4 text-dark">
-                                        {{ $appello->insegnamentoCorso->corso->nome ?? 'N/D' }}
-                                    </td>
+                                    <!-- Riga Singolo Appello -->
+                                    @foreach($appelli as $appello)
+                                        <tr>
+                                            <!-- Insegnamento -->
+                                            <td class="py-3 px-4 fw-semibold text-dark">
+                                                {{ $appello->insegnamentoCorso->insegnamento->nome ?? 'N/D' }}
+                                            </td>
 
-                                    <!-- Data -->
-                                    <td class="py-3 px-4 text-center text-nowrap">
-                                        <span class="badge border border-unibs text-unibs bg-transparent px-3 py-1.5 rounded-pill fw-bold">
-                                            <i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($appello->data)->format('d/m/Y') }}
-                                        </span>
-                                    </td>
+                                            <!-- Anno di Corso -->
+                                            <td class="py-3 px-4 text-dark">
+                                                {{ $appello->insegnamentoCorso->anno_di_corso ? $appello->insegnamentoCorso->anno_di_corso . '° Anno' : 'N/D' }}
+                                            </td>
 
-                                    <!-- Orario -->
-                                    <td class="py-3 px-4 text-center text-nowrap">
-                                        <span class="badge border border-unibs text-unibs bg-transparent px-3 py-1.5 rounded-pill fw-bold">
-                                            <i class="bi bi-clock me-1"></i>{{ substr($appello->ora_inizio, 0, 5) }} - {{ substr($appello->ora_fine, 0, 5) }}
-                                        </span>
-                                    </td>
+                                            <!-- Data e Orario in Badge -->
+                                            <td class="py-3 px-4 text-center text-nowrap">
+                                                <span class="badge border border-unibs text-unibs bg-transparent px-3 py-2 rounded-3 fw-bold d-inline-block text-start">
+                                                    <i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($appello->data)->format('d/m/Y') }}
+                                                    <br>
+                                                    <i class="bi bi-clock me-1"></i>{{ substr($appello->ora_inizio, 0, 5) }} - {{ substr($appello->ora_fine, 0, 5) }}
+                                                </span>
+                                            </td>
 
-                                    <!-- Pulsanti Azione (Modifica ed Elimina) -->
-                                    <td class="py-3 px-4 text-center text-nowrap">
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <!-- Modifica -->
-                                            <a href="{{ route('admin.appelli.edit', $appello->getKey()) }}" 
-                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                               style="width: 36px; height: 36px;" 
-                                               title="Modifica Appello">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
+                                            <!-- Sede (Edificio e Aula in Badge Stile Identico) -->
+                                            <td class="py-3 px-4 text-center text-nowrap">
+                                                @if($appello->aula)
+                                                    <span class="badge border border-unibs text-unibs bg-transparent px-3 py-2 rounded-3 fw-bold d-inline-block text-start">
+                                                        <i class="bi bi-building me-1"></i>{{ $appello->aula->edificio->nome ?? 'N/D' }}
+                                                        <br>
+                                                        <i class="bi bi-geo-alt-fill me-1"></i>{{ $appello->aula->nome }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-muted small">N/D</span>
+                                                @endif
+                                            </td>
 
-                                            <!-- Elimina -->
-                                            <form action="{{ route('admin.appelli.destroy', $appello->getKey()) }}" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');" 
-                                                  class="d-inline m-0">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" 
-                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                                        style="width: 36px; height: 36px;" 
-                                                        title="Elimina Appello">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
+                                            <!-- Pulsanti Azione -->
+                                            <td class="py-3 px-4 text-center text-nowrap">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <!-- Modifica -->
+                                                    <a href="{{ route('admin.appelli.edit', $appello->getKey()) }}" 
+                                                       class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                       style="width: 36px; height: 36px;" 
+                                                       title="Modifica Appello">
+                                                        <i class="bi bi-pencil-fill"></i>
+                                                    </a>
+
+                                                    <!-- Elimina -->
+                                                    <form action="{{ route('admin.appelli.destroy', $appello->getKey()) }}" 
+                                                          method="POST" 
+                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');" 
+                                                          class="d-inline m-0">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                                style="width: 36px; height: 36px;" 
+                                                                title="Elimina Appello">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                            @else
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-5 fs-6">
                                         <i class="bi bi-calendar-x fs-3 d-block mb-2 text-secondary"></i>
-                                        Nessun appello fissato per questa sessione.
+                                        @if($sessione_id && $corso_id)
+                                            Nessun appello fissato per la sessione ed il corso selezionati.
+                                        @else
+                                            Seleziona una sessione ed un corso di laurea per visualizzare il calendario.
+                                        @endif
                                     </td>
                                 </tr>
-                            @endforelse
+                            @endif
                         </tbody>
                     </table>
                 </div>

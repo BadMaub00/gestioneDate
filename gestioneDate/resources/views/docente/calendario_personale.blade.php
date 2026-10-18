@@ -14,51 +14,32 @@
     </head>
     <body class="min-vh-100" style="background-color: #e1edf7;">
 
-        <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
-        <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
-                
-                <!-- Logo Università -->
                 <a class="navbar-brand py-0" href="#">
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
-                <!-- Toggler Mobile -->
-                <button class="navbar-toggler border-0 shadow-none" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#navbarSupportedContent" 
-                        aria-controls="navbarSupportedContent" 
-                        aria-expanded="false" 
-                        aria-label="Toggle navigation">
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Menu di Navigazione -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
-                        <!-- Pulsante Home -->
                         <li class="nav-item">
                             <a class="btn btn-unibs btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" 
-                               aria-current="page" 
-                               href="{{ route('docente.dashboard') }}"
-                               style="width: 115px;">
+                               href="{{ route('docente.dashboard') }}" style="width: 115px;">
                                 <i class="bi bi-house-door-fill text-center me-2" style="width: 18px;"></i>
                                 <span>Home</span>
                             </a>
                         </li>
-
-                        <!-- Pulsante Logout -->
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" 
-                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
-                                        style="width: 115px;">
+                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
                                     <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
                                     <span>Logout</span>
                                 </button>
@@ -69,7 +50,6 @@
             </div>
         </nav>
 
-        <!-- Estrazione e Formattazione Dati Appelli per JS -->
         @php
             $appelliArray = [];
             foreach($insegnamentiCorsi as $insC) {
@@ -82,16 +62,16 @@
                         'nome_insegnamento' => $insC->insegnamento->nome,
                         'nome_corso' => $insC->corso->nome,
                         'ruolo_docente' => $insC->ruolo_docente ?? 'Secondario',
+                        'nome_aula' => $appello->aula->nome ?? 'N/D',
+                        'nome_edificio' => $appello->aula->edificio->nome ?? 'N/D',
                     ];
                 }
             }
         @endphp
 
-        <!-- Contenuto Principale -->
         <div class="py-3">
             <div class="container-fluid px-md-4 px-lg-5">
                 
-                <!-- Header Intestazione Docente -->
                 <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
                     <div>
                         <h1 class="h3 fw-bold text-unibs mb-1 d-flex align-items-center">
@@ -108,13 +88,10 @@
                     </a>
                 </div>
 
-                <!-- LAYOUT REATTIVO AFFIANCATO -->
                 <div class="row g-4 align-items-start">
                     
-                    <!-- 1. VISTA CALENDARIO A GRIGLIA (COLONNA DI SINISTRA) -->
+                    <!-- VISTA GRIGLIA CALENDARIO -->
                     <div class="col-12 col-xl-7 col-xxl-8 order-2 order-xl-1">
-                        
-                        <!-- Card Calendario con Header Navigazione Settimanale -->
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                             <div class="card-header bg-unibs text-white px-4 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2" style="min-height: 62px;">
                                 <button id="btn-prev-week" class="btn btn-outline-light btn-sm fw-bold px-3 py-1 rounded-2">
@@ -140,7 +117,7 @@
                         </div>
                     </div>
 
-                    <!-- 2. TABELLA RIASSUNTIVA CON AZIONI (COLONNA DI DESTRA) -->
+                    <!-- TABELLA RIASSUNTIVA (4 Colonne Separate) -->
                     <div class="col-12 col-xl-5 col-xxl-4 order-1 order-xl-2">
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                             <div class="card-header bg-unibs text-white px-4 border-0 d-flex justify-content-between align-items-center" style="min-height: 62px;">
@@ -154,9 +131,10 @@
                                     <table class="table table-hover table-striped align-middle mb-0">
                                         <thead class="table-light border-bottom sticky-top">
                                             <tr>
-                                                <th class="ps-3 py-3 text-unibs" style="width: 32%;">Data & Orario</th>
-                                                <th class="py-3 text-unibs" style="width: 38%;">Insegnamento</th>
-                                                <th class="pe-3 py-3 text-unibs text-end" style="width: 30%;">Azioni</th>
+                                                <th class="ps-3 py-3 text-unibs" style="width: 25%;">Data & Orario</th>
+                                                <th class="py-3 text-unibs" style="width: 30%;">Insegnamento</th>
+                                                <th class="py-3 text-unibs" style="width: 25%;">Sede</th>
+                                                <th class="pe-3 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -177,7 +155,7 @@
                                                             </div>
                                                         </td>
 
-                                                        <!-- Insegnamento e Corso -->
+                                                        <!-- Insegnamento -->
                                                         <td class="py-2.5 text-dark">
                                                             <div class="fw-semibold text-dark">{{ $insC->insegnamento->nome }}</div>
                                                             <div class="small text-muted fst-italic">
@@ -185,48 +163,40 @@
                                                             </div>
                                                         </td>
 
-                                                        <!-- Pulsanti Modifica / Elimina Minimale -->
+                                                        <!-- Sede (Colonna Separata) -->
+                                                        <td class="py-2.5 text-dark">
+                                                            <div class="fw-semibold text-dark">
+                                                                <i class="bi bi-geo-alt-fill text-unibs me-1"></i>{{ $appello->aula->nome ?? 'Aula N/D' }}
+                                                            </div>
+                                                            <div class="small text-muted">
+                                                                {{ $appello->aula->edificio->nome ?? 'Edificio N/D' }}
+                                                            </div>
+                                                        </td>
+
+                                                        <!-- Pulsanti Azione -->
                                                         <td class="text-end pe-3 py-2.5 text-nowrap">
                                                             <div class="d-flex justify-content-end gap-1">
                                                                 @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
-                                                                    <!-- MODIFICA - Abilitato -->
                                                                     <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
                                                                        class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
-                                                                       style="width: 32px; height: 32px;" 
-                                                                       title="Modifica Appello">
+                                                                       style="width: 32px; height: 32px;" title="Modifica Appello">
                                                                         <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                                     </a>
 
-                                                                    <!-- ELIMINA - Abilitato -->
                                                                     <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
-                                                                          method="POST" 
-                                                                          class="d-inline m-0 p-0"
+                                                                          method="POST" class="d-inline m-0 p-0"
                                                                           onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" 
-                                                                                class="btn btn-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
-                                                                                style="width: 32px; height: 32px;" 
-                                                                                title="Elimina Appello">
+                                                                        <button type="submit" class="btn btn-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;" title="Elimina Appello">
                                                                             <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                                         </button>
                                                                     </form>
                                                                 @else
-                                                                    <!-- MODIFICA - Disabilitato -->
-                                                                    <button type="button" 
-                                                                            class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                            disabled 
-                                                                            style="width: 32px; height: 32px; cursor: not-allowed;"
-                                                                            title="Azione riservata al docente primario dell'insegnamento">
+                                                                    <button type="button" class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" disabled style="width: 32px; height: 32px;" title="Azione riservata al docente primario">
                                                                         <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                                     </button>
-
-                                                                    <!-- ELIMINA - Disabilitato -->
-                                                                    <button type="button" 
-                                                                            class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                            disabled 
-                                                                            style="width: 32px; height: 32px; cursor: not-allowed;" 
-                                                                            title="Azione riservata al docente primario dell'insegnamento">
+                                                                    <button type="button" class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" disabled style="width: 32px; height: 32px;" title="Azione riservata al docente primario">
                                                                         <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                                     </button>
                                                                 @endif
@@ -238,7 +208,7 @@
 
                                             @if(!$hasAppelli)
                                                 <tr>
-                                                    <td colspan="3" class="text-center py-5 text-muted fw-bold">
+                                                    <td colspan="4" class="text-center py-5 text-muted fw-bold">
                                                         <i class="bi bi-calendar-x fs-3 d-block mb-2 text-secondary"></i>
                                                         Nessun appello fissato per le tue materie in questa sessione.
                                                     </td>
@@ -253,7 +223,6 @@
 
                 </div>
 
-                <!-- Bottone di Navigazione Inferiore Unico a Tutta Larghezza -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <a href="{{ route('docente.dashboard') }}" 
@@ -266,7 +235,6 @@
             </div>
         </div>
 
-        <!-- Script JS Calendario Personale -->
         <script src="{{ asset('js/calendarioPersonale.js') }}?v={{ time() }}"></script>
     </body>
 </html>

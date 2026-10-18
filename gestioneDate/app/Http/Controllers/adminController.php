@@ -11,6 +11,8 @@ use App\Models\Utente;
 use App\Models\InsegnamentiCorso;
 use App\Models\DocenteInsegnamento;
 use App\Models\Insegnamento;
+use App\Models\Edificio;
+use App\Models\Aula;
 use Carbon\Carbon;
 
 class adminController extends Controller
@@ -75,9 +77,24 @@ class adminController extends Controller
     }
 
     public function indexAssociazioni() {
-        $associazioni = DocenteInsegnamento::with(['docente', 'insegnamentiCorso.insegnamento', 'insegnamentiCorso.corso'])->get();
-        return view('admin.personale.associazioni_index', compact('associazioni'));
-    }
+    $associazioniGrouped = DocenteInsegnamento::with([
+        'docente', 
+        'insegnamentiCorso.insegnamento', 
+        'insegnamentiCorso.corso'
+    ])
+    ->get()
+    // Ordina per Corso (A-Z), poi per Cognome Docente (A-Z) e infine Nome Docente
+    ->sortBy([
+        fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->nome ?? '', $b->insegnamentiCorso->corso->nome ?? ''),
+        fn ($a, $b) => strcmp($a->docente->cognome ?? '', $b->docente->cognome ?? ''),
+        fn ($a, $b) => strcmp($a->docente->nome ?? '', $b->docente->nome ?? ''),
+    ])
+    // Raggruppa per Nome del Corso di Laurea
+    ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso->nome ?? 'N/D')
+    ->sortKeys(); // Ordina le chiavi dei corsi in ordine alfabetico
+
+    return view('admin.personale.associazioni_index', compact('associazioniGrouped'));
+}
 
     public function storeAssociazioneDocente(Request $request) {
         $validated = $request->validate([
@@ -86,13 +103,13 @@ class adminController extends Controller
             'ruolo'        => 'required|in:Primario,Secondario',
         ]);
 
-        // 1. Controllo che l'utente sia effettivamente un Docente (impedisce l'assegnazione ad Amministratori)
+        // 1. Controllo che l'utente sia effettivamente un Docente
         $utente = Utente::findOrFail($validated['utente_id']);
         if ($utente->ruolo !== 'Docente') {
             return back()->withErrors(['utente_id' => 'Solo gli utenti con ruolo "Docente" possono essere associati ad un insegnamento!'])->withInput();
         }
 
-        // 2. Controllo associazione duplicata (impedisce che il docente sia sia Primario che Secondario per lo stesso insegnamento)
+        // 2. Controllo associazione duplicata
         $giaAssociato = DocenteInsegnamento::where('ins_corso_id', $validated['ins_corso_id'])
             ->where('utente_id', $validated['utente_id'])
             ->exists();
@@ -124,18 +141,28 @@ class adminController extends Controller
     // --- APPELLI ---
 
     public function editAppello($id) {
-        $appello = Appello::with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])->findOrFail($id);
+        $appello = Appello::with([
+            'insegnamentoCorso.insegnamento', 
+            'insegnamentoCorso.corso',
+            'aula.edificio'
+        ])->findOrFail($id);
+
         $sessioni = Sessione::all();
-        return view('admin.appelli.edit', compact('appello', 'sessioni'));
+        $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
+        $aule = Aula::orderBy('nome', 'asc')->get();
+
+        return view('admin.appelli.edit', compact('appello', 'sessioni', 'edifici', 'aule'));
     }
 
     public function updateAppello(Request $request, $id) {
-        $appello = Appello::findOrFail($id);
+        $appello = Appello::with('insegnamentoCorso')->findOrFail($id);
 
         $validatedData = $request->validate([
-            'data'       => 'required|date',
-            'ora_inizio' => 'required|date_format:H:i|after_or_equal:08:00|before_or_equal:18:00',
-            'ora_fine'   => 'required|date_format:H:i|after:ora_inizio|before_or_equal:19:00',
+            'data'        => 'required|date',
+            'ora_inizio'  => 'required|date_format:H:i|after_or_equal:08:00|before_or_equal:18:00',
+            'ora_fine'    => 'required|date_format:H:i|after:ora_inizio|before_or_equal:19:00',
+            'edificio_id' => 'required|exists:edificio,edificio_id',
+            'aula_id'     => 'required|exists:aula,aula_id',
         ]);
 
         $sessione = Sessione::findOrFail($appello->sessione_id);
@@ -150,16 +177,29 @@ class adminController extends Controller
             return back()->withErrors($erroreSovrapposizione)->withInput();
         }
 
-        $appello->update($validatedData);
-        return redirect()->route('admin.calendario', $appello->sessione_id)->with('success', 'Appello modificato con successo.');
+        $appello->update([
+            'data'       => $validatedData['data'],
+            'ora_inizio' => $validatedData['ora_inizio'],
+            'ora_fine'   => $validatedData['ora_fine'],
+            'aula_id'    => $validatedData['aula_id'],
+        ]);
+
+        return redirect()->route('admin.calendario', [
+            'sessione_id' => $appello->sessione_id,
+            'corso_id'    => $appello->insegnamentoCorso->corso_id ?? null,
+        ])->with('success', 'Appello modificato con successo.');
     }
 
     public function destroyAppello($id) {
-        $appello = Appello::findOrFail($id);
+        $appello = Appello::with('insegnamentoCorso')->findOrFail($id);
         $sessione_id = $appello->sessione_id;
+        $corso_id = $appello->insegnamentoCorso->corso_id ?? null;
         $appello->delete();
 
-        return redirect()->route('admin.calendario', $sessione_id)->with('success', 'Appello eliminato con successo.');
+        return redirect()->route('admin.calendario', [
+            'sessione_id' => $sessione_id,
+            'corso_id'    => $corso_id,
+        ])->with('success', 'Appello eliminato con successo.');
     }
 
     // --- INSEGNAMENTI E CORSI ---
@@ -211,7 +251,6 @@ class adminController extends Controller
             'durata'          => 'required|integer|min:1',
         ]);
 
-        // Controllo se l'insegnamento è già presente nel piano di studi di questo corso
         $giaPresente = InsegnamentiCorso::where('corso_id', $corso_id)
             ->where('insegnamento_id', $data['insegnamento_id'])
             ->exists();
@@ -229,17 +268,47 @@ class adminController extends Controller
             ->with('success', 'Insegnamento aggiunto al piano di studi con successo!');
     }
 
-    public function viewcalendario_generale($sessione_id = null) {
-        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
-        $sessione_id = $sessione_id ?? $sessioni->first()?->getKey();
+    // --- CALENDARIO ---
 
-        $appelli = Appello::where('sessione_id', $sessione_id)
-            ->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])
-            ->orderBy('data', 'asc')
-            ->orderBy('ora_inizio', 'asc')
+    public function viewcalendario_generale(Request $request) {
+        $sessione_id = $request->input('sessione_id');
+        $corso_id = $request->input('corso_id');
+
+        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        $corsi = Corso::orderBy('nome', 'asc')->get();
+
+        $appelliGrouped = collect();
+
+        if ($sessione_id && $corso_id) {
+            $appelli = Appello::where('sessione_id', $sessione_id)
+                ->whereHas('insegnamentoCorso', function ($q) use ($corso_id) {
+                    $q->where('corso_id', $corso_id);
+                })
+                ->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])
+                ->orderBy('data', 'asc')
+                ->orderBy('ora_inizio', 'asc')
+                ->get();
+
+            $appelliGrouped = $appelli->groupBy(function ($appello) {
+                return $appello->insegnamentoCorso->anno_di_corso ?? 'Non Specificato';
+            })->sortKeys();
+        }
+
+        return view('admin.calendario', compact('appelliGrouped', 'sessioni', 'corsi', 'sessione_id', 'corso_id'));
+    }
+
+    public function indexEdifici() {
+    $edifici = Edificio::orderBy('nome', 'asc')->get();
+    return view('admin.sedi.edifici', compact('edifici'));
+}
+
+    public function viewAuleEdificio($edificio_id) {
+        $edificio = Edificio::findOrFail($edificio_id);
+        $aule = Aula::where('edificio_id', $edificio_id)
+            ->orderBy('nome', 'asc')
             ->get();
 
-        return view('admin.calendario', compact('appelli', 'sessioni', 'sessione_id'));
+        return view('admin.sedi.aule', compact('edificio', 'aule'));
     }
 
     // --- METODI HELPER PRIVATI ---

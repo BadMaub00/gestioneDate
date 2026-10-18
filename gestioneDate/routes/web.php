@@ -109,4 +109,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::put('/sessioni/{id}', [sessioneController::class, 'update'])->name('sessioni.update');
     Route::delete('/sessioni/{id}', [sessioneController::class, 'destroy'])->name('sessioni.destroy');
 
+    // Gestione Sedi (Edifici ed Aule)
+    Route::get('/sedi/edifici', [adminController::class, 'indexEdifici'])->name('admin.sedi.edifici');
+    Route::get('/sedi/edifici/{edificio_id}/aule', [adminController::class, 'viewAuleEdificio'])->name('admin.sedi.aule');
+
 });

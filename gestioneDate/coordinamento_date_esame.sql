@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 16, 2026 alle 02:45
+-- Creato il: Ott 18, 2026 alle 21:55
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -33,34 +33,82 @@ CREATE TABLE `appello` (
   `sessione_id` int(11) NOT NULL,
   `data` date NOT NULL,
   `ora_inizio` time NOT NULL,
-  `ora_fine` time NOT NULL
+  `ora_fine` time NOT NULL,
+  `aula_id` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dump dei dati per la tabella `appello`
 --
 
-INSERT INTO `appello` (`appello_id`, `ins_corso_id`, `sessione_id`, `data`, `ora_inizio`, `ora_fine`) VALUES
-(1, 1, 1, '2026-01-20', '09:00:00', '11:00:00'),
-(2, 1, 1, '2026-02-10', '09:00:00', '11:00:00'),
-(3, 2, 1, '2026-01-22', '14:00:00', '17:00:00'),
-(4, 3, 1, '2026-02-05', '10:00:00', '12:00:00'),
-(5, 7, 1, '2026-01-25', '09:00:00', '12:00:00'),
-(6, 7, 1, '2026-02-15', '09:00:00', '12:00:00'),
-(7, 7, 2, '2026-06-20', '14:00:00', '17:00:00'),
-(8, 4, 1, '2026-01-28', '09:00:00', '12:00:00'),
-(9, 4, 1, '2026-02-18', '09:00:00', '12:00:00'),
-(10, 4, 2, '2026-06-25', '09:00:00', '12:00:00'),
-(11, 5, 1, '2026-01-30', '14:00:00', '17:00:00'),
-(12, 5, 1, '2026-02-20', '14:00:00', '17:00:00'),
-(13, 5, 2, '2026-07-02', '14:00:00', '17:00:00'),
-(14, 6, 1, '2026-02-02', '10:00:00', '13:00:00'),
-(15, 6, 1, '2026-02-23', '10:00:00', '13:00:00'),
-(16, 6, 2, '2026-06-29', '10:00:00', '13:00:00'),
-(17, 8, 1, '2026-01-26', '14:00:00', '17:00:00'),
-(18, 8, 1, '2026-02-16', '14:00:00', '17:00:00'),
-(19, 8, 2, '2026-06-22', '14:00:00', '17:00:00'),
-(20, 9, 2, '2026-07-06', '09:00:00', '12:00:00');
+INSERT INTO `appello` (`appello_id`, `ins_corso_id`, `sessione_id`, `data`, `ora_inizio`, `ora_fine`, `aula_id`) VALUES
+(1, 1, 1, '2026-01-20', '09:00:00', '11:00:00', 1),
+(2, 1, 1, '2026-02-10', '09:00:00', '11:00:00', 1),
+(3, 2, 1, '2026-01-22', '14:00:00', '17:00:00', 7),
+(4, 3, 1, '2026-02-05', '10:00:00', '12:00:00', 3),
+(5, 7, 1, '2026-01-23', '09:00:00', '12:00:00', 1),
+(6, 7, 1, '2026-02-10', '09:00:00', '12:00:00', 2),
+(7, 7, 2, '2026-06-20', '14:00:00', '17:00:00', 1),
+(8, 4, 1, '2026-01-28', '09:00:00', '12:00:00', 7),
+(9, 4, 1, '2026-02-18', '09:00:00', '12:00:00', 7),
+(10, 4, 2, '2026-06-25', '09:00:00', '12:00:00', 7),
+(11, 5, 1, '2026-01-30', '14:00:00', '17:00:00', 3),
+(12, 5, 1, '2026-02-20', '14:00:00', '17:00:00', 3),
+(13, 5, 2, '2026-07-02', '14:00:00', '17:00:00', 3),
+(14, 6, 1, '2026-02-02', '10:00:00', '13:00:00', 5),
+(15, 6, 1, '2026-02-23', '10:00:00', '13:00:00', 5),
+(16, 6, 2, '2026-06-29', '10:00:00', '13:00:00', 5),
+(17, 8, 1, '2026-01-26', '14:00:00', '17:00:00', 18),
+(18, 8, 1, '2026-02-16', '14:00:00', '17:00:00', 18),
+(19, 8, 2, '2026-06-22', '14:00:00', '17:00:00', 18),
+(20, 9, 2, '2026-07-06', '09:00:00', '12:00:00', 4);
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `aula`
+--
+
+CREATE TABLE `aula` (
+  `aula_id` int(100) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `edificio_id` int(100) NOT NULL,
+  `capienza` int(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dump dei dati per la tabella `aula`
+--
+
+INSERT INTO `aula` (`aula_id`, `nome`, `edificio_id`, `capienza`) VALUES
+(1, 'MTB2', 2, 120),
+(2, 'MTB3', 2, 80),
+(3, 'MTB4', 2, 150),
+(4, 'Aula Magna Ingegneria', 2, 250),
+(5, 'Lab N1', 3, 50),
+(6, 'Lab N2', 3, 45),
+(7, 'Lab Informatica 1', 3, 60),
+(8, 'Aula A', 4, 200),
+(9, 'Aula B', 4, 180),
+(10, 'Aula C', 4, 120),
+(11, 'Aula Magna Medicina', 4, 300),
+(12, 'Aula B1', 5, 140),
+(13, 'Aula B2', 5, 110),
+(14, 'Aula B3', 5, 90),
+(15, 'Aula Calini 1', 6, 130),
+(16, 'Aula Calini 2', 6, 85),
+(17, 'Aula Magna Giurisprudenza', 6, 220),
+(18, 'Valotti 1', 7, 75),
+(19, 'Valotti 2', 7, 75),
+(20, 'Valotti 3', 7, 100),
+(21, 'Santa Chiara A1', 8, 60),
+(22, 'Santa Chiara A2', 8, 50),
+(23, 'Brixia 1', 9, 90),
+(24, 'Brixia 2', 9, 90),
+(25, 'Lab Chimica', 10, 35),
+(26, 'Lab Fisica', 10, 40),
+(27, 'Aula Spec 1', 11, 50),
+(28, 'Aula Spec 2', 11, 40);
 
 -- --------------------------------------------------------
 
@@ -143,6 +191,34 @@ INSERT INTO `docente_insegnamento` (`doc_ins_id`, `ins_corso_id`, `utente_id`, `
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `edificio`
+--
+
+CREATE TABLE `edificio` (
+  `edificio_id` int(100) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `via` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dump dei dati per la tabella `edificio`
+--
+
+INSERT INTO `edificio` (`edificio_id`, `nome`, `via`) VALUES
+(2, 'Ingegneria - Polo Didattico', 'Via Branze 38'),
+(3, 'Ingegneria - Laboratori NORD', 'Via Branze 45'),
+(4, 'Medicina e Chirurgia', 'Viale Europa 11'),
+(5, 'Economia e Management', 'Via San Faustino 74'),
+(6, 'Giurisprudenza - Palazzo Calini', 'Via San Faustino 41'),
+(7, 'Polo Didattico Valotti', 'Via Valotti 3'),
+(8, 'Polo Studenti Santa Chiara', 'Contrada Santa Chiara 50'),
+(9, 'Complesso Brixia', 'Via San Rocchino 68'),
+(10, 'Laboratori di Ricerca Nord', 'Via Duca degli Abruzzi 15'),
+(11, 'Dipartimento di Specialità Mediche', 'Piazzale Spedali Civili 1');
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `failed_jobs`
 --
 
@@ -180,7 +256,16 @@ INSERT INTO `insegnamento` (`insegnamento_id`, `nome`) VALUES
 (6, 'Robotica e Sistemi Intelligenti'),
 (8, 'Programmazione Web'),
 (10, 'Deep Learning e Reti Neurali'),
-(11, 'Analisi II');
+(12, 'Fisica I'),
+(13, 'Sistemi Operativi'),
+(14, 'Basi di Dati'),
+(15, 'Elaborazione delle Immagini'),
+(16, 'Calcolo Numerico'),
+(17, 'Reti di Calcolatori'),
+(18, 'Elettrotecnica'),
+(19, 'Sistemi Embedded e IoT'),
+(20, 'Elaborazione del Linguaggio Naturale'),
+(21, 'Ingegneria del Software');
 
 -- --------------------------------------------------------
 
@@ -211,7 +296,18 @@ INSERT INTO `insegnamento_corso` (`ins_corso_id`, `corso_id`, `insegnamento_id`,
 (7, 1, 8, 60, 6, 2),
 (8, 7, 8, 60, 6, 1),
 (9, 4, 10, 60, 6, 2),
-(10, 4, 6, 60, 6, 1);
+(10, 4, 6, 60, 6, 1),
+(11, 1, 12, 60, 9, 1),
+(12, 2, 12, 60, 6, 1),
+(13, 1, 13, 60, 9, 2),
+(14, 2, 14, 60, 9, 2),
+(15, 4, 15, 60, 6, 1),
+(16, 3, 16, 60, 6, 2),
+(17, 1, 17, 60, 6, 3),
+(18, 5, 18, 60, 9, 1),
+(19, 7, 19, 60, 6, 1),
+(20, 4, 20, 60, 6, 2),
+(21, 2, 21, 60, 9, 3);
 
 -- --------------------------------------------------------
 
@@ -324,8 +420,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('95QGbDneVxSSSHT430mOwujOyWgPu1bfQ7K6Cibi', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOVlnb1JQNnlxS3J1T1pvdTR4OEs1MkphSmZMd3U5ZFdkN2luc3U0VCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo3MzoiaHR0cDovL2xvY2FsaG9zdC9nZXN0aW9uZURhdGUvZ2VzdGlvbmVEYXRlL3B1YmxpYy9hZG1pbi9wZXJzb25hbGUvYXNzb2NpYSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjczOiJodHRwOi8vbG9jYWxob3N0L2dlc3Rpb25lRGF0ZS9nZXN0aW9uZURhdGUvcHVibGljL2FkbWluL3BlcnNvbmFsZS9hc3NvY2lhIjtzOjU6InJvdXRlIjtzOjIzOiJhZG1pbi5wZXJzb25hbGUuYXNzb2NpYSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1792103040),
-('fnq5S7o4NehSjtvHfxeqkCDXRWnmf2lAlYGLz5UF', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQ2Exb3FHcEFsUEFJb0RwMHdoeHV5V0dPeFV6eGJ4enY3UkNlZWVzSCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDk6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMiO3M6NToicm91dGUiO3M6NToibG9naW4iO319', 1792111458);
+('j6I2exJWuY4oTI2cW1lYRAGDqiWYiaycMJSlxxin', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNkRwekpQd3RQM3NsNkpUU2tYWHRjOEV6WVZoUFJLQWpnZGlkVWQyZyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Njc6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMvZG9jZW50ZS9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MTc6ImRvY2VudGUuZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1792261317);
 
 -- --------------------------------------------------------
 
@@ -367,7 +462,8 @@ CREATE TABLE `utente` (
 INSERT INTO `utente` (`utente_id`, `username`, `password`, `nome`, `cognome`, `data_nascita`, `ruolo`) VALUES
 (5, 'mrossi', '$2y$12$uvr8qflKSaq/FGrvDLOWb.7ft/2bT39yTm6iC3b25iriRpzZumCqi', 'Mario', 'Rossi', '1990-05-15', 'Amministratore'),
 (6, 'lverdi', '$2y$12$EH.XFqQ4XJrCQvaBaZRjOuwApRM39J7WdkYP1GfAagNUK3s.2yEvu', 'Luigi', 'Verdi', '1985-04-20', 'Docente'),
-(7, 'gmineiro', '$2y$12$UzKu2ajt5wImELwBZeWj4.bPCgUOa3f5vTmjBY9j4yLLaOy7zQr5u', 'Giuseppe', 'Mineiro', '1980-05-20', 'Docente');
+(7, 'gmineiro', '$2y$12$UzKu2ajt5wImELwBZeWj4.bPCgUOa3f5vTmjBY9j4yLLaOy7zQr5u', 'Giuseppe', 'Mineiro', '1980-05-20', 'Docente'),
+(8, 'delPiero10', '$2y$12$.PPxW6dr5xHh0SiXWouxCujC4DEU2muClHi2xrUJksca7Kl1FamTC', 'Alessandro', 'Del Piero', '1974-11-09', 'Amministratore');
 
 --
 -- Indici per le tabelle scaricate
@@ -379,7 +475,15 @@ INSERT INTO `utente` (`utente_id`, `username`, `password`, `nome`, `cognome`, `d
 ALTER TABLE `appello`
   ADD PRIMARY KEY (`appello_id`),
   ADD KEY `ins_corso_id` (`ins_corso_id`),
-  ADD KEY `sessione_id` (`sessione_id`);
+  ADD KEY `sessione_id` (`sessione_id`),
+  ADD KEY `fk_appello_aula` (`aula_id`);
+
+--
+-- Indici per le tabelle `aula`
+--
+ALTER TABLE `aula`
+  ADD PRIMARY KEY (`aula_id`),
+  ADD KEY `edificio_id` (`edificio_id`);
 
 --
 -- Indici per le tabelle `cache`
@@ -408,6 +512,12 @@ ALTER TABLE `docente_insegnamento`
   ADD PRIMARY KEY (`doc_ins_id`),
   ADD KEY `ins_corso_id` (`ins_corso_id`),
   ADD KEY `docente_id` (`utente_id`);
+
+--
+-- Indici per le tabelle `edificio`
+--
+ALTER TABLE `edificio`
+  ADD PRIMARY KEY (`edificio_id`);
 
 --
 -- Indici per le tabelle `failed_jobs`
@@ -495,6 +605,12 @@ ALTER TABLE `appello`
   MODIFY `appello_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
+-- AUTO_INCREMENT per la tabella `aula`
+--
+ALTER TABLE `aula`
+  MODIFY `aula_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+--
 -- AUTO_INCREMENT per la tabella `corso`
 --
 ALTER TABLE `corso`
@@ -507,6 +623,12 @@ ALTER TABLE `docente_insegnamento`
   MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
+-- AUTO_INCREMENT per la tabella `edificio`
+--
+ALTER TABLE `edificio`
+  MODIFY `edificio_id` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- AUTO_INCREMENT per la tabella `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
@@ -516,13 +638,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT per la tabella `insegnamento`
 --
 ALTER TABLE `insegnamento`
-  MODIFY `insegnamento_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `insegnamento_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT per la tabella `insegnamento_corso`
 --
 ALTER TABLE `insegnamento_corso`
-  MODIFY `ins_corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `ins_corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT per la tabella `jobs`
@@ -552,7 +674,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT per la tabella `utente`
 --
 ALTER TABLE `utente`
-  MODIFY `utente_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `utente_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Limiti per le tabelle scaricate
@@ -563,7 +685,14 @@ ALTER TABLE `utente`
 --
 ALTER TABLE `appello`
   ADD CONSTRAINT `appello_ibfk_1` FOREIGN KEY (`ins_corso_id`) REFERENCES `insegnamento_corso` (`ins_corso_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `appello_ibfk_2` FOREIGN KEY (`sessione_id`) REFERENCES `sessione_esami` (`sessione_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `appello_ibfk_2` FOREIGN KEY (`sessione_id`) REFERENCES `sessione_esami` (`sessione_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_appello_aula` FOREIGN KEY (`aula_id`) REFERENCES `aula` (`aula_id`) ON UPDATE CASCADE;
+
+--
+-- Limiti per la tabella `aula`
+--
+ALTER TABLE `aula`
+  ADD CONSTRAINT `aula_ibfk_1` FOREIGN KEY (`edificio_id`) REFERENCES `edificio` (`edificio_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Limiti per la tabella `docente_insegnamento`

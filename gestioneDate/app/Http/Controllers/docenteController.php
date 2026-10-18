@@ -44,8 +44,10 @@ class docenteController extends Controller
         $sessione = Sessione::findOrFail($sessione_id);
         $insegnamentiCorsi = $this->insAssociati($user);
 
+        // Caricamento Eager della relazione aula ed edificio per ogni appello
         $insegnamentiCorsi->load(['appelli' => function($query) use ($sessione_id) {
             $query->where('sessione_id', $sessione_id)
+                ->with('aula.edificio')
                 ->orderBy('data')
                 ->orderBy('ora_inizio');
         }]);
@@ -107,10 +109,13 @@ class docenteController extends Controller
             ->pluck('ins_corso_id')
             ->toArray();
 
+        // Join con le tabelle aula ed edificio per includere le informazioni sulla sede dell'appello
         $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
             ->join('insegnamento', 'insegnamento_corso.insegnamento_id', '=', 'insegnamento.insegnamento_id') 
             ->join('corso', 'insegnamento_corso.corso_id', '=', 'corso.corso_id') 
             ->join('sessione_esami', 'appello.sessione_id', '=', 'sessione_esami.sessione_id')
+            ->leftJoin('aula', 'appello.aula_id', '=', 'aula.aula_id')
+            ->leftJoin('edificio', 'aula.edificio_id', '=', 'edificio.edificio_id')
             ->leftJoin('docente_insegnamento', function($join) {
                 $join->on('insegnamento_corso.ins_corso_id', '=', 'docente_insegnamento.ins_corso_id')
                     ->where('docente_insegnamento.ruolo', '=', 'Primario');
@@ -134,7 +139,9 @@ class docenteController extends Controller
                 'sessione_esami.nome as nome_sessione', 
                 'sessione_esami.anno as anno_sessione',
                 'utente.nome as docente_nome',
-                'utente.cognome as docente_cognome'
+                'utente.cognome as docente_cognome',
+                'aula.nome as nome_aula',
+                'edificio.nome as nome_edificio'
             )
             ->get();
 
@@ -161,27 +168,22 @@ class docenteController extends Controller
         /** @var Utente $user */
         $user = Auth::user();
 
-        // 1. Cerca l'insegnamento all'interno della collection restituita da insAssociati()
         $insegnamentoCorso = $this->insAssociati($user)->firstWhere('ins_corso_id', $ins_corso_id);
 
-        // Se l'ID non è presente tra le materie del docente, blocca l'accesso
         if (!$insegnamentoCorso) {
             abort(404, 'Insegnamento non trovato o non associato a questo docente.');
         }
 
-        // 2. Recupera il ruolo per questo specifico insegnamento per il docente loggato
         $docenteInsegnamento = DocenteInsegnamento::where('ins_corso_id', $ins_corso_id)
             ->where('utente_id', $user->getKey())
             ->first();
 
-        // 3. Recupera il docente primario esplicitando le colonne e la tabella per evitare ambiguità SQL
         $docentePrimario = DocenteInsegnamento::where('docente_insegnamento.ins_corso_id', $ins_corso_id)
             ->where('docente_insegnamento.ruolo', 'Primario')
             ->join('utente', 'docente_insegnamento.utente_id', '=', 'utente.utente_id')
             ->select('utente.utente_id', 'utente.nome', 'utente.cognome', 'docente_insegnamento.ruolo')
             ->first();
 
-        // 4. Recupera i docenti secondari esplicitando le colonne e la tabella per evitare ambiguità SQL
         $docentiSecondari = DocenteInsegnamento::where('docente_insegnamento.ins_corso_id', $ins_corso_id)
             ->where('docente_insegnamento.ruolo', 'Secondario')
             ->join('utente', 'docente_insegnamento.utente_id', '=', 'utente.utente_id')
@@ -201,25 +203,23 @@ class docenteController extends Controller
         /** @var Utente $user */
         $user = Auth::user();
 
-        // 1. Verifica che l'insegnamento appartenga al docente loggato
         $insegnamentoCorso = $this->insAssociati($user)->firstWhere('ins_corso_id', $ins_corso_id);
 
         if (!$insegnamentoCorso) {
             abort(404, 'Insegnamento non trovato o non associato a questo docente.');
         }
 
-        // 2. Ruolo del docente per questo specifico insegnamento
         $docenteInsegnamento = DocenteInsegnamento::where('ins_corso_id', $ins_corso_id)
             ->where('utente_id', $user->getKey())
             ->first();
 
-        // 3. Recupera tutte le sessioni d'esame in ordine cronologico
         $sessioni = Sessione::orderBy('data_inizio', 'asc')->get();
 
-        // 4. Carica gli appelli per questo specifico insegnamento diviso per ogni sessione
+        // Inclusione delle relazioni aula ed edificio per gli appelli della sessione
         foreach ($sessioni as $sessione) {
             $sessione->appelli_insegnamento = Appello::where('ins_corso_id', $ins_corso_id)
                 ->where('sessione_id', $sessione->sessione_id)
+                ->with('aula.edificio')
                 ->orderBy('data', 'asc')
                 ->orderBy('ora_inizio', 'asc')
                 ->get();

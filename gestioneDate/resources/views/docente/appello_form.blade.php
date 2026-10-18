@@ -74,11 +74,10 @@
                     </a>
                 </div>
 
-                <!-- Ciclo sulle N Sessioni Esistenti (Ordinate Cronologicamente) -->
+                <!-- Sessioni Esistenti -->
                 @foreach($sessioni as $sessione)
                     <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
                         
-                        <!-- Header Card della Sessione -->
                         <div class="card-header bg-unibs text-white px-4 py-3 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
                             <div>
                                 <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
@@ -89,7 +88,6 @@
                                 </span>
                             </div>
 
-                            <!-- Pulsante Aggiungi Appello per questa specifica Sessione -->
                             <div>
                                 @if(($docenteInsegnamento->ruolo ?? 'Secondario') === 'Primario')
                                     <a href="{{ route('appelli.create', ['ins_corso_id' => $insegnamentoCorso->ins_corso_id, 'sessione_id' => $sessione->sessione_id]) }}" 
@@ -107,14 +105,15 @@
                             </div>
                         </div>
 
-                        <!-- Tabella Appelli Programmati per la Sessione -->
+                        <!-- Tabella con Colonne Separate per Insegnamento e Sede -->
                         <div class="card-body p-0">
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped align-middle mb-0">
                                     <thead class="table-light border-bottom">
                                         <tr>
-                                            <th class="ps-4 py-3 text-unibs" style="width: 35%;">Data & Orario</th>
-                                            <th class="py-3 text-unibs" style="width: 45%;">Insegnamento</th>
+                                            <th class="ps-4 py-3 text-unibs" style="width: 25%;">Data & Orario</th>
+                                            <th class="py-3 text-unibs" style="width: 30%;">Insegnamento</th>
+                                            <th class="py-3 text-unibs" style="width: 25%;">Sede d'Esame</th>
                                             <th class="pe-4 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
                                         </tr>
                                     </thead>
@@ -133,7 +132,7 @@
                                                     </div>
                                                 </td>
 
-                                                <!-- Insegnamento e Corso -->
+                                                <!-- Insegnamento -->
                                                 <td class="py-3 text-dark">
                                                     <div class="fw-semibold text-dark">{{ $insegnamentoCorso->insegnamento->nome }}</div>
                                                     <div class="small text-muted fst-italic">
@@ -141,11 +140,20 @@
                                                     </div>
                                                 </td>
 
-                                                <!-- Pulsanti Modifica / Elimina Minimali -->
+                                                <!-- Sede (Colonna Separata) -->
+                                                <td class="py-3 text-dark">
+                                                    <div class="fw-semibold text-dark">
+                                                        <i class="bi bi-geo-alt-fill text-unibs me-1"></i>{{ $appello->aula->nome ?? 'Aula N/D' }}
+                                                    </div>
+                                                    <div class="small text-muted">
+                                                        {{ $appello->aula->edificio->nome ?? 'Edificio N/D' }}
+                                                    </div>
+                                                </td>
+
+                                                <!-- Azioni -->
                                                 <td class="pe-4 py-3 text-end text-nowrap">
                                                     <div class="d-flex justify-content-end gap-1">
                                                         @if(($docenteInsegnamento->ruolo ?? 'Secondario') === 'Primario')
-                                                            <!-- Modifica - Abilitato -->
                                                             <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
                                                                class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
                                                                style="width: 32px; height: 32px;" 
@@ -153,7 +161,6 @@
                                                                 <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                             </a>
 
-                                                            <!-- Elimina - Abilitato -->
                                                             <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
                                                                   method="POST" 
                                                                   class="d-inline m-0 p-0"
@@ -168,21 +175,10 @@
                                                                 </button>
                                                             </form>
                                                         @else
-                                                            <!-- Modifica - Disabilitato -->
-                                                            <button type="button" 
-                                                                    class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                    disabled 
-                                                                    style="width: 32px; height: 32px; cursor: not-allowed;"
-                                                                    title="Azione riservata al docente primario dell'insegnamento">
+                                                            <button type="button" class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" disabled style="width: 32px; height: 32px;" title="Azione riservata al docente primario">
                                                                 <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                             </button>
-
-                                                            <!-- Elimina - Disabilitato -->
-                                                            <button type="button" 
-                                                                    class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                    disabled 
-                                                                    style="width: 32px; height: 32px; cursor: not-allowed;" 
-                                                                    title="Azione riservata al docente primario dell'insegnamento">
+                                                            <button type="button" class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" disabled style="width: 32px; height: 32px;" title="Azione riservata al docente primario">
                                                                 <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                             </button>
                                                         @endif
@@ -191,7 +187,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="3" class="text-center py-4 text-muted fw-medium">
+                                                <td colspan="4" class="text-center py-4 text-muted fw-medium">
                                                     <i class="bi bi-info-circle me-1 text-secondary"></i> Nessun appello fissato per questo insegnamento in questa sessione.
                                                 </td>
                                             </tr>
@@ -204,7 +200,7 @@
                     </div>
                 @endforeach
 
-                <!-- Pulsante Inferiore A Tutta Larghezza -->
+                <!-- Bottone Inferiore -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <a href="{{ route('docente.dashboard') }}" 
