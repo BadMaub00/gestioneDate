@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 18, 2026 alle 21:55
+-- Creato il: Ott 18, 2026 alle 23:57
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -42,7 +42,7 @@ CREATE TABLE `appello` (
 --
 
 INSERT INTO `appello` (`appello_id`, `ins_corso_id`, `sessione_id`, `data`, `ora_inizio`, `ora_fine`, `aula_id`) VALUES
-(1, 1, 1, '2026-01-20', '09:00:00', '11:00:00', 1),
+(1, 1, 1, '2026-01-20', '09:00:00', '10:00:00', 1),
 (2, 1, 1, '2026-02-10', '09:00:00', '11:00:00', 1),
 (3, 2, 1, '2026-01-22', '14:00:00', '17:00:00', 7),
 (4, 3, 1, '2026-02-05', '10:00:00', '12:00:00', 3),
@@ -61,7 +61,8 @@ INSERT INTO `appello` (`appello_id`, `ins_corso_id`, `sessione_id`, `data`, `ora
 (17, 8, 1, '2026-01-26', '14:00:00', '17:00:00', 18),
 (18, 8, 1, '2026-02-16', '14:00:00', '17:00:00', 18),
 (19, 8, 2, '2026-06-22', '14:00:00', '17:00:00', 18),
-(20, 9, 2, '2026-07-06', '09:00:00', '12:00:00', 4);
+(20, 9, 2, '2026-07-06', '09:00:00', '12:00:00', 4),
+(21, 22, 2, '2026-06-22', '09:00:00', '12:00:00', 7);
 
 -- --------------------------------------------------------
 
@@ -155,7 +156,7 @@ INSERT INTO `corso` (`corso_id`, `nome`, `tipo_corso`) VALUES
 (2, 'Informatica', 'Triennale'),
 (3, 'Ingegneria Elettronica', 'Triennale'),
 (4, 'Artificial Intelligence Engineering', 'Magistrale'),
-(5, 'Ingegneria dell Automazione', 'Triennale'),
+(5, 'Ingegneria Dell Automazione', 'Triennale'),
 (7, 'Ingegneria Elettronica', 'Magistrale');
 
 -- --------------------------------------------------------
@@ -186,7 +187,8 @@ INSERT INTO `docente_insegnamento` (`doc_ins_id`, `ins_corso_id`, `utente_id`, `
 (9, 8, 7, 'Primario'),
 (10, 9, 6, 'Primario'),
 (11, 3, 7, 'Primario'),
-(12, 10, 7, 'Primario');
+(12, 10, 7, 'Primario'),
+(13, 22, 6, 'Primario');
 
 -- --------------------------------------------------------
 
@@ -265,7 +267,8 @@ INSERT INTO `insegnamento` (`insegnamento_id`, `nome`) VALUES
 (18, 'Elettrotecnica'),
 (19, 'Sistemi Embedded e IoT'),
 (20, 'Elaborazione del Linguaggio Naturale'),
-(21, 'Ingegneria del Software');
+(21, 'Ingegneria del Software'),
+(22, 'Sicurezza dei Sistemi Software');
 
 -- --------------------------------------------------------
 
@@ -307,7 +310,8 @@ INSERT INTO `insegnamento_corso` (`ins_corso_id`, `corso_id`, `insegnamento_id`,
 (18, 5, 18, 60, 9, 1),
 (19, 7, 19, 60, 6, 1),
 (20, 4, 20, 60, 6, 2),
-(21, 2, 21, 60, 9, 3);
+(21, 2, 21, 60, 9, 3),
+(22, 1, 22, 60, 6, 2);
 
 -- --------------------------------------------------------
 
@@ -420,7 +424,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('j6I2exJWuY4oTI2cW1lYRAGDqiWYiaycMJSlxxin', 6, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNkRwekpQd3RQM3NsNkpUU2tYWHRjOEV6WVZoUFJLQWpnZGlkVWQyZyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Njc6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMvZG9jZW50ZS9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MTc6ImRvY2VudGUuZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9', 1792261317);
+('ZkYeY1iK5LiHZ2FTByMcKKaTfBVlP3RpLpU7Jwlv', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoic0YxSGtkNGRlWWZFVGNsUk5sWVNoQWpRcmd5UG5Hcmpua2U0QjduUyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDk6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMiO3M6NToicm91dGUiO3M6NToibG9naW4iO319', 1792360608);
 
 -- --------------------------------------------------------
 
@@ -602,7 +606,7 @@ ALTER TABLE `utente`
 -- AUTO_INCREMENT per la tabella `appello`
 --
 ALTER TABLE `appello`
-  MODIFY `appello_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `appello_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT per la tabella `aula`
@@ -620,7 +624,7 @@ ALTER TABLE `corso`
 -- AUTO_INCREMENT per la tabella `docente_insegnamento`
 --
 ALTER TABLE `docente_insegnamento`
-  MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT per la tabella `edificio`
@@ -638,13 +642,13 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT per la tabella `insegnamento`
 --
 ALTER TABLE `insegnamento`
-  MODIFY `insegnamento_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `insegnamento_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT per la tabella `insegnamento_corso`
 --
 ALTER TABLE `insegnamento_corso`
-  MODIFY `ins_corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `ins_corso_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT per la tabella `jobs`
