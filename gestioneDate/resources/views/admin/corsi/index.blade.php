@@ -83,7 +83,6 @@
             <hr class="border-unibs border-2 opacity-100 mb-4">
 
             <!-- Pulsante Aggiungi Corso -->
-            <!-- Pulsante Aggiungi Corso -->
             <div class="mb-4">
                 <a href="{{ route('admin.corsi.create') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
                     <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Corso
@@ -102,7 +101,7 @@
                                         <h5 class="card-title fw-bold text-unibs m-0 pe-2">{{ $corso->nome }}</h5>
                                         
                                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                                            <!-- Tasto Modifica (Sfondo bianco, bordo e icona blu Unibs) -->
+                                            <!-- Tasto Modifica -->
                                             <a href="#" 
                                                class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
                                                style="width: 36px; height: 36px;" 
@@ -110,7 +109,7 @@
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
-                                            <!-- Tasto Elimina (Sfondo bianco, bordo e icona rossa) -->
+                                            <!-- Tasto Elimina -->
                                             <form action="#" 
                                                   method="POST" 
                                                   onsubmit="return confirm('Sei sicuro di voler eliminare questo corso?');" 
@@ -127,7 +126,10 @@
                                         </div>
                                     </div>
 
-                                    <p class="text-muted small mb-3">Codice: {{ $corso->codice ?? 'N/D' }}</p>
+                                    <!-- Tipologia del Corso -->
+                                    <p class="text-muted small mb-3 fw-medium">
+                                        <i class="bi bi-mortarboard me-1 text-unibs"></i>{{ $corso->tipo_corso }}
+                                    </p>
                                 </div>
 
                                 <a href="{{ route('admin.corsi.pianoDiStudi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
