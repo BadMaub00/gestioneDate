@@ -14,7 +14,7 @@ use App\Models\Insegnamento;
 use App\Models\Edificio;
 use App\Models\Aula;
 use Carbon\Carbon;
-
+//prova
 class adminController extends Controller
 {
     public function dashboard() {
