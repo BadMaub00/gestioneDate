@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tempStart = new Date(currentWeekStart);
     while (tempStart <= endDateSession) {
         const tempEnd = new Date(tempStart);
-        tempEnd.setDate(tempEnd.getDate() + 4); // +4 giorni: da Lunedì a Venerdì
+        tempEnd.setDate(tempEnd.getDate() + 4);
         
         weeks.push({
             start: new Date(tempStart),
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNextWeek.disabled = (index === weeks.length - 1);
 
         const days = [];
-        for (let i = 0; i < 5; i++) { // Solo 5 giorni (Lun-Ven)
+        for (let i = 0; i < 5; i++) {
             const d = new Date(week.start);
             d.setDate(d.getDate() + i);
             days.push(d);
@@ -200,36 +200,14 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `;
                             }
                         } else {
-                            if (isCompact) {
-                                html += `
-                                    <div class="p-1.5 text-start rounded-2 shadow-sm text-white d-flex flex-column justify-content-center overflow-hidden" 
-                                         style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.72rem; line-height: 1.15;" 
-                                         title="${appello.nome_insegnamento} - ${aulaStr} (${edificioStr})">
-                                        <div class="fw-bold text-truncate">${appello.nome_insegnamento}</div>
-                                        <div class="opacity-90 text-truncate"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
-                                        <div class="text-truncate fw-semibold text-white-50 mt-0.5" style="font-size: 0.70rem;">
-                                            <i class="bi bi-geo-alt-fill me-1 text-white"></i><strong class="text-white">${aulaStr}</strong> (${edificioStr})
-                                        </div>
-                                    </div>
-                                `;
-                            } else {
-                                html += `
-                                    <div class="p-2 text-start rounded-3 shadow-sm text-white d-flex flex-column justify-content-between overflow-hidden" 
-                                         style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.80rem; line-height: 1.25;">
-                                        <div>
-                                            <div class="fw-bold mb-1 text-truncate">${appello.nome_insegnamento}</div>
-                                            <div class="small opacity-90"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
-                                            <div class="small fw-bold text-white text-truncate mt-1" title="${aulaStr}">
-                                                <i class="bi bi-geo-alt-fill me-1 text-white"></i>${aulaStr}
-                                            </div>
-                                            <div class="small text-white-50 fw-normal text-truncate" style="font-size: 0.72rem;" title="${edificioStr}">
-                                                ${edificioStr}
-                                            </div>
-                                        </div>
-                                        <div class="small opacity-90 fst-italic text-truncate mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
-                                    </div>
-                                `;
-                            }
+                            // APPELLO NON DEL DOCENTE: Solamente la scritta centrata
+                            html += `
+                                <div class="p-2 text-center rounded-3 shadow-sm text-white d-flex align-items-center justify-content-center overflow-hidden" 
+                                     style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.75rem; line-height: 1.2;" 
+                                     title="Fascia oraria assegnata">
+                                    <span class="fw-semibold">Fascia oraria assegnata</span>
+                                </div>
+                            `;
                         }
                     });
 

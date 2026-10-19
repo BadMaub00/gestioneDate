@@ -9,11 +9,13 @@ use App\Models\InsegnamentiCorso;
 use App\Models\DocenteInsegnamento;
 use App\Models\Utente;
 use App\Models\Sessione;
+use App\Models\Corso;
 
 class docenteController extends Controller
 {
     public function dashboard()
     {
+        /** @var Utente $user */
         $user = Auth::user();
         $insegnamentiCorsi = $this->insAssociati($user);
 
@@ -61,7 +63,7 @@ class docenteController extends Controller
         $user = Auth::user();
 
         $insegnamentiCorsi = $this->insAssociati($user);
-        $corsi = $insegnamentiCorsi->pluck('corso')->unique('corso_id')->values();
+        $corsi = $insegnamentiCorsi->pluck('corso')->filter()->unique('corso_id')->values();
         $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
 
         return view('docente.selezionaFiltriGenerale', compact('corsi', 'sessioni'));
@@ -100,66 +102,73 @@ class docenteController extends Controller
         ]);
     }
 
-    public function viewcalendario_generale(int $sessione_id, int $annoCorso, int $corso_id)
+    public function viewcalendarioGenerale(Request $request)
     {
-        /** @var Utente $user */
+        /** @var Utente|null $user */
         $user = Auth::user();
+        $docenteId = $user ? $user->getKey() : null;
 
-        $mieiInsCorsoIds = DocenteInsegnamento::where('utente_id', $user->getKey())
-            ->pluck('ins_corso_id')
-            ->toArray();
+        $sessioneId = $request->input('sessione_id') ?? $request->route('sessione_id');
+        $corsoId = $request->input('corso_id') ?? $request->route('corso_id');
+        $annoCorso = $request->input('annoCorso') ?? $request->input('anno_corso') ?? $request->route('annoCorso');
 
-        // Join con le tabelle aula ed edificio per includere le informazioni sulla sede dell'appello
-        $appelliAnnoCorso = Appello::join('insegnamento_corso', 'appello.ins_corso_id', '=', 'insegnamento_corso.ins_corso_id')
-            ->join('insegnamento', 'insegnamento_corso.insegnamento_id', '=', 'insegnamento.insegnamento_id') 
-            ->join('corso', 'insegnamento_corso.corso_id', '=', 'corso.corso_id') 
-            ->join('sessione_esami', 'appello.sessione_id', '=', 'sessione_esami.sessione_id')
-            ->leftJoin('aula', 'appello.aula_id', '=', 'aula.aula_id')
-            ->leftJoin('edificio', 'aula.edificio_id', '=', 'edificio.edificio_id')
-            ->leftJoin('docente_insegnamento', function($join) {
-                $join->on('insegnamento_corso.ins_corso_id', '=', 'docente_insegnamento.ins_corso_id')
-                    ->where('docente_insegnamento.ruolo', '=', 'Primario');
+        $sessione = Sessione::find($sessioneId);
+        $corso = Corso::find($corsoId);
+
+        if (!$sessione || !$corso) {
+            return redirect()->route('docente.selezionaFiltriGenerale')->withErrors(['msg' => 'Sessione o corso selezionato non valido.']);
+        }
+
+        // Filtra gli appelli relativi allo stesso corso, anno e sessione
+        $appelliRaw = Appello::where('sessione_id', $sessione->sessione_id)
+            ->whereHas('insegnamentoCorso', function ($q) use ($corsoId, $annoCorso) {
+                $q->where('corso_id', $corsoId)
+                  ->where('anno_di_corso', $annoCorso);
             })
-            ->leftJoin('utente', 'docente_insegnamento.utente_id', '=', 'utente.utente_id')
-            ->where([
-                'insegnamento_corso.corso_id' => $corso_id,
-                'insegnamento_corso.anno_di_corso' => $annoCorso,
-                'appello.sessione_id' => $sessione_id,
-            ])
-            ->orderBy('appello.data')
-            ->orderBy('appello.ora_inizio')
-            ->select(
-                'appello.appello_id',
-                'appello.data', 
-                'appello.ora_inizio', 
-                'appello.ora_fine', 
-                'insegnamento_corso.ins_corso_id',
-                'insegnamento.nome as nome_insegnamento', 
-                'corso.nome as nome_corso',
-                'sessione_esami.nome as nome_sessione', 
-                'sessione_esami.anno as anno_sessione',
-                'utente.nome as docente_nome',
-                'utente.cognome as docente_cognome',
-                'aula.nome as nome_aula',
-                'edificio.nome as nome_edificio'
-            )
+            ->with(['insegnamentoCorso.insegnamento', 'aula.edificio'])
             ->get();
 
-        $appelliAnnoCorso->transform(function ($appello) use ($mieiInsCorsoIds) {
-            $appello->setAttribute('is_mio_appello', in_array($appello->ins_corso_id, $mieiInsCorsoIds));
-            return $appello;
+        // Mappatura con Visibilità Differenziata (Punto 7)
+        $appelliAnnoCorso = $appelliRaw->map(function ($appello) use ($docenteId) {
+            $insCorsoId = $appello->ins_corso_id;
+
+            // Controlla se l'appello appartiene al docente loggato
+            $isMio = DocenteInsegnamento::where('ins_corso_id', $insCorsoId)
+                ->where('utente_id', $docenteId)
+                ->exists();
+
+            // Recupera il docente associato se l'appello è del docente
+            $docenteObj = null;
+            if ($isMio) {
+                $docIns = DocenteInsegnamento::where('ins_corso_id', $insCorsoId)
+                    ->join('utente', 'docente_insegnamento.utente_id', '=', 'utente.utente_id')
+                    ->select('utente.nome', 'utente.cognome')
+                    ->first();
+                $docenteObj = $docIns;
+            }
+
+            return (object) [
+                'appello_id'        => $appello->appello_id,
+                'data'              => $appello->data,
+                'ora_inizio'        => $appello->ora_inizio,
+                'ora_fine'          => $appello->ora_fine,
+                'is_mio_appello'    => $isMio,
+
+                // VISIBILITÀ DIFFERENZIATA:
+                // Se è del docente mostra i dettagli, altrimenti nasconde tutto marcando solo "Occupato"
+                'nome_insegnamento' => $isMio ? ($appello->insegnamentoCorso->insegnamento->nome ?? 'Insegnamento') : 'Occupato',
+                'docente_nome'      => $isMio ? ($docenteObj->nome ?? '') : '',
+                'docente_cognome'   => $isMio ? ($docenteObj->cognome ?? '') : '',
+                'nome_aula'         => $isMio ? ($appello->aula->nome ?? 'N/D') : 'Occupata',
+                'nome_edificio'     => $isMio ? ($appello->aula->edificio->nome ?? 'N/D') : '',
+            ];
         });
 
-        $corso = \App\Models\Corso::find($corso_id);
-        $sessione = Sessione::find($sessione_id);
-
         return view('docente.calendario_generale', compact(
-            'appelliAnnoCorso', 
-            'sessione_id', 
-            'annoCorso', 
-            'corso_id',
             'corso',
-            'sessione'
+            'sessione',
+            'annoCorso',
+            'appelliAnnoCorso'
         ));
     }
 

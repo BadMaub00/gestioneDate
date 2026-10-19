@@ -6,22 +6,13 @@ use App\Http\Controllers\docenteController;
 use App\Http\Controllers\appelloController;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\sessioneController;
+use App\Http\Middleware\AdminMiddleware;
 
-/*Route::get('/', function () {
-    return view('welcome');
-});*/
+Route::get('/', [FrontController::class, 'getLogin'])->name('login');
+Route::post('/loginPerform', [FrontController::class, 'postLogin'])->name('login.perform');
+Route::post('/logout', [FrontController::class, 'logout'])->name('logout');
 
-/*Route::post('/login', function () {
-    return "Form inviato con successo!";
-});*/
-
-Route::get('/', [frontController::class, 'getLogin'])->name('login');
-Route::post('/loginPerform', [frontController::class, 'postLogin'])->name('login.perform');
-Route::post('/logout', [frontController::class, 'logout'])->name('logout');
-
-//routes per il docente
-// Routes per il docente
-// Routes per il docente
+// Rotte per il docente
 Route::middleware(['auth'])->prefix('docente')->group(function () {
 
     // Dashboard del Docente
@@ -44,9 +35,9 @@ Route::middleware(['auth'])->prefix('docente')->group(function () {
 
     // Visualizzazione Calendari
     Route::get('/calendario/{sessione_id}', [docenteController::class, 'viewCalendarioPersonale'])->name('docente.calendario');
-    Route::get('/calendario-generale/{sessione_id}/{annoCorso}/{corso_id}', [docenteController::class, 'viewcalendario_generale'])
-    ->whereNumber('annoCorso')
-    ->name('docente.calendario.generale');
+    Route::get('/calendario-generale/{sessione_id}/{annoCorso}/{corso_id}', [docenteController::class, 'viewcalendarioGenerale'])
+        ->whereNumber('annoCorso')
+        ->name('docente.calendario.generale');
         
     // Gestione Appelli (CRUD)
     Route::get('/appelli/crea', [appelloController::class, 'create'])->name('appelli.create');
@@ -57,16 +48,21 @@ Route::middleware(['auth'])->prefix('docente')->group(function () {
 
 });
 
-//routes per l'amministratore
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+// Rotte per l'amministratore (con AdminMiddleware applicato)
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
 
     // 1. Dashboard Generale Admin
     Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
     
+    // Gestione Corsi e Piani di Studi
     Route::get('/corsi', [adminController::class, 'indexCorsi'])->name('admin.corsi.index');
+    Route::get('/corsi/crea', [adminController::class, 'createCorso'])->name('admin.corsi.create');
+    Route::post('/corsi', [adminController::class, 'storeCorso'])->name('admin.corsi.store');
     Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.pianoDiStudi');
+    Route::get('/corsi/{corso_id}/insegnamenti/crea', [adminController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
+    Route::post('/corsi/{corso_id}/insegnamenti', [adminController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
 
-    //gestione del personale
+    // Gestione del Personale
     Route::get('/personale', [adminController::class, 'indexPersonale'])->name('admin.personale.index');
     Route::get('/personale/crea', [adminController::class, 'createPersonale'])->name('admin.personale.create');
     Route::post('/personale', [adminController::class, 'storePersonale'])->name('admin.personale.store');
@@ -77,20 +73,10 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/personale/associa', [adminController::class, 'storeAssociazioneDocente'])->name('admin.personale.storeAssocia');
     Route::delete('/associazioni/{id}', [adminController::class, 'destroyAssociazioneDocente'])->name('admin.personale.destroyAssocia');
 
-    // Gestione Corsi
-    Route::get('/corsi', [adminController::class, 'indexCorsi'])->name('admin.corsi.index');
-    Route::get('/corsi/crea', [adminController::class, 'createCorso'])->name('admin.corsi.create');
-    Route::post('/corsi', [adminController::class, 'storeCorso'])->name('admin.corsi.store');
-    Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.pianoDiStudi');
-
-    // Rotte per aggiungere un insegnamento a uno specifico piano di studi
-    Route::get('/corsi/{corso_id}/insegnamenti/crea', [adminController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
-    Route::post('/corsi/{corso_id}/insegnamenti', [adminController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
-    
-    // 2. Calendario Globale (vede gli appelli di tutti i docenti e corsi)
+    // 2. Calendario Globale
     Route::get('/calendario/{sessione_id?}', [adminController::class, 'viewcalendario_generale'])->name('admin.calendario');
 
-    // Gestione/Intervento diretto sugli appelli lato Admin
+    // Gestione Appelli lato Admin
     Route::get('/appelli/{id}/modifica', [adminController::class, 'editAppello'])->name('admin.appelli.edit');
     Route::put('/appelli/{id}', [adminController::class, 'updateAppello'])->name('admin.appelli.update');
     Route::delete('/appelli/{id}', [adminController::class, 'destroyAppello'])->name('admin.appelli.destroy');

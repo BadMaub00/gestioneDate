@@ -109,7 +109,7 @@
                         </div>
                     </div>
 
-                    <!-- TABELLA RIASSUNTIVA (4 Colonne Separate) -->
+                    <!-- TABELLA RIASSUNTIVA (Colonna Info Unificata) -->
                     <div class="col-12 col-xl-5 col-xxl-4 order-1 order-xl-2">
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                             <div class="card-header bg-unibs text-white px-4 border-0 d-flex align-items-center" style="min-height: 62px;">
@@ -123,57 +123,63 @@
                                     <table class="table table-hover table-striped align-middle mb-0">
                                         <thead class="table-light border-bottom sticky-top">
                                             <tr>
-                                                <th class="ps-3 py-3 text-unibs" style="width: 22%;">Data</th>
-                                                <th class="py-3 text-unibs" style="width: 20%;">Orario</th>
-                                                <th class="py-3 text-unibs" style="width: 33%;">Insegnamento & Prof</th>
-                                                <th class="pe-3 py-3 text-unibs" style="width: 25%;">Sede</th>
+                                                <th class="ps-3 py-3 text-unibs" style="width: 25%;">Data</th>
+                                                <th class="py-3 text-unibs" style="width: 25%;">Orario</th>
+                                                <th class="pe-3 py-3 text-unibs" style="width: 50%;">Info</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @forelse ($appelliAnnoCorso as $appello)
-                                                <tr class="{{ $appello->is_mio_appello ? 'table-warning' : '' }}">
+                                                @php
+                                                    $isMio = is_object($appello) ? $appello->is_mio_appello : $appello['is_mio_appello'];
+                                                    $data = is_object($appello) ? $appello->data : $appello['data'];
+                                                    $oraInizio = is_object($appello) ? $appello->ora_inizio : $appello['ora_inizio'];
+                                                    $oraFine = is_object($appello) ? $appello->ora_fine : $appello['ora_fine'];
+                                                    $nomeIns = is_object($appello) ? $appello->nome_insegnamento : $appello['nome_insegnamento'];
+                                                    $docNome = is_object($appello) ? $appello->docente_nome : $appello['docente_nome'];
+                                                    $docCognome = is_object($appello) ? $appello->docente_cognome : $appello['docente_cognome'];
+                                                    $nomeAula = is_object($appello) ? $appello->nome_aula : $appello['nome_aula'];
+                                                    $nomeEdificio = is_object($appello) ? $appello->nome_edificio : $appello['nome_edificio'];
+                                                @endphp
+                                                <tr class="{{ $isMio ? 'table-warning' : '' }}">
                                                     <!-- Data -->
                                                     <td class="ps-3 py-2.5 fw-bold text-dark fs-7">
                                                         <i class="bi bi-calendar-event text-unibs me-1"></i>
-                                                        {{ \Carbon\Carbon::parse($appello->data)->format('d/m/Y') }}
+                                                        {{ \Carbon\Carbon::parse($data)->format('d/m/Y') }}
                                                     </td>
 
                                                     <!-- Orario -->
                                                     <td class="py-2.5 text-dark fw-medium fs-7">
                                                         <i class="bi bi-clock me-1 text-muted"></i>
-                                                        {{ \Carbon\Carbon::parse($appello->ora_inizio)->format('H:i') }} - {{ \Carbon\Carbon::parse($appello->ora_fine)->format('H:i') }}
+                                                        {{ \Carbon\Carbon::parse($oraInizio)->format('H:i') }} - {{ \Carbon\Carbon::parse($oraFine)->format('H:i') }}
                                                     </td>
 
-                                                    <!-- Insegnamento & Prof -->
-                                                    <td class="py-2.5 text-dark">
-                                                        <div class="fw-semibold text-dark d-flex align-items-center justify-content-between pe-2">
-                                                            <span>{{ $appello->nome_insegnamento }}</span>
-                                                            @if($appello->is_mio_appello)
+                                                    <!-- Info (Insegnamento/Docente/Sede oppure Fascia Assegnata) -->
+                                                    <td class="pe-3 py-2.5 text-dark">
+                                                        @if ($isMio)
+                                                            <div class="fw-semibold text-dark d-flex align-items-center justify-content-between pe-1">
+                                                                <span>{{ $nomeIns }}</span>
                                                                 <i class="bi bi-star-fill text-warning ms-1" title="Tuo insegnamento"></i>
-                                                            @endif
-                                                        </div>
-                                                        <div class="small text-muted fst-italic">
-                                                            @if ($appello->docente_nome && $appello->docente_cognome)
-                                                                Prof. {{ $appello->docente_nome }} {{ $appello->docente_cognome }}
-                                                            @else
-                                                                Non assegnato
-                                                            @endif
-                                                        </div>
-                                                    </td>
-
-                                                    <!-- Sede (Colonna Separata) -->
-                                                    <td class="py-2.5 pe-3 text-dark">
-                                                        <div class="fw-semibold text-dark">
-                                                            <i class="bi bi-geo-alt-fill text-unibs me-1"></i>{{ $appello->nome_aula ?? 'Aula N/D' }}
-                                                        </div>
-                                                        <div class="small text-muted">
-                                                            {{ $appello->nome_edificio ?? 'Edificio N/D' }}
-                                                        </div>
+                                                            </div>
+                                                            <div class="small text-muted fst-italic">
+                                                                @if ($docNome && $docCognome)
+                                                                    Prof. {{ $docNome }} {{ $docCognome }}
+                                                                @else
+                                                                    Non assegnato
+                                                                @endif
+                                                            </div>
+                                                            <div class="small fw-semibold text-unibs mt-1">
+                                                                <i class="bi bi-geo-alt-fill me-1"></i>{{ $nomeAula ?? 'Aula N/D' }}
+                                                                <span class="fw-normal text-muted">({{ $nomeEdificio ?? 'Edificio N/D' }})</span>
+                                                            </div>
+                                                        @else
+                                                            <span class="fst-italic text-muted fw-medium">fascia oraria assegnata</span>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="4" class="text-center py-5 text-muted fw-bold">
+                                                    <td colspan="3" class="text-center py-5 text-muted fw-bold">
                                                         <i class="bi bi-info-circle fs-3 d-block mb-2 text-secondary"></i>
                                                         Nessun appello trovato.
                                                     </td>
