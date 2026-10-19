@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ott 18, 2026 alle 23:57
+-- Creato il: Ott 19, 2026 alle 02:15
 -- Versione del server: 10.4.32-MariaDB
 -- Versione PHP: 8.2.12
 
@@ -62,7 +62,67 @@ INSERT INTO `appello` (`appello_id`, `ins_corso_id`, `sessione_id`, `data`, `ora
 (18, 8, 1, '2026-02-16', '14:00:00', '17:00:00', 18),
 (19, 8, 2, '2026-06-22', '14:00:00', '17:00:00', 18),
 (20, 9, 2, '2026-07-06', '09:00:00', '12:00:00', 4),
-(21, 22, 2, '2026-06-22', '09:00:00', '12:00:00', 7);
+(21, 22, 2, '2026-06-22', '09:00:00', '12:00:00', 7),
+(22, 10, 1, '2026-01-21', '09:00:00', '12:00:00', 4),
+(23, 10, 1, '2026-02-11', '09:00:00', '12:00:00', 4),
+(24, 11, 1, '2026-01-27', '09:00:00', '11:00:00', 1),
+(25, 11, 1, '2026-02-17', '09:00:00', '11:00:00', 2),
+(26, 12, 1, '2026-01-29', '14:00:00', '16:00:00', 3),
+(27, 13, 1, '2026-02-03', '09:00:00', '12:00:00', 7),
+(28, 13, 1, '2026-02-24', '09:00:00', '12:00:00', 7),
+(29, 14, 1, '2026-02-04', '14:00:00', '17:00:00', 7),
+(30, 15, 1, '2026-01-26', '10:00:00', '13:00:00', 5),
+(31, 16, 1, '2026-02-06', '09:00:00', '11:00:00', 3),
+(32, 17, 1, '2026-02-09', '14:00:00', '16:00:00', 2),
+(33, 18, 1, '2026-01-22', '09:00:00', '12:00:00', 1),
+(34, 19, 1, '2026-01-23', '14:00:00', '16:00:00', 18),
+(35, 20, 1, '2026-02-12', '10:00:00', '12:00:00', 4),
+(36, 21, 1, '2026-02-13', '14:00:00', '17:00:00', 7),
+(37, 1, 2, '2026-06-16', '09:00:00', '11:00:00', 1),
+(38, 2, 2, '2026-06-17', '14:00:00', '17:00:00', 7),
+(39, 3, 2, '2026-06-18', '10:00:00', '12:00:00', 3),
+(40, 10, 2, '2026-06-19', '09:00:00', '12:00:00', 4),
+(41, 11, 2, '2026-06-23', '09:00:00', '11:00:00', 2),
+(42, 12, 2, '2026-06-24', '14:00:00', '16:00:00', 3),
+(43, 13, 2, '2026-06-26', '09:00:00', '12:00:00', 7),
+(44, 14, 2, '2026-06-30', '14:00:00', '17:00:00', 7),
+(45, 15, 2, '2026-07-01', '10:00:00', '13:00:00', 5),
+(46, 16, 2, '2026-07-03', '09:00:00', '11:00:00', 3),
+(47, 17, 2, '2026-07-07', '14:00:00', '16:00:00', 2),
+(48, 18, 2, '2026-07-08', '09:00:00', '12:00:00', 1),
+(49, 19, 2, '2026-07-09', '14:00:00', '16:00:00', 19),
+(50, 20, 2, '2026-07-10', '10:00:00', '12:00:00', 4),
+(51, 21, 2, '2026-07-13', '14:00:00', '17:00:00', 7),
+(52, 1, 1, '2026-01-15', '09:00:00', '12:00:00', 4),
+(53, 2, 1, '2026-01-16', '14:00:00', '16:00:00', 12),
+(54, 3, 1, '2026-01-19', '10:00:00', '13:00:00', 21),
+(55, 4, 1, '2026-01-20', '09:00:00', '11:00:00', 8),
+(56, 5, 1, '2026-01-21', '14:00:00', '17:00:00', 10),
+(57, 6, 1, '2026-01-22', '09:00:00', '12:00:00', 5),
+(58, 7, 1, '2026-01-26', '14:00:00', '16:00:00', 15),
+(59, 8, 1, '2026-01-27', '10:00:00', '12:00:00', 11),
+(60, 9, 1, '2026-01-28', '09:00:00', '12:00:00', 2),
+(61, 10, 1, '2026-02-04', '14:00:00', '17:00:00', 25),
+(62, 11, 1, '2026-02-05', '09:00:00', '11:00:00', 28),
+(63, 12, 1, '2026-02-06', '14:00:00', '16:00:00', 17),
+(64, 13, 1, '2026-02-11', '10:00:00', '13:00:00', 19),
+(65, 14, 1, '2026-02-12', '09:00:00', '12:00:00', 6),
+(66, 15, 1, '2026-02-13', '14:00:00', '17:00:00', 23),
+(67, 16, 2, '2026-06-16', '09:00:00', '12:00:00', 9),
+(68, 17, 2, '2026-06-17', '14:00:00', '16:00:00', 1),
+(69, 18, 2, '2026-06-18', '10:00:00', '12:00:00', 13),
+(70, 19, 2, '2026-06-22', '09:00:00', '11:00:00', 22),
+(71, 20, 2, '2026-06-23', '14:00:00', '17:00:00', 7),
+(72, 21, 2, '2026-06-24', '09:00:00', '12:00:00', 18),
+(73, 22, 2, '2026-06-25', '14:00:00', '16:00:00', 3),
+(74, 1, 2, '2026-06-29', '10:00:00', '13:00:00', 27),
+(75, 2, 2, '2026-06-30', '09:00:00', '11:00:00', 14),
+(76, 3, 2, '2026-07-01', '14:00:00', '17:00:00', 24),
+(77, 4, 2, '2026-07-06', '09:00:00', '12:00:00', 16),
+(78, 5, 2, '2026-07-07', '14:00:00', '16:00:00', 26),
+(79, 6, 2, '2026-07-08', '10:00:00', '12:00:00', 20),
+(80, 7, 2, '2026-07-14', '09:00:00', '12:00:00', 5),
+(81, 8, 2, '2026-07-15', '14:00:00', '17:00:00', 8);
 
 -- --------------------------------------------------------
 
@@ -188,7 +248,30 @@ INSERT INTO `docente_insegnamento` (`doc_ins_id`, `ins_corso_id`, `utente_id`, `
 (10, 9, 6, 'Primario'),
 (11, 3, 7, 'Primario'),
 (12, 10, 7, 'Primario'),
-(13, 22, 6, 'Primario');
+(13, 22, 6, 'Primario'),
+(14, 6, 9, 'Primario'),
+(15, 11, 10, 'Primario'),
+(16, 11, 11, 'Secondario'),
+(17, 12, 12, 'Primario'),
+(18, 12, 13, 'Secondario'),
+(19, 13, 14, 'Primario'),
+(20, 13, 15, 'Secondario'),
+(21, 14, 16, 'Primario'),
+(22, 14, 17, 'Secondario'),
+(23, 15, 18, 'Primario'),
+(24, 15, 6, 'Secondario'),
+(25, 16, 9, 'Primario'),
+(26, 16, 10, 'Secondario'),
+(27, 17, 11, 'Primario'),
+(28, 17, 12, 'Secondario'),
+(29, 18, 13, 'Primario'),
+(30, 18, 14, 'Secondario'),
+(31, 19, 15, 'Primario'),
+(32, 19, 16, 'Secondario'),
+(33, 20, 17, 'Primario'),
+(34, 20, 18, 'Secondario'),
+(35, 21, 6, 'Primario'),
+(36, 21, 7, 'Secondario');
 
 -- --------------------------------------------------------
 
@@ -424,7 +507,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('ZkYeY1iK5LiHZ2FTByMcKKaTfBVlP3RpLpU7Jwlv', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoic0YxSGtkNGRlWWZFVGNsUk5sWVNoQWpRcmd5UG5Hcmpua2U0QjduUyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDk6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMiO3M6NToicm91dGUiO3M6NToibG9naW4iO319', 1792360608);
+('jDeukLEBpx8pl7RozQ0UUWB2le1nWPwuDB67XvYL', 10, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiV25SVE1zSUwxdHhCUFJPejg1NWpLZ1FMV09VdWw5b3VDOGdERnFKWSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Njc6Imh0dHA6Ly9sb2NhbGhvc3QvZ2VzdGlvbmVEYXRlL2dlc3Rpb25lRGF0ZS9wdWJsaWMvZG9jZW50ZS9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MTc6ImRvY2VudGUuZGFzaGJvYXJkIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTA7fQ==', 1792368460);
 
 -- --------------------------------------------------------
 
@@ -467,7 +550,17 @@ INSERT INTO `utente` (`utente_id`, `username`, `password`, `nome`, `cognome`, `d
 (5, 'mrossi', '$2y$12$uvr8qflKSaq/FGrvDLOWb.7ft/2bT39yTm6iC3b25iriRpzZumCqi', 'Mario', 'Rossi', '1990-05-15', 'Amministratore'),
 (6, 'lverdi', '$2y$12$EH.XFqQ4XJrCQvaBaZRjOuwApRM39J7WdkYP1GfAagNUK3s.2yEvu', 'Luigi', 'Verdi', '1985-04-20', 'Docente'),
 (7, 'gmineiro', '$2y$12$UzKu2ajt5wImELwBZeWj4.bPCgUOa3f5vTmjBY9j4yLLaOy7zQr5u', 'Giuseppe', 'Mineiro', '1980-05-20', 'Docente'),
-(8, 'delPiero10', '$2y$12$.PPxW6dr5xHh0SiXWouxCujC4DEU2muClHi2xrUJksca7Kl1FamTC', 'Alessandro', 'Del Piero', '1974-11-09', 'Amministratore');
+(8, 'delPiero10', '$2y$12$.PPxW6dr5xHh0SiXWouxCujC4DEU2muClHi2xrUJksca7Kl1FamTC', 'Alessandro', 'Del Piero', '1974-11-09', 'Amministratore'),
+(9, 'mconti', '$2y$12$D2q1M.QC7CvrFLSJFZksNO9X0GbslSW60mHv7TocWc6mmf0kjfNx.', 'Matteo', 'Conti', '1983-02-11', 'Docente'),
+(10, 'smoretti', '$2y$12$fMHV.ElVnOq80BfOFez39uf8RTGAKSscdDBQupj7plRTekFB8hElW', 'Silvia', 'Moretti', '1978-05-24', 'Docente'),
+(11, 'abarbieri', '$2y$12$6ujbLAKq4f99XrfsHETjjecvvyGHAbl5mJmyMyNPSWZ6t0TZZDPuS', 'Andrea', 'Barbieri', '1981-11-09', 'Docente'),
+(12, 'vfontana', '$2y$12$A.4x.3fTo1HwOK5HFzMdG.JfJCDsF0Ep.7bq9DndABgGj1friiBaS', 'Valentina', 'Fontana', '1986-07-14', 'Docente'),
+(13, 'drinaldi', '$2y$12$6X1jpGMDsAl3Rh59UhN5IeR/DtvgNYEpbGK/BVsUx6ZwrH9DQx3yK', 'Davide', 'Rinaldi', '1975-01-30', 'Docente'),
+(14, 'cbellini', '$2y$12$MabJEXu.D/scaHUlU8zAw.nLifobipb3ZYY7A8czHUGnGyFua5kVS', 'Chiara', 'Bellini', '1991-09-05', 'Docente'),
+(15, 'sriva', '$2y$12$KzawBnv.oKl51NtctisVrugDGaeM1l2epNv4atlfJBegnVlKtYbCu', 'Stefano', 'Riva', '1984-04-18', 'Docente'),
+(16, 'mdeluca', '$2y$12$Fkr/H18UMxbNag/TnNg46uULaES36Z8AqjAbyYVUcJJCmS9US/icO', 'Martina', 'De Luca', '1989-12-03', 'Docente'),
+(17, 'lsantoro', '$2y$12$Twk7w8YBnZ8UOa88xbebPOTMUlRlSt4jwpl2rJYBlgzkHDer2NRZS', 'Luca', 'Santoro', '1980-08-21', 'Docente'),
+(18, 'sgalli', '$2y$12$6ImADmHK0icXl1fqXRUrbO3VO//AqJakad1166fHWwdbEcc0Auo0G', 'Sara', 'Galli', '1988-10-10', 'Docente');
 
 --
 -- Indici per le tabelle scaricate
@@ -606,7 +699,7 @@ ALTER TABLE `utente`
 -- AUTO_INCREMENT per la tabella `appello`
 --
 ALTER TABLE `appello`
-  MODIFY `appello_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `appello_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=82;
 
 --
 -- AUTO_INCREMENT per la tabella `aula`
@@ -624,7 +717,7 @@ ALTER TABLE `corso`
 -- AUTO_INCREMENT per la tabella `docente_insegnamento`
 --
 ALTER TABLE `docente_insegnamento`
-  MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `doc_ins_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT per la tabella `edificio`
@@ -678,7 +771,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT per la tabella `utente`
 --
 ALTER TABLE `utente`
-  MODIFY `utente_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `utente_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Limiti per le tabelle scaricate

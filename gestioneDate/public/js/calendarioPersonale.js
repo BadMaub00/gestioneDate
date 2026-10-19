@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderCalendar() {
         const weekDays = [];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 5; i++) { // Solo 5 giorni (Lun-Ven)
             const day = new Date(currentWeekStart);
             day.setDate(currentWeekStart.getDate() + i);
             weekDays.push(day);
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
         prevBtn.disabled = (currentWeekStart <= getMonday(sessioneInizio));
         nextBtn.disabled = (currentWeekStart >= getMonday(sessioneFine));
 
-        const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'];
 
         let html = `
             <div class="table-responsive">
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const inSession = (day >= sessioneInizio && day <= sessioneFine);
 
             html += `
-                <th style="width: 15%;" class="${isToday ? 'table-primary' : ''} ${!inSession ? 'bg-light text-muted opacity-50' : ''}">
+                <th style="width: 18%;" class="${isToday ? 'table-primary' : ''} ${!inSession ? 'bg-light text-muted opacity-50' : ''}">
                     <div class="fw-bold">${dayNames[index]}</div>
                     <small class="text-secondary">${formatShortDate(day)}</small>
                 </th>`;
@@ -127,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         const isCompact = (maxDuration === 1);
 
                         if (isCompact) {
-                            // Riquadro singolo (1 Ora): Edificio affiancato all'aula
                             html += `
                                 <div class="card border-0 shadow-sm bg-unibs text-white p-1.5 rounded-2 d-flex flex-column justify-content-center overflow-hidden" 
                                      style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.72rem; line-height: 1.15;" 
@@ -145,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
                                 </div>`;
                         } else {
-                            // Riquadro esteso (2+ Ore): Edificio a capo sotto l'aula
                             html += `
                                 <div class="card border-0 shadow-sm bg-unibs text-white p-2 rounded-2 d-flex flex-column justify-content-between overflow-hidden" 
                                      style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.80rem; line-height: 1.25;">

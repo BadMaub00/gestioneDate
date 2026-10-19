@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tempStart = new Date(currentWeekStart);
     while (tempStart <= endDateSession) {
         const tempEnd = new Date(tempStart);
-        tempEnd.setDate(tempEnd.getDate() + 5);
+        tempEnd.setDate(tempEnd.getDate() + 4); // +4 giorni: da Lunedì a Venerdì
         
         weeks.push({
             start: new Date(tempStart),
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let currentWeekIndex = 0;
-    const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+    const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'];
 
     function renderWeek(index) {
         if (weeks.length === 0) {
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNextWeek.disabled = (index === weeks.length - 1);
 
         const days = [];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 5; i++) { // Solo 5 giorni (Lun-Ven)
             const d = new Date(week.start);
             d.setDate(d.getDate() + i);
             days.push(d);
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         days.forEach((day, idx) => {
             html += `
-                <th style="width: 15%;">
+                <th style="width: 18%;">
                     <div class="fw-bold text-dark">${dayNames[idx]}</div>
                     <div class="small text-muted fw-normal">${formatDM(day)}</div>
                 </th>
@@ -164,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         if (appello.is_mio_appello) {
                             if (isCompact) {
-                                // Riquadro singolo (1 Ora): Edificio affiancato all'aula sulla stessa riga
                                 html += `
                                     <div class="p-1.5 text-start rounded-2 shadow-sm bg-warning-subtle border border-warning text-dark d-flex flex-column justify-content-center overflow-hidden" 
                                          style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.72rem; line-height: 1.15;" 
@@ -180,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </div>
                                 `;
                             } else {
-                                // Riquadro esteso (2+ Ore): Edificio a capo sotto l'aula
                                 html += `
                                     <div class="p-2 text-start rounded-3 shadow-sm bg-warning-subtle border border-warning text-dark d-flex flex-column justify-content-between overflow-hidden" 
                                          style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.80rem; line-height: 1.25;">
@@ -203,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         } else {
                             if (isCompact) {
-                                // Riquadro singolo Altri Appelli (1 Ora): Edificio affiancato all'aula
                                 html += `
                                     <div class="p-1.5 text-start rounded-2 shadow-sm text-white d-flex flex-column justify-content-center overflow-hidden" 
                                          style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.72rem; line-height: 1.15;" 
@@ -216,7 +213,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </div>
                                 `;
                             } else {
-                                // Riquadro esteso Altri Appelli (2+ Ore): Edificio a capo
                                 html += `
                                     <div class="p-2 text-start rounded-3 shadow-sm text-white d-flex flex-column justify-content-between overflow-hidden" 
                                          style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.80rem; line-height: 1.25;">
