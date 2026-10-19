@@ -63,6 +63,22 @@
                         Docente: Prof. {{ Auth::user()->nome }} {{ Auth::user()->cognome }}
                     </h1>
                 </div>
+                
+                <!-- Link Calendari -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <a href="{{ route('docente.selezionaSessione') }}" 
+                           class="btn btn-white text-unibs bg-white border-0 fw-bold py-3 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                            <i class="bi bi-calendar-check-fill me-2 fs-5"></i> CALENDARIO PERSONALE
+                        </a>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <a href="{{ route('docente.selezionaFiltriGenerale') }}" 
+                           class="btn btn-white text-unibs bg-white border-0 fw-bold py-3 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                            <i class="bi bi-calendar3 me-2 fs-5"></i> CALENDARIO GENERALE
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Card Tabella Insegnamenti -->
                 <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
@@ -145,21 +161,6 @@
                     </div>
                 </div>
 
-                <!-- Link Rapidi Inferiori -->
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <a href="{{ route('docente.selezionaSessione') }}" 
-                           class="btn btn-white text-unibs bg-white border-0 fw-bold py-3 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                            <i class="bi bi-calendar-check-fill me-2 fs-5"></i> CALENDARIO PERSONALE
-                        </a>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <a href="{{ route('docente.selezionaFiltriGenerale') }}" 
-                           class="btn btn-white text-unibs bg-white border-0 fw-bold py-3 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                            <i class="bi bi-calendar3 me-2 fs-5"></i> CALENDARIO GENERALE
-                        </a>
-                    </div>
-                </div>
 
             </div>
         </div>
