@@ -14,7 +14,7 @@ use App\Models\Insegnamento;
 use App\Models\Edificio;
 use App\Models\Aula;
 use Carbon\Carbon;
-//prova
+
 class adminController extends Controller
 {
     public function dashboard() {
@@ -348,5 +348,68 @@ class adminController extends Controller
         }
 
         return null;
+    }
+
+    // 1. Elenco di tutte le sessioni
+    public function index()
+    {
+        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        return view('admin.sessioni.index', compact('sessioni'));
+    }
+
+    // 2. Form per creare una nuova sessione
+    public function create()
+    {
+        return view('admin.sessioni.create');
+    }
+
+    // 3. Salvataggio nuova sessione
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'nome'           => 'required|string|max:150',
+            'data_inizio'    => 'required|date',
+            'data_fine'      => 'required|date|after_or_equal:data_inizio',
+            'anno'           => 'required|integer|min:2020|max:2100',
+            'numero_appelli' => 'required|integer|min:1|max:10',
+        ]);
+
+        Sessione::create($data);
+
+        return redirect()->route('sessioni.index')->with('success', 'Sessione d\'esame creata con successo!');
+    }
+
+    // 4. Form modifica sessione
+    public function edit($id)
+    {
+        $sessione = Sessione::findOrFail($id);
+        return view('admin.sessioni.edit', compact('sessione'));
+    }
+
+    // 5. Aggiornamento sessione
+    public function update(Request $request, $id)
+    {
+        $sessione = Sessione::findOrFail($id);
+
+        $data = $request->validate([
+            'nome'           => 'required|string|max:150',
+            'data_inizio'    => 'required|date',
+            'data_fine'      => 'required|date|after_or_equal:data_inizio',
+            'anno'           => 'required|integer|min:2020|max:2100',
+            'numero_appelli' => 'required|integer|min:1|max:10',
+        ]);
+
+        $sessione->update($data);
+
+        return redirect()->route('sessioni.index')->with('success', 'Sessione d\'esame aggiornata con successo!');
+    }
+
+    // 6. Eliminazione sessione
+    public function destroy($id)
+    {
+        $sessione = Sessione::findOrFail($id);
+        $sessione->delete();
+
+        return redirect()->route('sessioni.index')->with('success', 'Sessione d\'esame eliminata con successo!');
     }
 }

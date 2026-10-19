@@ -65,8 +65,8 @@
             </div>
         </nav>
 
-        <!-- Contenuto Principale con Larghezza Ridotta -->
-        <div class="container py-3" style="max-width: 900px;">
+        <!-- Contenuto Principale -->
+        <div class="container py-3">
 
             <?php if(session('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">

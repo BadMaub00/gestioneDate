@@ -18,30 +18,47 @@
         <script src="<?php echo e(asset('js/popper.min.js')); ?>"></script>
         <script src="<?php echo e(asset('js/bootstrap.min.js')); ?>"></script>
 
-        <!-- Navbar Istituzionale UniBS -->
+        <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
+                
+                <!-- Logo Università -->
                 <a class="navbar-brand py-0" href="#">
                     <img class="img-logo" src="<?php echo e(asset('images/unibsLogo.png')); ?>" alt="Unibs" style="max-height: 70px;">
                 </a>
 
-                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+                <!-- Toggler Mobile -->
+                <button class="navbar-toggler border-0 shadow-none" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#navbarSupportedContent" 
+                        aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" 
+                        aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
+                <!-- Menu di Navigazione -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
+                        <!-- Pulsante Home -->
                         <li class="nav-item">
                             <a class="btn btn-unibs btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" 
-                               href="<?php echo e(route('docente.dashboard')); ?>" style="width: 115px;">
+                               aria-current="page" 
+                               href="<?php echo e(route('docente.dashboard')); ?>"
+                               style="width: 115px;">
                                 <i class="bi bi-house-door-fill text-center me-2" style="width: 18px;"></i>
                                 <span>Home</span>
                             </a>
                         </li>
+
+                        <!-- Pulsante Logout -->
                         <li class="nav-item">
                             <form action="<?php echo e(route('logout')); ?>" method="POST" class="m-0">
                                 <?php echo csrf_field(); ?>
-                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
+                                <button type="submit" 
+                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
+                                        style="width: 115px;">
                                     <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
                                     <span>Logout</span>
                                 </button>
@@ -54,117 +71,107 @@
 
         <!-- Contenuto Principale -->
         <div class="py-3">
-            <div class="container px-md-4 px-lg-5">
-                
-                <!-- Intestazione Profilo Docente -->
-                <div class="mb-4 border-bottom border-2 border-unibs pb-2">
-                    <h1 class="h3 fw-bold text-unibs mb-1 d-flex align-items-center">
-                        <i class="bi bi-journal-bookmark-fill me-2 fs-3"></i>
-                        Docente: Prof. <?php echo e(Auth::user()->nome); ?> <?php echo e(Auth::user()->cognome); ?>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-xl-10">
+                        
+                        <!-- Titolo Intestazione Docente Dinamico -->
+                        <div class="mb-4">
+                            <h1 class="h3 fw-bold text-unibs mt-3 mb-2 d-flex align-items-center">
+                                <i class="bi bi-person-badge me-2"></i>Docente: Prof. <?php echo e(Auth::user()->nome); ?> <?php echo e(Auth::user()->cognome); ?>
 
-                    </h1>
-                </div>
-
-                <!-- Card Tabella Insegnamenti -->
-                <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
-                    <div class="card-header bg-unibs text-white py-3 px-4 border-0">
-                        <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                            <i class="bi bi-journal-text me-2 fs-5"></i> Gestione Insegnamenti e Appelli
-                        </h5>
-                    </div>
-
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
-                                <thead class="table-light border-bottom">
-                                    <tr>
-                                        <th class="py-3 ps-4 text-unibs fw-bold" style="width: 32%;">Insegnamento</th>
-                                        <th class="py-3 text-unibs fw-bold" style="width: 28%;">Corso di Studi</th>
-                                        <th class="py-3 text-unibs fw-bold" style="width: 15%;">Ruolo</th>
-                                        <th class="py-3 pe-4 text-center text-unibs fw-bold" style="width: 25%;">Azioni</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php $__empty_1 = true; $__currentLoopData = $insegnamentiCorsi; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $insC): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                        <tr>
-                                            <!-- Nome Insegnamento -->
-                                            <td class="py-3 ps-4 fw-bold text-dark">
-                                                <?php echo e($insC->insegnamento->nome); ?>
-
-                                            </td>
-
-                                            <!-- Corso di Studi -->
-                                            <td class="py-3 text-dark fw-medium">
-                                                <?php echo e($insC->corso->nome); ?>
-
-                                            </td>
-
-                                            <!-- Ruolo Docente -->
-                                            <td class="py-3 text-dark">
-                                                <span class="fw-semibold">
-                                                    <?php echo e($insC->ruolo_docente ?? 'Docente'); ?>
-
-                                                </span>
-                                            </td>
-
-                                            <!-- Pulsanti Azioni Circolari con Etichetta Sotto -->
-                                            <td class="py-3 pe-4 text-center text-nowrap">
-                                                <div class="d-inline-flex align-items-center justify-content-center gap-4">
-                                                    
-                                                    <!-- Pulsante Circular VISUALIZZA -->
-                                                    <a href="<?php echo e(route('docente.dettaglioInsegnamento', $insC->ins_corso_id)); ?>" 
-                                                       class="text-decoration-none d-flex flex-column align-items-center group"
-                                                       title="Visualizza Dettagli Insegnamento">
-                                                        <div class="bg-white text-unibs border border-2 border-unibs rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
-                                                             style="width: 38px; height: 38px;">
-                                                            <i class="bi bi-eye-fill fs-6"></i>
-                                                        </div>
-                                                        <span class="fw-bold text-unibs mt-1" style="font-size: 0.68rem; letter-spacing: 0.3px;">VISUALIZZA</span>
-                                                    </a>
-
-                                                    <!-- Pulsante Circular APPELLI -->
-                                                    <a href="<?php echo e(route('docente.appelliInsegnamento', $insC->ins_corso_id)); ?>" 
-                                                       class="text-decoration-none d-flex flex-column align-items-center group"
-                                                       title="Gestisci Appelli per questo Insegnamento">
-                                                        <div class="bg-white text-success border border-2 border-success rounded-circle p-0 d-flex align-items-center justify-content-center shadow-sm" 
-                                                             style="width: 38px; height: 38px;">
-                                                            <i class="bi bi-calendar-plus-fill fs-6"></i>
-                                                        </div>
-                                                        <span class="fw-bold text-success mt-1" style="font-size: 0.68rem; letter-spacing: 0.3px;">APPELLI</span>
-                                                    </a>
-
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                                        <tr>
-                                            <td colspan="4" class="text-center py-4 text-muted fw-medium">
-                                                <i class="bi bi-info-circle me-1 text-secondary"></i> Nessun insegnamento associato al tuo profilo.
-                                            </td>
-                                        </tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                            </h1>
+                            <hr class="border-unibs border-2 opacity-100 my-0">
                         </div>
+
+                        <!-- Card Gestione Insegnamenti -->
+                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+                            
+                            <!-- Intestazione Card Blu Istituzionale -->
+                            <div class="card-header bg-unibs text-white py-3 px-4 border-0">
+                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
+                                    <i class="bi bi-journal-bookmark-fill me-2 fs-4"></i> Gestione Insegnamenti e Appelli
+                                </h5>
+                            </div>
+
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped align-middle mb-0">
+                                        <thead class="table-light border-bottom">
+                                            <tr>
+                                                <th class="ps-4 py-3 text-unibs" style="width: 35%;">Insegnamento</th>
+                                                <th class="py-3 text-unibs" style="width: 25%;">Corso di Studi</th>
+                                                <th class="py-3 text-unibs" style="width: 20%;">Ruolo</th>
+                                                <th class="pe-4 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php $__empty_1 = true; $__currentLoopData = $insegnamentiCorsi; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $insC): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                                <tr>
+                                                    <!-- Nome Insegnamento -->
+                                                    <td class="ps-4 py-3 fw-bold text-dark" style="width: 35%;">
+                                                        <?php echo e($insC->insegnamento->nome); ?>
+
+                                                    </td>
+
+                                                    <!-- Nome Corso -->
+                                                    <td class="py-3 text-dark fw-medium" style="width: 25%;">
+                                                        <?php echo e($insC->corso->nome); ?>
+
+                                                    </td>
+
+                                                    <!-- Ruolo Docente (Testo Semplice) -->
+                                                    <td class="py-3 text-dark fw-medium" style="width: 20%;">
+                                                        <?php echo e($insC->ruolo_docente ?? 'Secondario'); ?>
+
+                                                    </td>
+
+                                                    <!-- Azioni -->
+                                                    <td class="text-end pe-4 py-3" style="width: 20%;">
+                                                        <div class="btn-group shadow-sm" role="group" aria-label="Azioni insegnamento">
+                                                            <a href="<?php echo e(route('docente.dettaglioInsegnamento', $insC->ins_corso_id)); ?>" 
+                                                               class="btn btn-unibs text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" 
+                                                               style="width: 90px;">
+                                                                <i class="bi bi-eye fs-5 mb-1"></i>
+                                                                <span style="font-size: 0.75rem;">VISUALIZZA</span>
+                                                            </a>
+                                                            <a href="#" class="btn btn-success text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
+                                                                <i class="bi bi-calendar-event fs-5 mb-1"></i>
+                                                                <span style="font-size: 0.75rem;">Appelli</span>
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                                <tr>
+                                                    <td colspan="4" class="text-center py-4 text-muted fw-bold">
+                                                        Nessun insegnamento associato a questo docente.
+                                                    </td>
+                                                </tr>
+                                            <?php endif; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottoni Calendari a tutta larghezza (50% ciascuno) -->
+                        <div class="row g-2 mt-3">
+                            <div class="col-12 col-md-6">
+                                <a href="<?php echo e(route('docente.selezionaSessione')); ?>" 
+                                   class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar-check-fill me-2 fs-6"></i>Calendario Personale
+                                </a>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <a href="<?php echo e(route('docente.selezionaFiltriGenerale')); ?>" class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
+                                    <i class="bi bi-calendar3 me-2 fs-6"></i>Calendario Generale
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
-                <!-- Link Rapidi Inferiori -->
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <a href="<?php echo e(route('docente.selezionaSessione')); ?>" 
-                           class="btn btn-white text-unibs bg-white border-0 fw-bold py-3 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                            <i class="bi bi-calendar-check-fill me-2 fs-5"></i> CALENDARIO PERSONALE
-                        </a>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <a href="<?php echo e(route('docente.selezionaFiltriGenerale')); ?>" 
-                           class="btn btn-white text-unibs bg-white border-0 fw-bold py-3 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                            <i class="bi bi-calendar3 me-2 fs-5"></i> CALENDARIO GENERALE
-                        </a>
-                    </div>
-                </div>
-
             </div>
         </div>
 
