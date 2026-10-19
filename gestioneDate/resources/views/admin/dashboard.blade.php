@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
     </head>
-    <body class="bg-light min-vh-100">
+    <body class="min-vh-100" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
@@ -74,8 +74,8 @@
         <div class="py-3">
             <div class="container">
                 <div class="row justify-content-center">
-                    <div class="col-12 col-xl-10">
-                        
+                    <div class="col-12 col-lg-10 col-xl-9">
+
                         <!-- Titolo Intestazione Amministratore Dinamico -->
                         <div class="mb-4">
                             <h1 class="h3 fw-bold text-unibs mt-3 mb-2 d-flex align-items-center">
@@ -84,75 +84,66 @@
                             <hr class="border-unibs border-2 opacity-100 my-0">
                         </div>
 
-                        <!-- Card Gestione Insegnamenti -->
-                        <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                            
-                            <!-- Intestazione Card Blu Istituzionale -->
-                            <div class="card-header bg-unibs text-white py-3 px-4 border-0">
-                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                                    <i class="bi bi-journal-bookmark-fill me-2 fs-4"></i> Gestione Sessioni
-                                </h5>
-                            </div>
+                        <!-- Riquadri (Centrati nello schermo e più ampi) -->
+                        <div class="mx-auto mb-5" style="max-width: 960px;">
+                            <div class="row g-3 justify-content-center">
 
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0">
-                                        <tbody>
-                                            @forelse($sessioni as $sessione)
-                                                <tr>
-                                                    <td class="ps-4 py-3 fw-bold text-dark" style="width: 35%;">
-                                                        {{ $sessione->nome }}
-                                                    </td>
-                                                    <td class="py-3 text-dark fw-medium" style="width: 25%;">
-                                                        {{ $sessione->anno }}
-                                                    </td>
-                                                    <td class="text-end pe-4 py-3" style="width: 40%;">
-                                                        <div class="d-inline-flex gap-2 align-items-center">
-                                                            <div class="btn-group shadow-sm" role="group" aria-label="Azioni sessione">
-                                                                <a href="{{ route('admin.calendario', $sessione->getKey()) }}" class="btn btn-unibs text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
-                                                                    <i class="bi bi-eye fs-5 mb-1"></i>
-                                                                    <span style="font-size: 0.75rem;">Visualizza</span>
-                                                                </a>
-                                                                <a href="{{ route('sessioni.edit', $sessione->getKey()) }}" class="btn btn-warning text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2" style="width: 90px;">
-                                                                    <i class="bi bi-pencil-square fs-5 mb-1"></i>
-                                                                    <span style="font-size: 0.75rem;">Modifica</span>
-                                                                </a>
-                                                            </div>
-                                                            <form action="{{ route('sessioni.destroy', $sessione->getKey()) }}" method="POST" class="m-0" onsubmit="return confirm('Eliminare la sessione {{ $sessione->nome }} {{ $sessione->anno }}?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="btn btn-danger text-white fw-semibold d-inline-flex flex-column align-items-center justify-content-center py-2 shadow-sm" style="width: 90px;">
-                                                                    <i class="bi bi-trash fs-5 mb-1"></i>
-                                                                    <span style="font-size: 0.75rem;">Elimina</span>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="3" class="text-center py-4 text-muted fw-bold">
-                                                        Nessuna sessione ancora programmata.
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                <!-- 1. Corsi -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.corsi.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">   
+                                        <i class="bi bi-mortarboard-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Corsi</span>
+                                    </a>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Bottoni Calendari a tutta larghezza (50% ciascuno) -->
-                        <div class="row g-2 mt-3">
-                            <div class="col-12 col-md-6">
-                                <a href="{{ route('sessioni.create') }}" class="btn btn-unibs text-white fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                                    <i class="bi bi-plus-circle-fill me-2 fs-6"></i>Nuova sessione
-                                </a>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <a href="{{ route('admin.calendario') }}" class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                                    <i class="bi bi-calendar3 me-2 fs-6"></i>Calendario generale
-                                </a>
+                                <!-- 2. Insegnamenti -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.insegnamenti.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-journal-bookmark-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Insegnamenti</span>
+                                    </a>
+                                </div>
+
+                                <!-- 3. Personale Universitario -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.personale.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Personale universitario</span>
+                                    </a>
+                                </div>
+
+                                <!-- 4. Associa -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.personale.associazioni') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Incarichi Docenti</span>
+                                    </a>
+                                </div>
+
+                                <!-- 5. Appelli -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.calendario') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-calendar-check text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Appelli</span>
+                                    </a>
+                                </div>
+
+                                <!-- 6. Sessioni -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('sessioni.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-calendar-range text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Sessioni</span>
+                                    </a>
+                                </div>
+
+                                <!-- 7. Sedi (Posizionato al centro della terza fila) -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.sedi.edifici') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-building text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Sedi</span>
+                                    </a>
+                                </div>
+
                             </div>
                         </div>
 

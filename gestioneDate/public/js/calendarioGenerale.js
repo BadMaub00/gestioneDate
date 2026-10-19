@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!calendarContainer) return;
 
-    // 1. Estrazione dati dagli attributi HTML
     const appelli = JSON.parse(calendarContainer.getAttribute('data-appelli') || '[]');
     const dataInizioStr = calendarContainer.getAttribute('data-inizio');
     const dataFineStr = calendarContainer.getAttribute('data-fine');
@@ -16,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Helper per conversione date senza problemi di fuso orario
     function parseLocalDate(dateStr) {
         const [year, month, day] = dateStr.split('-').map(Number);
         return new Date(year, month - 1, day);
@@ -29,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${y}-${m}-${d}`;
     }
 
-    // 2. Calcolo delle settimane da Lunedì a Sabato (6 giorni)
     const startDateSession = parseLocalDate(dataInizioStr);
     const endDateSession = parseLocalDate(dataFineStr);
 
@@ -46,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let tempStart = new Date(currentWeekStart);
     while (tempStart <= endDateSession) {
         const tempEnd = new Date(tempStart);
-        tempEnd.setDate(tempEnd.getDate() + 5); // Da Lunedì a Sabato
+        tempEnd.setDate(tempEnd.getDate() + 4); // +4 giorni: da Lunedì a Venerdì
         
         weeks.push({
             start: new Date(tempStart),
@@ -57,12 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let currentWeekIndex = 0;
+    const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'];
 
-    // Slot orari e giorni di lezione
-    const ore = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
-    const dayNames = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
-
-    // 3. Renderizzazione del Calendario a Griglia Oraria
     function renderWeek(index) {
         if (weeks.length === 0) {
             calendarContainer.innerHTML = `<div class="p-4 text-center text-muted">Nessuna settimana trovata per questa sessione.</div>`;
@@ -82,9 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         btnPrevWeek.disabled = (index === 0);
         btnNextWeek.disabled = (index === weeks.length - 1);
 
-        // Genera array dei 6 giorni (Lunedì -> Sabato)
         const days = [];
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 5; i++) { // Solo 5 giorni (Lun-Ven)
             const d = new Date(week.start);
             d.setDate(d.getDate() + i);
             days.push(d);
@@ -100,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         days.forEach((day, idx) => {
             html += `
-                <th style="width: 15%;">
+                <th style="width: 18%;">
                     <div class="fw-bold text-dark">${dayNames[idx]}</div>
                     <div class="small text-muted fw-normal">${formatDM(day)}</div>
                 </th>
@@ -113,65 +105,142 @@ document.addEventListener('DOMContentLoaded', () => {
                     <tbody>
         `;
 
-        ore.forEach(ora => {
+        const occupied = new Set();
+
+        for (let hour = 8; hour <= 18; hour++) {
+            const timeSlot = `${String(hour).padStart(2, '0')}:00`;
+
             html += `
                 <tr>
-                    <td class="fw-bold text-secondary bg-light small py-3">${ora}</td>
+                    <td class="fw-bold text-secondary bg-light small py-2 align-middle" style="height: 60px;">${timeSlot}</td>
             `;
 
             days.forEach(day => {
                 const dayYMD = formatDateToYMD(day);
+                const cellKey = `${dayYMD}_${hour}`;
 
-                // Trova gli appelli che iniziano in questa fascia oraria
+                if (occupied.has(cellKey)) {
+                    return;
+                }
+
                 const appelliSlot = appelli.filter(app => {
                     if (app.data !== dayYMD) return false;
-                    const oraInizioHH = app.ora_inizio.substring(0, 2);
-                    const oraSlotHH = ora.substring(0, 2);
-                    return oraInizioHH === oraSlotHH;
+                    const oraInizioHH = parseInt(app.ora_inizio.split(':')[0], 10);
+                    return oraInizioHH === hour;
                 });
 
-                html += `<td class="p-1 align-top" style="height: 65px; position: relative;">`;
+                if (appelliSlot.length > 0) {
+                    let maxDuration = 1;
 
-                appelliSlot.forEach(appello => {
-                    const oraInizio = appello.ora_inizio.substring(0, 5);
-                    const oraFine = appello.ora_fine.substring(0, 5);
-                    const docente = appello.docente_nome 
-                        ? `Prof. ${appello.docente_nome} ${appello.docente_cognome}` 
-                        : 'Non assegnato';
+                    appelliSlot.forEach(appello => {
+                        const hInizio = parseInt(appello.ora_inizio.split(':')[0], 10);
+                        let hFine = parseInt(appello.ora_fine.split(':')[0], 10);
+                        if (appello.ora_fine.includes(':') && parseInt(appello.ora_fine.split(':')[1], 10) > 0) {
+                            hFine += 1;
+                        }
+                        const duration = Math.max(1, hFine - hInizio);
+                        if (duration > maxDuration) maxDuration = duration;
+                    });
 
-                    if (appello.is_mio_appello) {
-                        // TUO INSEGNAMENTO: Giallo tenue (bg-warning-subtle) identico alla tabella
-                        html += `
-                            <div class="p-2 text-start rounded-3 shadow-sm bg-warning-subtle border border-warning text-dark mb-1" 
-                                 style="font-size: 0.82rem; line-height: 1.3;">
-                                <div class="fw-bold mb-1 d-flex justify-content-between align-items-center">
-                                    <span>${appello.nome_insegnamento}</span>
-                                    <i class="bi bi-star-fill text-warning ms-1" title="Tuo insegnamento"></i>
-                                </div>
-                                <div class="small text-dark fw-medium opacity-90"><i class="bi bi-clock me-1 text-muted"></i>${oraInizio} - ${oraFine}</div>
-                                <div class="small text-muted fst-italic mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
-                            </div>
-                        `;
-                    } else {
-                        // ALTRI INSEGNAMENTI: Blu scuro originale (#002b49)
-                        html += `
-                            <div class="p-2 text-start rounded-3 shadow-sm text-white mb-1" 
-                                 style="background-color: #002b49; font-size: 0.82rem; line-height: 1.3;">
-                                <div class="fw-bold mb-1">
-                                    ${appello.nome_insegnamento}
-                                </div>
-                                <div class="small opacity-90"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
-                                <div class="small opacity-90 fst-italic mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
-                            </div>
-                        `;
+                    for (let d = 1; d < maxDuration; d++) {
+                        if (hour + d <= 18) {
+                            occupied.add(`${dayYMD}_${hour + d}`);
+                        }
                     }
-                });
 
-                html += `</td>`;
+                    html += `<td rowspan="${maxDuration}" class="p-1 align-top" style="position: relative;">`;
+
+                    appelliSlot.forEach(appello => {
+                        const oraInizio = appello.ora_inizio.substring(0, 5);
+                        const oraFine = appello.ora_fine.substring(0, 5);
+                        const docente = appello.docente_nome 
+                            ? `Prof. ${appello.docente_nome} ${appello.docente_cognome}` 
+                            : 'Non assegnato';
+                        
+                        const aulaStr = appello.nome_aula || 'Aula N/D';
+                        const edificioStr = appello.nome_edificio || 'Edificio N/D';
+
+                        const isCompact = (maxDuration === 1);
+
+                        if (appello.is_mio_appello) {
+                            if (isCompact) {
+                                html += `
+                                    <div class="p-1.5 text-start rounded-2 shadow-sm bg-warning-subtle border border-warning text-dark d-flex flex-column justify-content-center overflow-hidden" 
+                                         style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.72rem; line-height: 1.15;" 
+                                         title="${appello.nome_insegnamento} - ${aulaStr} (${edificioStr})">
+                                        <div class="fw-bold text-truncate d-flex justify-content-between align-items-center">
+                                            <span class="text-truncate">${appello.nome_insegnamento}</span>
+                                            <i class="bi bi-star-fill text-warning ms-1" style="font-size: 0.65rem;"></i>
+                                        </div>
+                                        <div class="opacity-90 text-truncate"><i class="bi bi-clock me-1 text-muted"></i>${oraInizio} - ${oraFine}</div>
+                                        <div class="text-truncate fw-bold text-unibs mt-0.5" style="font-size: 0.70rem;">
+                                            <i class="bi bi-geo-alt-fill me-1"></i>${aulaStr} <span class="fw-normal text-muted">(${edificioStr})</span>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                html += `
+                                    <div class="p-2 text-start rounded-3 shadow-sm bg-warning-subtle border border-warning text-dark d-flex flex-column justify-content-between overflow-hidden" 
+                                         style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; font-size: 0.80rem; line-height: 1.25;">
+                                        <div>
+                                            <div class="fw-bold mb-1 d-flex justify-content-between align-items-center text-truncate">
+                                                <span class="text-truncate">${appello.nome_insegnamento}</span>
+                                                <i class="bi bi-star-fill text-warning ms-1" title="Tuo insegnamento"></i>
+                                            </div>
+                                            <div class="small text-dark fw-medium opacity-90"><i class="bi bi-clock me-1 text-muted"></i>${oraInizio} - ${oraFine}</div>
+                                            <div class="small fw-bold text-unibs text-truncate mt-1" title="${aulaStr}">
+                                                <i class="bi bi-geo-alt-fill me-1"></i>${aulaStr}
+                                            </div>
+                                            <div class="small text-muted fw-normal text-truncate" style="font-size: 0.72rem;" title="${edificioStr}">
+                                                ${edificioStr}
+                                            </div>
+                                        </div>
+                                        <div class="small text-muted fst-italic text-truncate mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
+                                    </div>
+                                `;
+                            }
+                        } else {
+                            if (isCompact) {
+                                html += `
+                                    <div class="p-1.5 text-start rounded-2 shadow-sm text-white d-flex flex-column justify-content-center overflow-hidden" 
+                                         style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.72rem; line-height: 1.15;" 
+                                         title="${appello.nome_insegnamento} - ${aulaStr} (${edificioStr})">
+                                        <div class="fw-bold text-truncate">${appello.nome_insegnamento}</div>
+                                        <div class="opacity-90 text-truncate"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
+                                        <div class="text-truncate fw-semibold text-white-50 mt-0.5" style="font-size: 0.70rem;">
+                                            <i class="bi bi-geo-alt-fill me-1 text-white"></i><strong class="text-white">${aulaStr}</strong> (${edificioStr})
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                html += `
+                                    <div class="p-2 text-start rounded-3 shadow-sm text-white d-flex flex-column justify-content-between overflow-hidden" 
+                                         style="position: absolute; top: 4px; bottom: 4px; left: 4px; right: 4px; background-color: #002b49; font-size: 0.80rem; line-height: 1.25;">
+                                        <div>
+                                            <div class="fw-bold mb-1 text-truncate">${appello.nome_insegnamento}</div>
+                                            <div class="small opacity-90"><i class="bi bi-clock me-1"></i>${oraInizio} - ${oraFine}</div>
+                                            <div class="small fw-bold text-white text-truncate mt-1" title="${aulaStr}">
+                                                <i class="bi bi-geo-alt-fill me-1 text-white"></i>${aulaStr}
+                                            </div>
+                                            <div class="small text-white-50 fw-normal text-truncate" style="font-size: 0.72rem;" title="${edificioStr}">
+                                                ${edificioStr}
+                                            </div>
+                                        </div>
+                                        <div class="small opacity-90 fst-italic text-truncate mt-1"><i class="bi bi-person me-1"></i>${docente}</div>
+                                    </div>
+                                `;
+                            }
+                        }
+                    });
+
+                    html += `</td>`;
+                } else {
+                    html += `<td class="p-1 align-top" style="height: 60px;"></td>`;
+                }
             });
 
             html += `</tr>`;
-        });
+        }
 
         html += `
                     </tbody>
@@ -182,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
         calendarContainer.innerHTML = html;
     }
 
-    // 4. Navigazione tra le settimane
     btnPrevWeek.addEventListener('click', () => {
         if (currentWeekIndex > 0) {
             currentWeekIndex--;

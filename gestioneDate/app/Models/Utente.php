@@ -11,6 +11,8 @@ class Utente extends Authenticatable
     protected $fillable = ['username','password','nome','cognome','data_nascita','ruolo'];
     protected $hidden = ['password'];
 
+    public $timestamps = false;
+
     public function incarichi()
     {
         return $this->hasMany(DocenteInsegnamento::class, 'utente_id', 'utente_id');
