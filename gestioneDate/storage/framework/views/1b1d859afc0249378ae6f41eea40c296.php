@@ -103,10 +103,10 @@
                 </a>
             </div>
 
-            <!-- Tabella Associazioni -->
+            <!-- Tabella Associazioni Raggruppate per Corso -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0">
                         <thead class="bg-white border-bottom">
                             <tr>
                                 <th class="py-3 px-4 text-dark fw-bold">Docente</th>
@@ -117,54 +117,76 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $__empty_1 = true; $__currentLoopData = $associazioni; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $assoc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                                <tr>
-                                    <td class="py-3 px-4 fw-bold text-dark">
-                                        <?php echo e($assoc->docente->cognome ?? ''); ?> <?php echo e($assoc->docente->nome ?? 'N/D'); ?>
+                            <?php if($associazioniGrouped->isNotEmpty()): ?>
+                                <?php $__currentLoopData = $associazioniGrouped; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $corsoNome => $associazioni): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <!-- Intestazione Gruppo Corso -->
+                                    <tr class="table-light">
+                                        <td colspan="5" class="py-2 px-4 fw-bold text-unibs border-top border-bottom">
+                                            <i class="bi bi-journal-bookmark-fill me-2"></i><?php echo e($corsoNome); ?>
 
-                                    </td>
-                                    <td class="py-3 px-4 fw-semibold text-dark">
-                                        <?php echo e($assoc->insegnamentiCorso->insegnamento->nome ?? 'N/D'); ?>
+                                        </td>
+                                    </tr>
 
-                                    </td>
-                                    <td class="py-3 px-4 text-dark">
-                                        <?php echo e($assoc->insegnamentiCorso->corso->nome ?? 'N/D'); ?>
+                                    <!-- Righe Associazioni del Corso -->
+                                    <?php $__currentLoopData = $associazioni; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $assoc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <tr>
+                                            <!-- Docente (Cognome e Nome) -->
+                                            <td class="py-3 px-4 fw-bold text-dark">
+                                                <?php echo e($assoc->docente->cognome ?? ''); ?> <?php echo e($assoc->docente->nome ?? 'N/D'); ?>
 
-                                    </td>
-                                    <td class="py-3 px-4 text-center">
-                                        <span class="badge border border-unibs text-unibs bg-transparent rounded-pill py-2 fw-bold d-inline-block" style="width: 135px;">
-                                            <?php echo e($assoc->ruolo); ?>
+                                            </td>
 
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-4 text-center text-nowrap">
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <!-- Tasto Modifica -->
-                                            <a href="#" 
-                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                               style="width: 36px; height: 36px;" 
-                                               title="Modifica Associazione">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
+                                            <!-- Insegnamento -->
+                                            <td class="py-3 px-4 fw-semibold text-dark">
+                                                <?php echo e($assoc->insegnamentiCorso->insegnamento->nome ?? 'N/D'); ?>
 
-                                            <!-- Tasto Elimina -->
-                                            <form action="#" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler rimuovere questa associazione?');" 
-                                                  class="d-inline m-0">
-                                                <?php echo csrf_field(); ?>
-                                                <?php echo method_field('DELETE'); ?>
-                                                <button type="submit" 
-                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                                        style="width: 36px; height: 36px;" 
-                                                        title="Rimuovi Associazione">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                                            </td>
+
+                                            <!-- Corso di Laurea -->
+                                            <td class="py-3 px-4 text-dark">
+                                                <?php echo e($assoc->insegnamentiCorso->corso->nome ?? 'N/D'); ?>
+
+                                            </td>
+
+                                            <!-- Ruolo -->
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="badge border border-unibs text-unibs bg-transparent rounded-pill py-2 fw-bold d-inline-block" style="width: 135px;">
+                                                    <?php echo e($assoc->ruolo); ?>
+
+                                                </span>
+                                            </td>
+
+                                            <!-- Azioni -->
+                                            <td class="py-3 px-4 text-center text-nowrap">
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <!-- Tasto Modifica -->
+                                                    <a href="#" 
+                                                    class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                    style="width: 36px; height: 36px;" 
+                                                    title="Modifica Associazione">
+                                                        <i class="bi bi-pencil-fill"></i>
+                                                    </a>
+
+                                                    <!-- Tasto Elimina -->
+                                                    <form action="#" 
+                                                        method="POST" 
+                                                        onsubmit="return confirm('Sei sicuro di voler rimuovere questa associazione?');" 
+                                                        class="d-inline m-0">
+                                                        <?php echo csrf_field(); ?>
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <button type="submit" 
+                                                                class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                                style="width: 36px; height: 36px;" 
+                                                                title="Rimuovi Associazione">
+                                                            <i class="bi bi-trash-fill"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php else: ?>
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-5 fs-6">
                                         <i class="bi bi-people fs-3 d-block mb-2 text-secondary"></i>

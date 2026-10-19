@@ -26,6 +26,16 @@
                     <img class="img-logo" src="<?php echo e(asset('images/unibsLogo.png')); ?>" alt="Unibs" style="max-height: 70px;">
                 </a>
 
+                <button class="navbar-toggler border-0 shadow-none" 
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#navbarSupportedContent" 
+                        aria-controls="navbarSupportedContent" 
+                        aria-expanded="false" 
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
                         <li class="nav-item">
@@ -62,26 +72,25 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Titolo e Tasto Torna alla Dashboard -->
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-2">
+            <!-- Intestazione -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
                     <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                         <i class="bi bi-calendar-range me-2"></i>Gestione Sessioni d'Esame
                     </h1>
                     <p class="text-muted small m-0 mt-1">Elenco e gestione delle sessioni d'esame registrate nel sistema</p>
                 </div>
-
-                <a href="<?php echo e(route('admin.dashboard')); ?>" class="btn btn-unibs text-white fw-bold text-uppercase rounded-pill px-4 py-2 shadow-sm">
-                    <i class="bi bi-arrow-left me-2"></i>Torna alla Dashboard
+                <a href="<?php echo e(route('admin.dashboard')); ?>" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
                 </a>
             </div>
 
             <hr class="border-unibs border-2 opacity-100 mb-4">
 
-            <!-- Pulsante Principale Aggiungi Sessione (Full Width) -->
+            <!-- Pulsante Aggiungi Sessione -->
             <div class="mb-4">
-                <a href="<?php echo e(route('sessioni.create')); ?>" class="btn btn-unibs text-white fw-bold text-uppercase w-100 py-3 rounded-3 shadow-sm d-flex align-items-center justify-content-center fs-5">
-                    <i class="bi bi-plus-lg me-2"></i>Aggiungi Sessione
+                <a href="<?php echo e(route('sessioni.create')); ?>" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                    <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Sessione
                 </a>
             </div>
 
@@ -111,24 +120,27 @@
                                         <?php echo e($s->numero_appelli); ?>
 
                                     </td>
-                                    <td class="py-3 px-4 text-center">
-                                        <div class="d-inline-flex gap-2">
+                                    <td class="py-3 px-4 text-center text-nowrap">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <!-- Tasto Modifica -->
                                             <a href="<?php echo e(route('sessioni.edit', $s->sessione_id)); ?>" 
-                                               class="btn btn-sm btn-outline-primary rounded-circle d-flex align-items-center justify-content-center" 
-                                               title="Modifica Sessione" 
-                                               style="width: 36px; height: 36px;">
+                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                               style="width: 36px; height: 36px;" 
+                                               title="Modifica Sessione">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
+
+                                            <!-- Tasto Elimina -->
                                             <form action="<?php echo e(route('sessioni.destroy', $s->sessione_id)); ?>" 
                                                   method="POST" 
-                                                  class="d-inline" 
+                                                  class="d-inline m-0" 
                                                   onsubmit="return confirm('Sei sicuro di voler eliminare questa sessione?');">
                                                 <?php echo csrf_field(); ?>
                                                 <?php echo method_field('DELETE'); ?>
                                                 <button type="submit" 
-                                                        class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center" 
-                                                        title="Elimina Sessione" 
-                                                        style="width: 36px; height: 36px;">
+                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                        style="width: 36px; height: 36px;" 
+                                                        title="Elimina Sessione">
                                                     <i class="bi bi-trash-fill"></i>
                                                 </button>
                                             </form>

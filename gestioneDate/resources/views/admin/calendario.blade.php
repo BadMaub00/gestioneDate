@@ -146,7 +146,6 @@
                         <thead class="bg-white border-bottom">
                             <tr>
                                 <th class="py-3 px-4 text-dark fw-bold">Insegnamento</th>
-                                <th class="py-3 px-4 text-dark fw-bold">Anno di corso</th>
                                 <th class="py-3 px-4 text-center text-dark fw-bold">Data e Orario</th>
                                 <th class="py-3 px-4 text-center text-dark fw-bold">Sede</th>
                                 <th class="py-3 px-4 text-center text-dark fw-bold">Azioni</th>
@@ -157,7 +156,7 @@
                                 @foreach($appelliGrouped as $anno => $appelli)
                                     <!-- Intestazione Gruppo Anno di Corso -->
                                     <tr class="table-light">
-                                        <td colspan="5" class="py-2 px-4 fw-bold text-unibs border-top border-bottom">
+                                        <td colspan="4" class="py-2 px-4 fw-bold text-unibs border-top border-bottom">
                                             <i class="bi bi-mortarboard-fill me-2"></i>
                                             @if(is_numeric($anno))
                                                 {{ $anno }}° Anno
@@ -175,11 +174,6 @@
                                                 {{ $appello->insegnamentoCorso->insegnamento->nome ?? 'N/D' }}
                                             </td>
 
-                                            <!-- Anno di Corso -->
-                                            <td class="py-3 px-4 text-dark">
-                                                {{ $appello->insegnamentoCorso->anno_di_corso ? $appello->insegnamentoCorso->anno_di_corso . '° Anno' : 'N/D' }}
-                                            </td>
-
                                             <!-- Data e Orario in Badge -->
                                             <td class="py-3 px-4 text-center text-nowrap">
                                                 <span class="badge border border-unibs text-unibs bg-transparent px-3 py-2 rounded-3 fw-bold d-inline-block text-start">
@@ -189,7 +183,7 @@
                                                 </span>
                                             </td>
 
-                                            <!-- Sede (Edificio e Aula in Badge Stile Identico) -->
+                                            <!-- Sede (Edificio e Aula in Badge) -->
                                             <td class="py-3 px-4 text-center text-nowrap">
                                                 @if($appello->aula)
                                                     <span class="badge border border-unibs text-unibs bg-transparent px-3 py-2 rounded-3 fw-bold d-inline-block text-start">
@@ -234,7 +228,7 @@
                                 @endforeach
                             @else
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted py-5 fs-6">
+                                    <td colspan="4" class="text-center text-muted py-5 fs-6">
                                         <i class="bi bi-calendar-x fs-3 d-block mb-2 text-secondary"></i>
                                         @if($sessione_id && $corso_id)
                                             Nessun appello fissato per la sessione ed il corso selezionati.

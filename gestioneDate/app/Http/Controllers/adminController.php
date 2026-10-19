@@ -77,24 +77,22 @@ class adminController extends Controller
     }
 
     public function indexAssociazioni() {
-    $associazioniGrouped = DocenteInsegnamento::with([
-        'docente', 
-        'insegnamentiCorso.insegnamento', 
-        'insegnamentiCorso.corso'
-    ])
-    ->get()
-    // Ordina per Corso (A-Z), poi per Cognome Docente (A-Z) e infine Nome Docente
-    ->sortBy([
-        fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->nome ?? '', $b->insegnamentiCorso->corso->nome ?? ''),
-        fn ($a, $b) => strcmp($a->docente->cognome ?? '', $b->docente->cognome ?? ''),
-        fn ($a, $b) => strcmp($a->docente->nome ?? '', $b->docente->nome ?? ''),
-    ])
-    // Raggruppa per Nome del Corso di Laurea
-    ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso->nome ?? 'N/D')
-    ->sortKeys(); // Ordina le chiavi dei corsi in ordine alfabetico
+        $associazioniGrouped = DocenteInsegnamento::with([
+            'docente', 
+            'insegnamentiCorso.insegnamento', 
+            'insegnamentiCorso.corso'
+        ])
+        ->get()
+        ->sortBy([
+            fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->nome ?? '', $b->insegnamentiCorso->corso->nome ?? ''),
+            fn ($a, $b) => strcmp($a->docente->cognome ?? '', $b->docente->cognome ?? ''),
+            fn ($a, $b) => strcmp($a->docente->nome ?? '', $b->docente->nome ?? ''),
+        ])
+        ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso->nome ?? 'N/D')
+        ->sortKeys();
 
-    return view('admin.personale.associazioni_index', compact('associazioniGrouped'));
-}
+        return view('admin.personale.associazioni_index', compact('associazioniGrouped'));
+    }
 
     public function storeAssociazioneDocente(Request $request) {
         $validated = $request->validate([
