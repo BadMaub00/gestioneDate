@@ -1,0 +1,63 @@
+/* Sfondo personalizzato per la dashboard docente */
+body.bg-dashboard {
+    background-color: #f0f4f8 !important;
+}
+
+/* Palette Istituzionale UniBS */
+.bg-unibs { 
+    background-color: #003366 !important; 
+}
+
+.border-unibs { 
+    border-color: #003366 !important; 
+}
+
+.text-unibs { 
+    color: #003366 !important; 
+}
+
+.btn-unibs { 
+    background-color: #003366; 
+    color: #ffffff; 
+    border-color: #003366; 
+}
+
+.btn-unibs:hover,
+.btn-unibs:focus { 
+    background-color: #002244; 
+    color: #ffffff; 
+    border-color: #002244;
+}
+
+/* Bottone Outline UniBS */
+.btn-outline-unibs {
+    color: #003366;
+    border-color: #003366;
+    background-color: #ffffff;
+}
+
+.btn-outline-unibs:hover,
+.btn-outline-unibs:focus {
+    color: #ffffff;
+    background-color: #003366;
+    border-color: #003366;
+}
+
+/* Evidenziazione Docente Loggato nelle Tabelle */
+.tr-docente-attivo, 
+.tr-docente-attivo > td {
+    background-color: #d0e2f4 !important;
+}
+
+/* Card metriche d'insegnamento */
+.info-metric-card {
+    background-color: #ffffff;
+    border: 1px solid #cce0f0;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.info-metric-card:hover {
+    border-color: #003366;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 51, 102, 0.08);
+}

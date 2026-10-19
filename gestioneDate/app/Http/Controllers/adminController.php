@@ -405,6 +405,7 @@ class adminController extends Controller
     }
 
     // 6. Eliminazione sessione
+    //elimina una sessione e tutti gli appelli associati
     public function destroy($id)
     {
         $sessione = Sessione::findOrFail($id);
