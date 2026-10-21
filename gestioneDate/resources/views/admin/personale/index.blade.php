@@ -128,7 +128,7 @@
                                     <td class="py-3 px-4 text-center text-nowrap">
                                         <div class="d-flex justify-content-center gap-2">
                                             <!-- Pulsante Circolare Modifica -->
-                                            <a href="#" class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Modifica Utente">
+                                            <a href="{{ route('admin.personale.edit', $p->utente_id) }}" class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Modifica Utente">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 

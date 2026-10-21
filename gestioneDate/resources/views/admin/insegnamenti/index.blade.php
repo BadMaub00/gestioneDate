@@ -123,7 +123,7 @@
                                     <td class="py-3 px-4 text-center text-nowrap">
                                         <div class="d-flex justify-content-center gap-2">
                                             <!-- Modifica -->
-                                            <a href="#" 
+                                            <a href="{{ route('admin.insegnamenti.edit', $insegnamento->insegnamento_id) }}" 
                                                class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
                                                style="width: 36px; height: 36px;" 
                                                title="Modifica Insegnamento">

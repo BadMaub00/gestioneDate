@@ -119,7 +119,7 @@
                                         
                                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
                                             <!-- Tasto Modifica -->
-                                            <a href="#" 
+                                            <a href="<?php echo e(route('admin.corsi.edit', $corso->corso_id)); ?>" 
                                                class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
                                                style="width: 36px; height: 36px;" 
                                                title="Modifica Corso">
