@@ -63,6 +63,8 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/corsi/crea', [adminController::class, 'createCorso'])->name('admin.corsi.create');
     Route::post('/corsi', [adminController::class, 'storeCorso'])->name('admin.corsi.store');
     Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.piano_di_studi');
+    Route::get('/corsi/{corso_id}/modifica', [adminController::class, 'editCorso'])->name('admin.corsi.edit');
+    Route::put('/corsi/{corso_id}', [adminController::class, 'updateCorso'])->name('admin.corsi.update');
     
     // Gestione Insegnamenti del Piano di Studi
     Route::get('/corsi/{corso_id}/insegnamenti/crea', [adminController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
@@ -74,6 +76,8 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/personale/crea', [adminController::class, 'createPersonale'])->name('admin.personale.create');
     Route::post('/personale', [adminController::class, 'storePersonale'])->name('admin.personale.store');
     Route::delete('/personale/{id}', [adminController::class, 'destroyPersonale'])->name('admin.personale.destroy');
+    Route::get('/personale/{id}/modifica', [adminController::class, 'editPersonale'])->name('admin.personale.edit');
+    Route::put('/personale/{id}', [adminController::class, 'updatePersonale'])->name('admin.personale.update');
 
     Route::get('/personale/associazioni', [adminController::class, 'indexAssociazioni'])->name('admin.personale.associazioni_index');
     Route::get('/personale/associa', [adminController::class, 'createAssociazioneDocente'])->name('admin.personale.associa');
@@ -93,6 +97,8 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/insegnamenti/crea', [adminController::class, 'createInsegnamento'])->name('admin.insegnamenti.create');
     Route::post('/insegnamenti', [adminController::class, 'storeInsegnamento'])->name('admin.insegnamenti.store');
     Route::delete('/insegnamenti/{insegnamento_id}', [adminController::class, 'destroyInsegnamento'])->name('admin.insegnamenti.destroy');
+    Route::get('/insegnamenti/{insegnamento_id}/modifica', [adminController::class, 'editInsegnamento'])->name('admin.insegnamenti.edit');
+    Route::put('/insegnamenti/{insegnamento_id}', [adminController::class, 'updateInsegnamento'])->name('admin.insegnamenti.update');
 
     // 7. Gestione Sessioni d'Esame (admin/sessioni)
     Route::get('/sessioni', [sessioneController::class, 'index'])->name('admin.sessioni.index');

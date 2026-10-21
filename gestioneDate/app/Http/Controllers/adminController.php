@@ -67,6 +67,34 @@ class adminController extends Controller
         return redirect()->route('admin.personale.index')->with('success', 'Membro del personale eliminato con successo!');
     }
 
+    public function editPersonale($id) {
+        $utente = Utente::findOrFail($id);
+        return view('admin.personale.edit', compact('utente'));
+    }
+
+    public function updatePersonale(Request $request, $id) {
+        $utente = Utente::findOrFail($id);
+
+        $validated = $request->validate([
+            'username'     => 'required|string|max:100|unique:utente,username,' . $id . ',utente_id',
+            'nome'         => 'required|string|max:100',
+            'cognome'      => 'required|string|max:100',
+            'data_nascita' => 'required|date',
+            'ruolo'        => 'required|in:Docente,Amministratore',
+            'password'     => 'nullable|string|min:6',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $utente->update($validated);
+
+        return redirect()->route('admin.personale.index')->with('success', 'Membro del personale aggiornato con successo!');
+    }
+
     // --- ASSOCIAZIONI DOCENTE ---
 
     public function createAssociazioneDocente() {
@@ -275,6 +303,23 @@ class adminController extends Controller
         return redirect()->back()->with('success', 'Insegnamento eliminato con successo.');
     }
 
+    public function editInsegnamento($insegnamento_id) {
+        $insegnamento = Insegnamento::findOrFail($insegnamento_id);
+        return view('admin.insegnamenti.edit', compact('insegnamento'));
+    }
+
+    public function updateInsegnamento(Request $request, $insegnamento_id) {
+        $insegnamento = Insegnamento::findOrFail($insegnamento_id);
+
+        $validated = $request->validate([
+            'nome' => 'required|string|max:150|unique:insegnamento,nome,' . $insegnamento_id . ',insegnamento_id',
+        ]);
+
+        $insegnamento->update($validated);
+
+        return redirect()->route('admin.insegnamenti.index')->with('success', 'Insegnamento aggiornato con successo!');
+    }
+
     public function createCorso() {
         return view('admin.corsi.create');
     }
@@ -318,6 +363,24 @@ class adminController extends Controller
 
         return redirect()->route('admin.corsi.pianoDiStudi', $corso_id)
             ->with('success', 'Insegnamento aggiunto al piano di studi con successo!');
+    }
+
+    public function editCorso($corso_id) {
+        $corso = Corso::findOrFail($corso_id);
+        return view('admin.corsi.edit', compact('corso'));
+    }
+
+    public function updateCorso(Request $request, $corso_id) {
+        $corso = Corso::findOrFail($corso_id);
+
+        $validated = $request->validate([
+            'nome'       => 'required|string|max:150',
+            'tipo_corso' => 'required|in:Triennale,Magistrale,Magistrale a ciclo unico',
+        ]);
+
+        $corso->update($validated);
+
+        return redirect()->route('admin.corsi.index')->with('success', 'Corso di laurea aggiornato con successo!');
     }
 
     // --- CALENDARIO ---
