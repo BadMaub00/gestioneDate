@@ -81,6 +81,13 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <!-- Intestazione e Pulsante Torna alla Dashboard -->
             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
                 <div>
@@ -168,6 +175,11 @@
 
                                     <!-- Riga Singolo Appello -->
                                     @foreach($appelli as $appello)
+                                        @php
+                                            // Verifica se la sessione a cui appartiene l'appello è passata
+                                            $sessioneAppello = $appello->sessione;
+                                            $isPassata = $sessioneAppello ? \Carbon\Carbon::parse($sessioneAppello->data_fine)->lt(\Carbon\Carbon::today()) : false;
+                                        @endphp
                                         <tr>
                                             <!-- Insegnamento -->
                                             <td class="py-3 px-4 fw-semibold text-dark">
@@ -199,28 +211,48 @@
                                             <!-- Pulsanti Azione -->
                                             <td class="py-3 px-4 text-center text-nowrap">
                                                 <div class="d-flex justify-content-center gap-2">
-                                                    <!-- Modifica -->
-                                                    <a href="{{ route('admin.appelli.edit', $appello->getKey()) }}" 
-                                                       class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                                       style="width: 36px; height: 36px;" 
-                                                       title="Modifica Appello">
-                                                        <i class="bi bi-pencil-fill"></i>
-                                                    </a>
-
-                                                    <!-- Elimina -->
-                                                    <form action="{{ route('admin.appelli.destroy', $appello->getKey()) }}" 
-                                                          method="POST" 
-                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');" 
-                                                          class="d-inline m-0">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" 
-                                                                class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                    @if($isPassata)
+                                                        <!-- Modifica Disabilitata -->
+                                                        <button type="button" 
+                                                                class="btn bg-white border border-secondary text-secondary rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center opacity-50" 
                                                                 style="width: 36px; height: 36px;" 
-                                                                title="Elimina Appello">
+                                                                disabled 
+                                                                title="Non è possibile modificare appelli di sessioni passate">
+                                                            <i class="bi bi-pencil-fill"></i>
+                                                        </button>
+
+                                                        <!-- Elimina Disabilitato -->
+                                                        <button type="button" 
+                                                                class="btn bg-white border border-secondary text-secondary rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center opacity-50" 
+                                                                style="width: 36px; height: 36px;" 
+                                                                disabled 
+                                                                title="Non è possibile eliminare appelli di sessioni passate">
                                                             <i class="bi bi-trash-fill"></i>
                                                         </button>
-                                                    </form>
+                                                    @else
+                                                        <!-- Modifica Attiva -->
+                                                        <a href="{{ route('admin.appelli.edit', $appello->getKey()) }}" 
+                                                           class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                           style="width: 36px; height: 36px;" 
+                                                           title="Modifica Appello">
+                                                            <i class="bi bi-pencil-fill"></i>
+                                                        </a>
+
+                                                        <!-- Elimina Attivo -->
+                                                        <form action="{{ route('admin.appelli.destroy', $appello->getKey()) }}" 
+                                                              method="POST" 
+                                                              onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');" 
+                                                              class="d-inline m-0">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" 
+                                                                    class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                                    style="width: 36px; height: 36px;" 
+                                                                    title="Elimina Appello">
+                                                                <i class="bi bi-trash-fill"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>

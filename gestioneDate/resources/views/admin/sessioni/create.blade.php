@@ -10,7 +10,6 @@
     </head>
     <body class="min-vh-100" style="background-color: #e1edf7;">
 
-
         <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -22,13 +21,7 @@
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
-                <button class="navbar-toggler border-0 shadow-none" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#navbarSupportedContent" 
-                        aria-controls="navbarSupportedContent" 
-                        aria-expanded="false" 
-                        aria-label="Toggle navigation">
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -44,9 +37,7 @@
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" 
-                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
-                                        style="width: 115px;">
+                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
                                     <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
                                     <span>Logout</span>
                                 </button>
@@ -62,7 +53,7 @@
                 <div class="col-12 col-md-8 col-lg-6">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h1 class="h4 fw-bold text-unibs m-0">Crea Sessione d'Esame</h1>
-                        <a href="{{ route('sessioni.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">Annulla</a>
+                        <a href="{{ route('admin.sessioni.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">Annulla</a>
                     </div>
 
                     @if($errors->any())
@@ -77,7 +68,7 @@
 
                     <div class="card shadow-sm border-0 rounded-3">
                         <div class="card-body p-4">
-                            <form action="{{ route('sessioni.store') }}" method="POST">
+                            <form action="{{ route('admin.sessioni.store') }}" method="POST">
                                 @csrf
 
                                 <div class="mb-3">
@@ -85,25 +76,27 @@
                                     <input type="text" name="nome" id="nome" class="form-control" placeholder="es. Sessione Invernale" required value="{{ old('nome') }}">
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="anno" class="form-label fw-bold">Anno Accademico <span class="text-danger">*</span></label>
-                                        <input type="number" name="anno" id="anno" class="form-control" placeholder="es. 2026" required value="{{ old('anno', date('Y')) }}">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="numero_appelli" class="form-label fw-bold">N° Appelli Previsti <span class="text-danger">*</span></label>
-                                        <input type="number" name="numero_appelli" id="numero_appelli" class="form-control" min="1" max="10" required value="{{ old('numero_appelli', 2) }}">
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="numero_appelli" class="form-label fw-bold">N° Appelli Previsti (1-4) <span class="text-danger">*</span></label>
+                                    <input type="number" name="numero_appelli" id="numero_appelli" class="form-control" min="1" max="4" required value="{{ old('numero_appelli', 2) }}">
                                 </div>
 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="data_inizio" class="form-label fw-bold">Data Inizio <span class="text-danger">*</span></label>
-                                        <input type="date" name="data_inizio" id="data_inizio" class="form-control" required value="{{ old('data_inizio') }}">
+                                        <input type="date" 
+                                               name="data_inizio" 
+                                               id="data_inizio" 
+                                               class="form-control" 
+                                               min="{{ \Carbon\Carbon::today()->addMonth()->format('Y-m-d') }}" 
+                                               required 
+                                               value="{{ old('data_inizio') }}">
+                                        <div class="form-text small">Deve distare almeno 1 mese da oggi.</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="data_fine" class="form-label fw-bold">Data Fine <span class="text-danger">*</span></label>
                                         <input type="date" name="data_fine" id="data_fine" class="form-control" required value="{{ old('data_fine') }}">
+                                        <div class="form-text small">Almeno 2 settimane dopo l'inizio.</div>
                                     </div>
                                 </div>
 
@@ -116,5 +109,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Collegamento allo script esterno -->
+        <script src="{{ asset('js/createSessione.js') }}"></script>
     </body>
 </html>

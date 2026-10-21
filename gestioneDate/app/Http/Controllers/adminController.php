@@ -76,14 +76,34 @@ class adminController extends Controller
         return view('admin.personale.associa', compact('docenti', 'insegnamentiCorso'));
     }
 
-    public function indexAssociazioni() {
-        $associazioniGrouped = DocenteInsegnamento::with([
+    public function indexAssociazioni(Request $request) {
+        $query = DocenteInsegnamento::with([
             'docente', 
             'insegnamentiCorso.insegnamento', 
             'insegnamentiCorso.corso'
-        ])
-        ->get()
-        ->sortBy([
+        ]);
+
+        // 1. Filtro facoltativo per Corso di Laurea
+        if ($request->filled('corso_id')) {
+            $query->whereHas('insegnamentiCorso', function ($q) use ($request) {
+                $q->where('corso_id', $request->corso_id);
+            });
+        }
+
+        // 2. Filtro facoltativo per Insegnamento specifico
+        if ($request->filled('ins_corso_id')) {
+            $query->where('ins_corso_id', $request->ins_corso_id);
+        }
+
+        // 3. Filtro facoltativo per Docente
+        if ($request->filled('docente_id')) {
+            $query->where('utente_id', $request->docente_id);
+        }
+
+        $associazioni = $query->get();
+
+        // Raggruppamento e ordinamento per nome del corso
+        $associazioniGrouped = $associazioni->sortBy([
             fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->nome ?? '', $b->insegnamentiCorso->corso->nome ?? ''),
             fn ($a, $b) => strcmp($a->docente->cognome ?? '', $b->docente->cognome ?? ''),
             fn ($a, $b) => strcmp($a->docente->nome ?? '', $b->docente->nome ?? ''),
@@ -91,7 +111,17 @@ class adminController extends Controller
         ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso->nome ?? 'N/D')
         ->sortKeys();
 
-        return view('admin.personale.associazioni_index', compact('associazioniGrouped'));
+        // Dati per ripopolare i menu a tendina nei filtri
+        $corsi = Corso::orderBy('nome', 'asc')->get();
+        $insegnamentiCorso = InsegnamentiCorso::with('insegnamento')->get();
+        $docenti = Utente::where('ruolo', 'Docente')->orderBy('cognome', 'asc')->get();
+
+        return view('admin.personale.associazioni_index', compact(
+            'associazioniGrouped', 
+            'corsi', 
+            'insegnamentiCorso', 
+            'docenti'
+        ));
     }
 
     public function storeAssociazioneDocente(Request $request) {
@@ -101,7 +131,7 @@ class adminController extends Controller
             'ruolo'        => 'required|in:Primario,Secondario',
         ]);
 
-        // 1. Controllo che l'utente sia effettivamente un Docente
+        // 1. Controllo ruolo docente
         $utente = Utente::findOrFail($validated['utente_id']);
         if ($utente->ruolo !== 'Docente') {
             return back()->withErrors(['utente_id' => 'Solo gli utenti con ruolo "Docente" possono essere associati ad un insegnamento!'])->withInput();
@@ -140,10 +170,16 @@ class adminController extends Controller
 
     public function editAppello($id) {
         $appello = Appello::with([
+            'sessione',
             'insegnamentoCorso.insegnamento', 
             'insegnamentoCorso.corso',
             'aula.edificio'
         ])->findOrFail($id);
+
+        // Blocco se la sessione è già passata
+        if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
+        }
 
         $sessioni = Sessione::all();
         $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
@@ -153,23 +189,36 @@ class adminController extends Controller
     }
 
     public function updateAppello(Request $request, $id) {
-        $appello = Appello::with('insegnamentoCorso')->findOrFail($id);
+        $appello = Appello::with(['insegnamentoCorso', 'sessione'])->findOrFail($id);
+        $sessione = $appello->sessione;
+
+        // Blocco se la sessione è passata
+        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
+        }
 
         $validatedData = $request->validate([
-            'data'        => 'required|date',
+            'data' => [
+                'required',
+                'date',
+                'after_or_equal:' . $sessione->data_inizio,
+                'before_or_equal:' . $sessione->data_fine,
+                function ($attribute, $value, $fail) {
+                    if (Carbon::parse($value)->isWeekend()) {
+                        $fail('Gli appelli d\'esame possono essere programmati solo dal lunedì al venerdì.');
+                    }
+                },
+            ],
             'ora_inizio'  => 'required|date_format:H:i|after_or_equal:08:00|before_or_equal:18:00',
             'ora_fine'    => 'required|date_format:H:i|after:ora_inizio|before_or_equal:19:00',
             'edificio_id' => 'required|exists:edificio,edificio_id',
             'aula_id'     => 'required|exists:aula,aula_id',
+        ], [
+            'data.after_or_equal'  => 'La data dev\'essere compresa tra l\'inizio (' . Carbon::parse($sessione->data_inizio)->format('d/m/Y') . ') e la fine della sessione.',
+            'data.before_or_equal' => 'La data dev\'essere compresa tra l\'inizio e la fine (' . Carbon::parse($sessione->data_fine)->format('d/m/Y') . ') della sessione.',
+            'ora_inizio.after_or_equal' => 'L\'orario di inizio non può essere antecedente le 08:00.',
+            'ora_fine.before_or_equal'  => 'L\'orario di fine deve essere entro le 19:00.',
         ]);
-
-        $sessione = Sessione::findOrFail($appello->sessione_id);
-
-        if ($validatedData['data'] < $sessione->data_inizio || $validatedData['data'] > $sessione->data_fine) {
-            return back()->withErrors([
-                'data' => 'La data dev\'essere compresa tra l\'inizio (' . Carbon::parse($sessione->data_inizio)->format('d/m/Y') . ') e la fine (' . Carbon::parse($sessione->data_fine)->format('d/m/Y') . ') della sessione.'
-            ])->withInput();
-        }
 
         if ($erroreSovrapposizione = $this->verificaSovrapposizioneAppello($appello, $validatedData, $id)) {
             return back()->withErrors($erroreSovrapposizione)->withInput();
@@ -189,7 +238,12 @@ class adminController extends Controller
     }
 
     public function destroyAppello($id) {
-        $appello = Appello::with('insegnamentoCorso')->findOrFail($id);
+        $appello = Appello::with(['insegnamentoCorso', 'sessione'])->findOrFail($id);
+
+        if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile eliminare un appello appartenente a una sessione passata.');
+        }
+
         $sessione_id = $appello->sessione_id;
         $corso_id = $appello->insegnamentoCorso->corso_id ?? null;
         $appello->delete();
@@ -282,7 +336,7 @@ class adminController extends Controller
                 ->whereHas('insegnamentoCorso', function ($q) use ($corso_id) {
                     $q->where('corso_id', $corso_id);
                 })
-                ->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso'])
+                ->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso', 'sessione'])
                 ->orderBy('data', 'asc')
                 ->orderBy('ora_inizio', 'asc')
                 ->get();
@@ -296,9 +350,9 @@ class adminController extends Controller
     }
 
     public function indexEdifici() {
-    $edifici = Edificio::orderBy('nome', 'asc')->get();
-    return view('admin.sedi.edifici', compact('edifici'));
-}
+        $edifici = Edificio::orderBy('nome', 'asc')->get();
+        return view('admin.sedi.edifici', compact('edifici'));
+    }
 
     public function viewAuleEdificio($edificio_id) {
         $edificio = Edificio::findOrFail($edificio_id);
@@ -307,6 +361,119 @@ class adminController extends Controller
             ->get();
 
         return view('admin.sedi.aule', compact('edificio', 'aule'));
+    }
+
+    // --- GESTIONE SESSIONI ---
+
+    public function index()
+    {
+        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        return view('admin.sessioni.index', compact('sessioni'));
+    }
+
+    public function create()
+    {
+        return view('admin.sessioni.create');
+    }
+
+    public function store(Request $request)
+    {
+        // Derivazione automatica dell'anno accademico dalla data di inizio
+        if ($request->filled('data_inizio')) {
+            $request->merge([
+                'anno' => Carbon::parse($request->data_inizio)->year
+            ]);
+        }
+
+        $minDataInizio = Carbon::today()->addMonth()->format('Y-m-d');
+
+        $validated = $request->validate([
+            'nome'           => 'required|string|max:150',
+            'anno'           => 'required|integer',
+            'numero_appelli' => 'required|integer|min:1|max:4',
+            'data_inizio'    => ['required', 'date', 'after_or_equal:' . $minDataInizio],
+            'data_fine'      => ['required', 'date', function ($attribute, $value, $fail) use ($request) {
+                if ($request->filled('data_inizio')) {
+                    $inizio = Carbon::parse($request->data_inizio);
+                    $fine = Carbon::parse($value);
+
+                    if ($fine->lt($inizio->copy()->addWeeks(2))) {
+                        $fail('La data di fine deve essere di almeno due settimane successiva alla data di inizio.');
+                    }
+                }
+            }],
+        ], [
+            'numero_appelli.min' => 'Il numero minimo di appelli previsti è 1.',
+            'numero_appelli.max' => 'Il numero massimo di appelli previsti per una sessione è 4.',
+            'data_inizio.after_or_equal' => 'La data di inizio della sessione deve essere programmata con almeno un mese di anticipo rispetto a oggi.',
+        ]);
+
+        Sessione::create($validated);
+
+        return redirect()->route('admin.sessioni.index')->with('success', 'Sessione d\'esame creata con successo!');
+    }
+
+    public function edit($id)
+    {
+        $sessione = Sessione::findOrFail($id);
+
+        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile modificare una sessione d\'esame già passata.');
+        }
+
+        return view('admin.sessioni.edit', compact('sessione'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $sessione = Sessione::findOrFail($id);
+
+        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile modificare una sessione d\'esame già passata.');
+        }
+
+        if ($request->filled('data_inizio')) {
+            $request->merge([
+                'anno' => Carbon::parse($request->data_inizio)->year
+            ]);
+        }
+
+        $validated = $request->validate([
+            'nome'           => 'required|string|max:150',
+            'anno'           => 'required|integer',
+            'numero_appelli' => 'required|integer|min:1|max:4',
+            'data_inizio'    => 'required|date',
+            'data_fine'      => ['required', 'date', function ($attribute, $value, $fail) use ($request) {
+                if ($request->filled('data_inizio')) {
+                    $inizio = Carbon::parse($request->data_inizio);
+                    $fine = Carbon::parse($value);
+
+                    if ($fine->lt($inizio->copy()->addWeeks(2))) {
+                        $fail('La data di fine deve essere di almeno due settimane successiva alla data di inizio.');
+                    }
+                }
+            }],
+        ], [
+            'numero_appelli.min' => 'Il numero minimo di appelli previsti è 1.',
+            'numero_appelli.max' => 'Il numero massimo di appelli previsti per una sessione è 4.',
+        ]);
+
+        $sessione->update($validated);
+
+        return redirect()->route('admin.sessioni.index')->with('success', 'Sessione d\'esame aggiornata con successo!');
+    }
+
+    public function destroy($id)
+    {
+        $sessione = Sessione::findOrFail($id);
+
+        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile eliminare una sessione d\'esame già passata.');
+        }
+
+        $sessione->delete();
+
+        return redirect()->route('admin.sessioni.index')->with('success', 'Sessione d\'esame eliminata con successo!');
     }
 
     // --- METODI HELPER PRIVATI ---
@@ -346,69 +513,5 @@ class adminController extends Controller
         }
 
         return null;
-    }
-
-    // 1. Elenco di tutte le sessioni
-    public function index()
-    {
-        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
-        return view('admin.sessioni.index', compact('sessioni'));
-    }
-
-    // 2. Form per creare una nuova sessione
-    public function create()
-    {
-        return view('admin.sessioni.create');
-    }
-
-    // 3. Salvataggio nuova sessione
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'nome'           => 'required|string|max:150',
-            'data_inizio'    => 'required|date',
-            'data_fine'      => 'required|date|after_or_equal:data_inizio',
-            'anno'           => 'required|integer|min:2020|max:2100',
-            'numero_appelli' => 'required|integer|min:1|max:10',
-        ]);
-
-        Sessione::create($data);
-
-        return redirect()->route('sessioni.index')->with('success', 'Sessione d\'esame creata con successo!');
-    }
-
-    // 4. Form modifica sessione
-    public function edit($id)
-    {
-        $sessione = Sessione::findOrFail($id);
-        return view('admin.sessioni.edit', compact('sessione'));
-    }
-
-    // 5. Aggiornamento sessione
-    public function update(Request $request, $id)
-    {
-        $sessione = Sessione::findOrFail($id);
-
-        $data = $request->validate([
-            'nome'           => 'required|string|max:150',
-            'data_inizio'    => 'required|date',
-            'data_fine'      => 'required|date|after_or_equal:data_inizio',
-            'anno'           => 'required|integer|min:2020|max:2100',
-            'numero_appelli' => 'required|integer|min:1|max:10',
-        ]);
-
-        $sessione->update($data);
-
-        return redirect()->route('sessioni.index')->with('success', 'Sessione d\'esame aggiornata con successo!');
-    }
-
-    // 6. Eliminazione sessione
-    //elimina una sessione e tutti gli appelli associati
-    public function destroy($id)
-    {
-        $sessione = Sessione::findOrFail($id);
-        $sessione->delete();
-
-        return redirect()->route('sessioni.index')->with('success', 'Sessione d\'esame eliminata con successo!');
     }
 }

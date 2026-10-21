@@ -88,12 +88,12 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::delete('/insegnamenti/{insegnamento_id}', [adminController::class, 'destroyInsegnamento'])->name('admin.insegnamenti.destroy');
 
     // 3. Gestione Sessioni d'Esame (CRUD Sessioni)
-    Route::get('/sessioni', [sessioneController::class, 'index'])->name('sessioni.index');
-    Route::get('/sessioni/crea', [sessioneController::class, 'create'])->name('sessioni.create');
-    Route::post('/sessioni', [sessioneController::class, 'store'])->name('sessioni.store');
-    Route::get('/sessioni/{id}/modifica', [sessioneController::class, 'edit'])->name('sessioni.edit');
-    Route::put('/sessioni/{id}', [sessioneController::class, 'update'])->name('sessioni.update');
-    Route::delete('/sessioni/{id}', [sessioneController::class, 'destroy'])->name('sessioni.destroy');
+    Route::get('/sessioni', [sessioneController::class, 'index'])->name('admin.sessioni.index');
+    Route::get('/sessioni/crea', [sessioneController::class, 'create'])->name('admin.sessioni.create');
+    Route::post('/sessioni', [sessioneController::class, 'store'])->name('admin.sessioni.store');
+    Route::get('/sessioni/{id}/modifica', [sessioneController::class, 'edit'])->name('admin.sessioni.edit');
+    Route::put('/sessioni/{id}', [sessioneController::class, 'update'])->name('admin.sessioni.update');
+    Route::delete('/sessioni/{id}', [sessioneController::class, 'destroy'])->name('admin.sessioni.destroy');
 
     // Gestione Sedi (Edifici ed Aule)
     Route::get('/sedi/edifici', [adminController::class, 'indexEdifici'])->name('admin.sedi.edifici');

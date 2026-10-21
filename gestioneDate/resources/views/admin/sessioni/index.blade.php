@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Gestione Sessioni d'Esame</title>
+        <title>Gestione Sessioni d'Esame - Amministratore</title>
 
         <!-- CSS Bootstrap & Icone -->
         <link rel="stylesheet" href="{{ asset('css/bootstrap_v2.min.css') }}">
@@ -26,13 +26,7 @@
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
-                <button class="navbar-toggler border-0 shadow-none" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#navbarSupportedContent" 
-                        aria-controls="navbarSupportedContent" 
-                        aria-expanded="false" 
-                        aria-label="Toggle navigation">
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -48,9 +42,7 @@
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" 
-                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
-                                        style="width: 115px;">
+                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
                                     <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
                                     <span>Logout</span>
                                 </button>
@@ -62,102 +54,210 @@
         </nav>
 
         <!-- Contenuto Principale -->
-        <div class="container py-3">
+        <div class="py-3">
+            <div class="container-fluid px-md-4 px-lg-5">
 
-            @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <!-- Intestazione Pagina con Pulsante Torna alla Dashboard -->
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+                    <div>
+                        <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
+                            <i class="bi bi-calendar-range-fill me-2"></i>Gestione Sessioni d'Esame
+                        </h1>
+                        <p class="text-muted small m-0 mt-1 fw-medium">
+                            Elenco e gestione delle sessioni d'esame registrate nel sistema
+                        </p>
+                    </div>
+
+                    <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase text-nowrap">
+                        <i class="bi bi-arrow-left me-2"></i>TORNA ALLA DASHBOARD
+                    </a>
                 </div>
-            @endif
 
-            <!-- Intestazione -->
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <div>
-                    <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                        <i class="bi bi-calendar-range me-2"></i>Gestione Sessioni d'Esame
-                    </h1>
-                    <p class="text-muted small m-0 mt-1">Elenco e gestione delle sessioni d'esame registrate nel sistema</p>
+                <hr class="border-unibs border-2 opacity-100 mb-4">
+
+                <!-- Alert Messaggi di Successo/Errore -->
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <!-- FILTRO OPZIONALE PER ANNO SESSIONE -->
+                @php
+                    $anniDisponibili = $sessioni->pluck('anno')->unique()->sort()->values();
+                @endphp
+
+                @if($anniDisponibili->count() > 0)
+                    <div class="card shadow-sm border-0 rounded-3 mb-4 p-3 bg-white">
+                        <div class="row align-items-center g-2">
+                            <div class="col-12 col-md-auto fw-bold text-unibs d-flex align-items-center">
+                                <i class="bi bi-funnel-fill me-2"></i>Filtra per Anno Sessione:
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <select id="filtroAnnoSessione" class="form-select form-select-sm shadow-sm border-unibs fw-semibold text-dark">
+                                    <option value="tutti" selected>Tutti gli anni (Mostra tutto)</option>
+                                    @foreach($anniDisponibili as $anno)
+                                        <option value="{{ $anno }}">Anno {{ $anno }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-auto text-muted small ms-md-auto">
+                                <i class="bi bi-info-circle me-1"></i> Seleziona un anno per restringere l'elenco delle sessioni
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Avviso in caso nessun risultato corrisponda al filtro -->
+                <div id="noSessioniMatchFilter" class="card shadow-sm border-0 rounded-3 p-4 text-center text-muted d-none mb-4 bg-white">
+                    <i class="bi bi-funnel fs-3 text-secondary mb-2"></i>
+                    <h6 class="fw-bold m-0">Nessuna sessione trovata per l'anno selezionato.</h6>
+                    <small>Seleziona "Tutti gli anni" per mostrare nuovamente tutte le sessioni d'esame.</small>
                 </div>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                    <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
-                </a>
-            </div>
 
-            <hr class="border-unibs border-2 opacity-100 mb-4">
-
-            <!-- Pulsante Aggiungi Sessione -->
-            <div class="mb-4">
-                <a href="{{ route('sessioni.create') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Sessione
-                </a>
-            </div>
-
-            <!-- Tabella Sessioni -->
-            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-white border-bottom">
-                            <tr>
-                                <th class="py-3 px-4 text-dark fw-bold">Nome</th>
-                                <th class="py-3 px-4 text-center text-dark fw-bold">Anno</th>
-                                <th class="py-3 px-4 text-center text-dark fw-bold">Periodo</th>
-                                <th class="py-3 px-4 text-center text-dark fw-bold">N° Appelli</th>
-                                <th class="py-3 px-4 text-center text-dark fw-bold">Azioni</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($sessioni as $s)
-                                <tr>
-                                    <td class="py-3 px-4 fw-bold text-dark">{{ $s->nome }}</td>
-                                    <td class="py-3 px-4 text-center fw-bold text-dark">{{ $s->anno }}</td>
-                                    <td class="py-3 px-4 text-center text-muted">
-                                        {{ \Carbon\Carbon::parse($s->data_inizio)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($s->data_fine)->format('d/m/Y') }}
-                                    </td>
-                                    <td class="py-3 px-4 text-center fw-bold text-dark">
-                                        {{ $s->numero_appelli }}
-                                    </td>
-                                    <td class="py-3 px-4 text-center text-nowrap">
-                                        <div class="d-flex justify-content-center gap-2">
-                                            <!-- Tasto Modifica -->
-                                            <a href="{{ route('sessioni.edit', $s->sessione_id) }}" 
-                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                               style="width: 36px; height: 36px;" 
-                                               title="Modifica Sessione">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
-
-                                            <!-- Tasto Elimina -->
-                                            <form action="{{ route('sessioni.destroy', $s->sessione_id) }}" 
-                                                  method="POST" 
-                                                  class="d-inline m-0" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questa sessione?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" 
-                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                                        style="width: 36px; height: 36px;" 
-                                                        title="Elimina Sessione">
-                                                    <i class="bi bi-trash-fill"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-5 fs-6">
-                                        <i class="bi bi-calendar-x fs-3 d-block mb-2 text-secondary"></i>
-                                        Nessuna sessione d'esame presente nel sistema.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <!-- Bottone Aggiungi Sessione -->
+                <div class="mb-4">
+                    <a href="{{ route('admin.sessioni.create') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center text-uppercase">
+                        <i class="bi bi-plus-circle-fill me-2 fs-5"></i> AGGIUNGI SESSIONE
+                    </a>
                 </div>
-            </div>
 
+                <!-- Tabella Sessioni d'Esame -->
+                <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle mb-0">
+                                <thead class="table-light border-bottom">
+                                    <tr>
+                                        <th class="ps-4 py-3 text-unibs" style="width: 25%;">Nome</th>
+                                        <th class="py-3 text-unibs text-center" style="width: 15%;">Anno</th>
+                                        <th class="py-3 text-unibs text-center" style="width: 25%;">Periodo</th>
+                                        <th class="py-3 text-unibs text-center" style="width: 15%;">N° Appelli</th>
+                                        <th class="pe-4 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($sessioni->sortBy('data_inizio') as $sessione)
+                                        @php
+                                            // Verifica se la sessione si è conclusa prima di oggi
+                                            $isPassata = \Carbon\Carbon::parse($sessione->data_fine)->lt(\Carbon\Carbon::today());
+                                        @endphp
+                                        <tr class="sessione-row" data-anno="{{ $sessione->anno }}">
+                                            <!-- Nome -->
+                                            <td class="ps-4 py-3 fw-bold text-dark">
+                                                {{ $sessione->nome }}
+                                            </td>
+
+                                            <!-- Anno -->
+                                            <td class="py-3 text-center fw-bold text-dark">
+                                                {{ $sessione->anno }}
+                                            </td>
+
+                                            <!-- Periodo -->
+                                            <td class="py-3 text-center text-muted fw-medium">
+                                                {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} - 
+                                                {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}
+                                            </td>
+
+                                            <!-- N° Appelli -->
+                                            <td class="py-3 text-center fw-bold text-dark">
+                                                {{ $sessione->numero_appelli }}
+                                            </td>
+
+                                            <!-- Azioni -->
+                                            <td class="pe-4 py-3 text-end text-nowrap">
+                                                <div class="d-flex justify-content-end gap-1">
+                                                    @if($isPassata)
+                                                        <!-- Modifica Disabilitata per Sessioni Passate -->
+                                                        <button type="button" 
+                                                                class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
+                                                                disabled 
+                                                                style="width: 32px; height: 32px;" 
+                                                                title="Non è possibile modificare una sessione passata">
+                                                            <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
+                                                        </button>
+                                                    @else
+                                                        <!-- Modifica Attiva -->
+                                                        <a href="{{ route('admin.sessioni.edit', $sessione->sessione_id) }}" 
+                                                           class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
+                                                           style="width: 32px; height: 32px;" 
+                                                           title="Modifica Sessione">
+                                                            <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    <!-- Elimina (Sempre Attivo) -->
+                                                    <form action="{{ route('admin.sessioni.destroy', $sessione->sessione_id) }}" 
+                                                          method="POST" 
+                                                          class="d-inline m-0 p-0"
+                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questa sessione?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" 
+                                                                class="btn btn-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
+                                                                style="width: 32px; height: 32px;" 
+                                                                title="Elimina Sessione">
+                                                            <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center py-4 text-muted fw-medium">
+                                                <i class="bi bi-info-circle me-1 text-secondary"></i> Nessuna sessione d'esame registrata.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
+
+        <!-- Script Filtraggio Dinamico per Anno Sessione -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const filterSelect = document.getElementById('filtroAnnoSessione');
+                if (!filterSelect) return;
+
+                const sessionRows = document.querySelectorAll('.sessione-row');
+                const noMatchAlert = document.getElementById('noSessioniMatchFilter');
+
+                filterSelect.addEventListener('change', () => {
+                    const selectedAnno = filterSelect.value;
+                    let visibleCount = 0;
+
+                    sessionRows.forEach(row => {
+                        const rowAnno = row.getAttribute('data-anno');
+                        if (selectedAnno === 'tutti' || rowAnno === selectedAnno) {
+                            row.classList.remove('d-none');
+                            visibleCount++;
+                        } else {
+                            row.classList.add('d-none');
+                        }
+                    });
+
+                    if (visibleCount === 0) {
+                        noMatchAlert.classList.remove('d-none');
+                    } else {
+                        noMatchAlert.classList.add('d-none');
+                    }
+                });
+            });
+        </script>
 
     </body>
 </html>
