@@ -74,8 +74,8 @@
                         <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                             <i class="bi bi-pencil-square me-2"></i>Modifica Appello d'Esame
                         </h1>
-                        <a href="{{ route('admin.calendario', ['sessione_id' => $appello->sessione_id, 'corso_id' => $appello->insegnamentoCorso->corso_id ?? null]) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                            <i class="bi bi-arrow-left me-1"></i>Annulla
+                        <a href="{{ route('admin.calendario', ['sessione_id' => $appello->sessione_id, 'corso_id' => $appello->insegnamentoCorso->corso_id ?? null]) }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
                         </a>
                     </div>
                     <hr class="border-unibs border-2 opacity-100 mb-4">
