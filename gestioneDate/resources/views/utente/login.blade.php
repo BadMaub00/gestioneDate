@@ -20,7 +20,7 @@
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
         <!-- Contenuto Principale: Card di Login Centrata -->
-        <div class="my-auto py-4">
+        <div class=" my-auto py-4">
             <div class="container">
                 <div class="row justify-content-center">
                     
