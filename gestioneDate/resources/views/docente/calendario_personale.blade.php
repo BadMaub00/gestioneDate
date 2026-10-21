@@ -177,13 +177,13 @@
                                                         <td class="text-end pe-3 py-2.5 text-nowrap">
                                                             <div class="d-flex justify-content-end gap-1">
                                                                 @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
-                                                                    <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
+                                                                    <a href="{{ route('docente.appelli.edit', $appello->appello_id) }}" 
                                                                        class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
                                                                        style="width: 32px; height: 32px;" title="Modifica Appello">
                                                                         <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                                     </a>
 
-                                                                    <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
+                                                                    <form action="{{ route('docente.appelli.destroy', $appello->appello_id) }}" 
                                                                           method="POST" class="d-inline m-0 p-0"
                                                                           onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');">
                                                                         @csrf
