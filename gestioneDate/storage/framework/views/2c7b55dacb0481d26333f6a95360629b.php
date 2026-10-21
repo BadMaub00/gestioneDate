@@ -13,24 +13,25 @@
         <link rel="stylesheet" href="<?php echo e(asset('css/style.css')); ?>">
         <link rel="stylesheet" href="<?php echo e(asset('css/docente.css')); ?>">
     </head>
-    <body class="bg-light min-vh-100 d-flex flex-column justify-content-between">
+    <body class="min-vh-100 d-flex flex-column justify-content-between" style="background-color: #e1edf7;">
 
         <!-- Script Bootstrap & Popper -->
         <script src="<?php echo e(asset('js/popper.min.js')); ?>"></script>
         <script src="<?php echo e(asset('js/bootstrap.min.js')); ?>"></script>
 
-
         <!-- Contenuto Principale: Card di Login Centrata -->
-        <div class="my-auto py-4">
+        <div class=" my-auto py-4">
             <div class="container">
                 <div class="row justify-content-center">
-                    <!-- Logo Ingrandito e Centrato -->
+                    
+                    <!-- Logo Ingrandito e Centrato su Sfondo Azzurro -->
                     <div class="text-center mb-5">
                         <img class="img-fluid" 
-                            src="<?php echo e(asset('images/unibsLogo.png')); ?>" 
-                            alt="Unibs" 
-                            style="max-height: 110px;">
+                             src="<?php echo e(asset('images/unibsLogo.png')); ?>" 
+                             alt="Unibs" 
+                             style="max-height: 110px;">
                     </div>
+
                     <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
                         
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
