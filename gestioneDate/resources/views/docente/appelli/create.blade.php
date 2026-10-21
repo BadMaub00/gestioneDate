@@ -21,7 +21,6 @@
 
         <script src="{{ asset('js/createAppelloDocente.js') }}"></script>
 
-
         <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
             <div class="container-fluid px-3 px-md-5">
@@ -97,7 +96,7 @@
                 </div>
 
                 <div class="card-body p-4 bg-white">
-                    <form action="{{ route('appelli.store') }}" method="POST">
+                    <form action="{{ route('docente.appelli.store') }}" method="POST">
                         @csrf
 
                         <!-- Hidden Inputs per gli ID Pre-selezionati -->

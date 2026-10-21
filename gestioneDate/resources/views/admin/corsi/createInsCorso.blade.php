@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Aggiungi Insegnamento al Corso - {{ $corso->nome }}</title>
+        <title>Aggiungi Insegnamento - {{ $corso->nome }}</title>
 
         <!-- CSS Bootstrap & Icone -->
         <link rel="stylesheet" href="{{ asset('css/bootstrap_v2.min.css') }}">
@@ -15,7 +15,6 @@
     </head>
     <body class="min-vh-100" style="background-color: #e1edf7;">
 
-        <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 
@@ -26,10 +25,7 @@
                     <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
                 </a>
 
-                <button class="navbar-toggler border-0 shadow-none" 
-                        type="button" 
-                        data-bs-toggle="collapse" 
-                        data-bs-target="#navbarSupportedContent">
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -45,9 +41,7 @@
                         <li class="nav-item">
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" 
-                                        class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start"
-                                        style="width: 115px;">
+                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
                                     <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
                                     <span>Logout</span>
                                 </button>
@@ -58,94 +52,107 @@
             </div>
         </nav>
 
-        <!-- Contenuto Principale -->
-        <div class="container py-3" style="max-width: 900px;">
+        <div class="container py-3">
             <div class="row justify-content-center">
-                <div class="col-12">
+                <div class="col-12 col-md-8 col-lg-6">
 
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <div>
-                            <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                                <i class="bi bi-journal-plus me-2"></i>Aggiungi Insegnamento
-                            </h1>
-                            <p class="text-muted small m-0 mt-1">
-                                Corso: <strong>{{ $corso->nome }}</strong> 
-                                <span class="badge bg-unibs text-white ms-1">{{ $corso->tipo_corso }} - {{ $durataAnni }} {{ $durataAnni == 1 ? 'Anno' : 'Anni' }}</span>
-                            </p>
-                        </div>
-                        <a href="{{ route('admin.corsi.pianoDiStudi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Torna al Piano di Studi
+                        <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
+                            <i class="bi bi-person-plus-fill me-2"></i>Associa Docente a Insegnamento
+                        </h1>
+                        <a href="{{ route('admin.corsi.piano_di_studi') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
                         </a>
                     </div>
 
-                    <hr class="border-unibs border-2 opacity-100 mb-4">
+                    @if($errors->any())
+                        <div class="alert alert-danger rounded-3 mb-3">
+                            <ul class="m-0 ps-3">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <div class="card shadow-sm border-0 rounded-3">
-                        <div class="card-body p-4">
-
-                            <!-- Visualizzazione Errori di Validazione -->
-                            @if ($errors->any())
-                                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
-                                    <ul class="mb-0 ps-3">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            @endif
-
+                        <div class="card-body p-4 bg-white">
                             <form action="{{ route('admin.corsi.insegnamenti.store', $corso->corso_id) }}" method="POST">
                                 @csrf
 
                                 <!-- Insegnamento -->
                                 <div class="mb-3">
-                                    <label for="insegnamento_id" class="form-label fw-bold">Insegnamento <span class="text-danger">*</span></label>
-                                    <select name="insegnamento_id" id="insegnamento_id" class="form-select @error('insegnamento_id') is-invalid @enderror" required>
-                                        <option value="" disabled {{ old('insegnamento_id') ? '' : 'selected' }}>-- Seleziona un Insegnamento --</option>
-                                        @foreach($insegnamenti as $ins)
-                                            <option value="{{ $ins->insegnamento_id }}" {{ old('insegnamento_id') == $ins->insegnamento_id ? 'selected' : '' }}>
-                                                {{ $ins->nome }}
+                                    <label for="insegnamento_id" class="form-label fw-bold text-dark small mb-1">
+                                        Seleziona Insegnamento <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="insegnamento_id" id="insegnamento_id" class="form-select shadow-sm" required>
+                                        <option value="" disabled selected>-- Seleziona Insegnamento --</option>
+                                        @foreach($insegnamenti as $insegnamento)
+                                            <option value="{{ $insegnamento->insegnamento_id }}" {{ old('insegnamento_id') == $insegnamento->insegnamento_id ? 'selected' : '' }}>
+                                                {{ $insegnamento->nome }} (Codice: {{ $insegnamento->insegnamento_id }})
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <!-- Anno di Corso, CFU e Durata -->
-                                <div class="row g-3 mb-4">
-                                    
-                                    <!-- Selezione Anno limitata a $durataAnni (3 per Triennale, 2 per Magistrale) -->
-                                    <div class="col-12 col-md-4">
-                                        <label for="anno_di_corso" class="form-label fw-bold">Anno di Corso <span class="text-danger">*</span></label>
-                                        <select name="anno_di_corso" id="anno_di_corso" class="form-select @error('anno_di_corso') is-invalid @enderror" required>
-                                            @for($i = 1; $i <= $durataAnni; $i++)
-                                                <option value="{{ $i }}" {{ old('anno_di_corso') == $i ? 'selected' : '' }}>
-                                                    {{ $i }}° Anno
-                                                </option>
-                                            @endfor
-                                        </select>
-                                    </div>
+                                <!-- Anno di Corso -->
+                                <div class="mb-3">
+                                    <label for="anno_di_corso" class="form-label fw-bold text-dark small mb-1">
+                                        Anno di Corso <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="anno_di_corso" id="anno_di_corso" class="form-select shadow-sm" required>
+                                        <option value="" disabled selected>-- Seleziona Anno --</option>
+                                        @php
+                                            $durataAnni = match($corso->tipo_corso ?? '') {
+                                                'Magistrale' => 2,
+                                                'Ciclo Unico' => 5,
+                                                default => 3,
+                                            };
+                                        @endphp
+                                        @for($a = 1; $a <= $durataAnni; $a++)
+                                            <option value="{{ $a }}" {{ old('anno_di_corso') == $a ? 'selected' : '' }}>
+                                                {{ $a }}° Anno
+                                            </option>
+                                        @endfor
+                                    </select>
+                                </div>
 
+                                <div class="row g-3 mb-4">
                                     <!-- CFU -->
-                                    <div class="col-12 col-md-4">
-                                        <label for="cfu" class="form-label fw-bold">CFU <span class="text-danger">*</span></label>
-                                        <input type="number" name="cfu" id="cfu" class="form-control @error('cfu') is-invalid @enderror" min="1" max="30" value="{{ old('cfu') }}" placeholder="es. 6" required>
+                                    <div class="col-6">
+                                        <label for="cfu" class="form-label fw-bold text-dark small mb-1">
+                                            CFU <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" 
+                                               name="cfu" 
+                                               id="cfu" 
+                                               class="form-control shadow-sm" 
+                                               placeholder="es. 6" 
+                                               min="1" 
+                                               value="{{ old('cfu') }}" 
+                                               required>
                                     </div>
 
                                     <!-- Durata in Ore -->
-                                    <div class="col-12 col-md-4">
-                                        <label for="durata" class="form-label fw-bold">Durata (Ore) <span class="text-danger">*</span></label>
-                                        <input type="number" name="durata" id="durata" class="form-control @error('durata') is-invalid @enderror" min="1" value="{{ old('durata') }}" placeholder="es. 48" required>
+                                    <div class="col-6">
+                                        <label for="durata" class="form-label fw-bold text-dark small mb-1">
+                                            Durata (Ore) <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="number" 
+                                               name="durata" 
+                                               id="durata" 
+                                               class="form-control shadow-sm" 
+                                               placeholder="es. 48" 
+                                               min="1" 
+                                               value="{{ old('durata') }}" 
+                                               required>
                                     </div>
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-unibs text-white fw-bold py-2 rounded-pill shadow-sm">
-                                        <i class="bi bi-plus-circle me-1"></i>Salva nel Piano di Studi
-                                    </button>
-                                </div>
+                                <button type="submit" class="btn btn-unibs text-white fw-bold w-100 rounded-pill py-2 shadow-sm">
+                                    <i class="bi bi-save me-2"></i>Salva Insegnamento
+                                </button>
                             </form>
-
                         </div>
                     </div>
 

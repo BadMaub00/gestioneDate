@@ -65,12 +65,20 @@
             </div>
         </nav>
 
-        <!-- Contenuto Principale -->
-        <div class="container py-3">
+        <!-- Contenuto Principale con Larghezza Ridotta -->
+        <div class="container py-3" style="max-width: 900px;">
 
             <?php if(session('success')): ?>
                 <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i><?php echo e(session('success')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo e(session('error')); ?>
 
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
@@ -125,10 +133,10 @@
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
-                                            <!-- Elimina -->
+                                            <!-- Elimina con Modal Personalizzato -->
                                             <form action="<?php echo e(route('admin.insegnamenti.destroy', $insegnamento->insegnamento_id)); ?>" 
                                                   method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo insegnamento?');" 
+                                                  data-confirm="Sei sicuro di voler eliminare l'insegnamento '<?php echo e($insegnamento->nome); ?>'?" 
                                                   class="d-inline m-0">
                                                 <?php echo csrf_field(); ?>
                                                 <?php echo method_field('DELETE'); ?>
@@ -156,6 +164,9 @@
             </div>
 
         </div>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="<?php echo e(asset('js/confirmDelete.js')); ?>"></script>
 
     </body>
 </html><?php /**PATH C:\xampp\htdocs\gestioneDate\gestioneDate\resources\views/admin/insegnamenti/index.blade.php ENDPATH**/ ?>

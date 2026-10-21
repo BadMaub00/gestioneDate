@@ -74,6 +74,13 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <!-- Titolo, Sottotitolo e Pulsante Torna alla Dashboard -->
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <div>
@@ -125,8 +132,8 @@
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
-                                            <!-- Pulsante Circolare Elimina -->
-                                            <form action="#" method="POST" class="d-inline m-0" onsubmit="return confirm('Sei sicuro di voler eliminare questo utente?');">
+                                            <!-- Pulsante Circolare Elimina con Modal Personalizzato -->
+                                            <form action="#" method="POST" class="d-inline m-0" data-confirm="Sei sicuro di voler eliminare l'utente '{{ $p->nome }} {{ $p->cognome }}'?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Elimina Utente">
@@ -150,6 +157,9 @@
             </div>
 
         </div>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>
 </html>

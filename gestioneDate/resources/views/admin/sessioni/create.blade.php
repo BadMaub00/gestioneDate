@@ -53,7 +53,9 @@
                 <div class="col-12 col-md-8 col-lg-6">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h1 class="h4 fw-bold text-unibs m-0">Crea Sessione d'Esame</h1>
-                        <a href="{{ route('admin.sessioni.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill">Annulla</a>
+                        <a href="{{ route('admin.sessioni.index') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
+                        </a>
                     </div>
 
                     @if($errors->any())

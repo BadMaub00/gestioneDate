@@ -158,7 +158,7 @@ class adminController extends Controller
         }
 
         DocenteInsegnamento::create($validated);
-        return redirect()->route('admin.personale.associazioni.index')->with('success', 'Docente associato con successo!');
+        return redirect()->route('admin.personale.associazioni_index.index')->with('success', 'Docente associato con successo!');
     }
 
     public function destroyAssociazioneDocente($id) {
@@ -287,12 +287,12 @@ class adminController extends Controller
         return redirect()->route('admin.corsi.index')->with('success', 'Corso di laurea creato con successo!');
     }
 
-    public function createInsegnamentoCorso($corso_id) {
+    public function createInsegnamentoCorso($corso_id)
+    {
         $corso = Corso::findOrFail($corso_id);
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-        $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
+        $insegnamenti = Insegnamento::all();
 
-        return view('admin.corsi.createInsCorso', compact('corso', 'durataAnni', 'insegnamenti'));
+        return view('admin.corsi.createInsCorso', compact('corso', 'insegnamenti'));
     }
 
     public function storeInsegnamentoCorso(Request $request, $corso_id) {
@@ -325,29 +325,70 @@ class adminController extends Controller
     public function viewcalendario_generale(Request $request) {
         $sessione_id = $request->input('sessione_id');
         $corso_id = $request->input('corso_id');
+        $anno_di_corso = $request->input('anno_di_corso');
 
-        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        // Recupera sessioni in ordine di data di inizio
+        $sessioni = Sessione::orderBy('data_inizio', 'asc')->get();
+        
+        // Recupera corsi in ordine alfabetico e calcola la durata
         $corsi = Corso::orderBy('nome', 'asc')->get();
-
-        $appelliGrouped = collect();
-
-        if ($sessione_id && $corso_id) {
-            $appelli = Appello::where('sessione_id', $sessione_id)
-                ->whereHas('insegnamentoCorso', function ($q) use ($corso_id) {
-                    $q->where('corso_id', $corso_id);
-                })
-                ->with(['insegnamentoCorso.insegnamento', 'insegnamentoCorso.corso', 'sessione'])
-                ->orderBy('data', 'asc')
-                ->orderBy('ora_inizio', 'asc')
-                ->get();
-
-            $appelliGrouped = $appelli->groupBy(function ($appello) {
-                return $appello->insegnamentoCorso->anno_di_corso ?? 'Non Specificato';
-            })->sortKeys();
+        foreach ($corsi as $corso) {
+            $corso->durata_anni = $this->getDurataAnni($corso->tipo_corso);
         }
 
-        return view('admin.calendario', compact('appelliGrouped', 'sessioni', 'corsi', 'sessione_id', 'corso_id'));
+        $query = Appello::with([
+            'sessione',
+            'insegnamentoCorso.insegnamento',
+            'insegnamentoCorso.corso',
+            'aula.edificio'
+        ]);
+
+        // Applicazione filtri facoltativi
+        if ($sessione_id) {
+            $query->where('sessione_id', $sessione_id);
+        }
+
+        if ($corso_id) {
+            $query->whereHas('insegnamentoCorso', function ($q) use ($corso_id, $anno_di_corso) {
+                $q->where('corso_id', $corso_id);
+                if ($anno_di_corso) {
+                    $q->where('anno_di_corso', $anno_di_corso);
+                }
+            });
+        }
+
+        // Ordinamento multi-livello:
+        // 1. Sessione per data_inizio
+        // 2. Corso di laurea per nome (alfabetico)
+        // 3. Anno di corso (numerico)
+        // 4. Insegnamento per nome (alfabetico)
+        // 5. Data e ora appello (cronologico)
+        $appelli = $query->get()->sortBy([
+            fn ($a, $b) => strcmp($a->sessione->data_inizio ?? '', $b->sessione->data_inizio ?? ''),
+            fn ($a, $b) => strcmp($a->insegnamentoCorso->corso->nome ?? '', $b->insegnamentoCorso->corso->nome ?? ''),
+            fn ($a, $b) => ($a->insegnamentoCorso->anno_di_corso ?? 0) <=> ($b->insegnamentoCorso->anno_di_corso ?? 0),
+            fn ($a, $b) => strcmp($a->insegnamentoCorso->insegnamento->nome ?? '', $b->insegnamentoCorso->insegnamento->nome ?? ''),
+            fn ($a, $b) => strcmp($a->data . $a->ora_inizio, $b->data . $b->ora_inizio),
+        ]);
+
+        // Raggruppamento gerarchico annidato: Sessione ID -> Nome Corso -> Anno di Corso
+        $appelliGrouped = $appelli->groupBy([
+            fn ($item) => $item->sessione_id,
+            fn ($item) => $item->insegnamentoCorso->corso->nome ?? 'Senza Corso',
+            fn ($item) => $item->insegnamentoCorso->anno_di_corso ?? 'Non Specificato',
+        ]);
+
+        return view('admin.calendario', compact(
+            'appelliGrouped', 
+            'sessioni', 
+            'corsi', 
+            'sessione_id', 
+            'corso_id', 
+            'anno_di_corso'
+        ));
     }
+
+    // --- GESTIONE EDIFICI ---
 
     public function indexEdifici() {
         $edifici = Edificio::orderBy('nome', 'asc')->get();
@@ -362,6 +403,98 @@ class adminController extends Controller
 
         return view('admin.sedi.aule', compact('edificio', 'aule'));
     }
+
+
+        public function createEdificio() {
+            return view('admin.sedi.createEdificio');
+        }
+
+        public function storeEdificio(Request $request) {
+            $validated = $request->validate([
+                'nome' => 'required|string|max:150|unique:edificio,nome',
+                'via'  => 'required|string|max:255',
+            ]);
+
+            Edificio::create($validated);
+
+            return redirect()->route('admin.edifici.index')->with('success', 'Edificio creato con successo!');
+        }
+
+        public function editEdificio($id) {
+            $edificio = Edificio::findOrFail($id);
+            return view('admin.sedi.editEdificio', compact('edificio'));
+        }
+
+        public function updateEdificio(Request $request, $id) {
+            $edificio = Edificio::findOrFail($id);
+
+            $validated = $request->validate([
+                'nome' => 'required|string|max:150|unique:edificio,nome,' . $id . ',edificio_id',
+                'via'  => 'required|string|max:255',
+            ]);
+
+            $edificio->update($validated);
+
+            return redirect()->route('admin.edifici.index')->with('success', 'Edificio aggiornato con successo!');
+        }
+
+        public function destroyEdificio($id) {
+            $edificio = Edificio::findOrFail($id);
+            $edificio->delete();
+
+            return redirect()->route('admin.edifici.index')->with('success', 'Edificio eliminato con successo!');
+        }
+
+        // --- GESTIONE AULE ---
+
+        public function createAula($edificio_id) {
+            $edificio = Edificio::findOrFail($edificio_id);
+            return view('admin.sedi.createAula', compact('edificio'));
+        }
+
+        public function storeAula(Request $request, $edificio_id) {
+            $edificio = Edificio::findOrFail($edificio_id);
+
+            $validated = $request->validate([
+                'nome'     => 'required|string|max:100',
+                'capienza' => 'required|integer|min:1',
+            ]);
+
+            $validated['edificio_id'] = $edificio->edificio_id;
+
+            Aula::create($validated);
+
+            return redirect()->route('admin.sedi.aule', $edificio_id)
+                ->with('success', 'Aula creata con successo!');
+        }
+
+        public function editAula($id) {
+            $aula = Aula::with('edificio')->findOrFail($id);
+            return view('admin.sedi.editAula', compact('aula'));
+        }
+
+        public function updateAula(Request $request, $id) {
+            $aula = Aula::findOrFail($id);
+
+            $validated = $request->validate([
+                'nome'     => 'required|string|max:100',
+                'capienza' => 'required|integer|min:1',
+            ]);
+
+            $aula->update($validated);
+
+            return redirect()->route('admin.sedi.aule', $aula->edificio_id)
+                ->with('success', 'Aula aggiornata con successo!');
+        }
+
+        public function destroyAula($id) {
+            $aula = Aula::findOrFail($id);
+            $edificio_id = $aula->edificio_id;
+            $aula->delete();
+
+            return redirect()->route('admin.sedi.aule', $edificio_id)
+                ->with('success', 'Aula eliminata con successo!');
+        }
 
     // --- GESTIONE SESSIONI ---
 

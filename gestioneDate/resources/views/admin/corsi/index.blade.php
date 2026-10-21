@@ -72,6 +72,21 @@
 
         <!-- Contenuto Principale -->
         <div class="container py-3">
+
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                     <i class="bi bi-mortarboard-fill me-2"></i>Seleziona un Corso di Laurea
@@ -109,10 +124,10 @@
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
-                                            <!-- Tasto Elimina -->
+                                            <!-- Tasto Elimina con Modal Personalizzato -->
                                             <form action="#" 
                                                   method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo corso?');" 
+                                                  data-confirm="Sei sicuro di voler eliminare il corso '{{ $corso->nome }}'? Verranno rimossi anche i relativi piani di studio associati." 
                                                   class="d-inline m-0">
                                                 @csrf
                                                 @method('DELETE')
@@ -132,7 +147,7 @@
                                     </p>
                                 </div>
 
-                                <a href="{{ route('admin.corsi.pianoDiStudi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
+                                <a href="{{ route('admin.corsi.piano_di_studi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
                                     Visualizza Piano di Studi <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
@@ -145,6 +160,9 @@
                 @endforelse
             </div>
         </div>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>
 </html>

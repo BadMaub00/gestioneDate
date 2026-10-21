@@ -75,6 +75,13 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <!-- Intestazione -->
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
@@ -123,10 +130,10 @@
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
-                                            <!-- Elimina -->
+                                            <!-- Elimina con Modal Personalizzato -->
                                             <form action="{{ route('admin.insegnamenti.destroy', $insegnamento->insegnamento_id) }}" 
                                                   method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo insegnamento?');" 
+                                                  data-confirm="Sei sicuro di voler eliminare l'insegnamento '{{ $insegnamento->nome }}'?" 
                                                   class="d-inline m-0">
                                                 @csrf
                                                 @method('DELETE')
@@ -154,6 +161,9 @@
             </div>
 
         </div>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>
 </html>

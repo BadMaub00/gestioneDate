@@ -79,6 +79,14 @@
                 </div>
             <?php endif; ?>
 
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo e(session('error')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <!-- Intestazione -->
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
@@ -97,7 +105,7 @@
             <!-- SCHEDA FILTRI FACOLTATIVI -->
             <div class="card shadow-sm border-0 rounded-3 mb-4 bg-white">
                 <div class="card-body p-3">
-                    <form action="<?php echo e(route('admin.personale.associazioni')); ?>" method="GET" class="row g-3 align-items-end">
+                    <form action="<?php echo e(route('admin.personale.associazioni_index')); ?>" method="GET" class="row g-3 align-items-end">
                         
                         <!-- 1. Filtro Corso -->
                         <div class="col-12 col-md-3">
@@ -112,7 +120,7 @@
                             </select>
                         </div>
 
-                        <!-- 2. Filtro Insegnamento (Disabilitato di default se nessun corso è selezionato) -->
+                        <!-- 2. Filtro Insegnamento -->
                         <div class="col-12 col-md-3">
                             <label for="filtro_ins_corso_id" class="form-label fw-bold text-dark small mb-1">Insegnamento:</label>
                             <select name="ins_corso_id" 
@@ -152,7 +160,7 @@
                                 <i class="bi bi-funnel-fill me-1"></i> Filtra
                             </button>
                             <?php if(request()->hasAny(['corso_id', 'ins_corso_id', 'docente_id'])): ?>
-                                <a href="<?php echo e(route('admin.personale.associazioni')); ?>" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm rounded-2">
+                                <a href="<?php echo e(route('admin.personale.associazioni_index')); ?>" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm rounded-2">
                                     <i class="bi bi-x-circle me-1"></i> Reset
                                 </a>
                             <?php endif; ?>
@@ -226,11 +234,11 @@
                                             <td class="py-3 px-4 text-center text-nowrap">
                                                 <div class="d-flex justify-content-center gap-2">
 
-                                                    <!-- Tasto Elimina -->
-                                                    <form action="#" 
-                                                        method="POST" 
-                                                        onsubmit="return confirm('Sei sicuro di voler rimuovere questa associazione?');" 
-                                                        class="d-inline m-0">
+                                                    <!-- Tasto Elimina con Modal Personalizzato -->
+                                                    <form action="<?php echo e(route('admin.personale.destroyAssocia', $assoc->getKey())); ?>" 
+                                                          method="POST" 
+                                                          data-confirm="Sei sicuro di voler rimuovere l'associazione del docente '<?php echo e($assoc->docente->cognome ?? ''); ?> <?php echo e($assoc->docente->nome ?? ''); ?>' dall'insegnamento '<?php echo e($assoc->insegnamentiCorso->insegnamento->nome ?? 'selezionato'); ?>'?" 
+                                                          class="d-inline m-0">
                                                         <?php echo csrf_field(); ?>
                                                         <?php echo method_field('DELETE'); ?>
                                                         <button type="submit" 
@@ -260,8 +268,9 @@
 
         </div>
 
-        <!-- Collegamento allo script dei filtri dinamici -->
+        <!-- Script Filtri Dinamici e Modal di Conferma Eliminazione Personalizzato -->
         <script src="<?php echo e(asset('js/filtriAssociazioni.js')); ?>"></script>
+        <script src="<?php echo e(asset('js/confirmDelete.js')); ?>"></script>
 
     </body>
 </html><?php /**PATH C:\xampp\htdocs\gestioneDate\gestioneDate\resources\views/admin/personale/associazioni_index.blade.php ENDPATH**/ ?>

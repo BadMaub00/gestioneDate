@@ -79,6 +79,14 @@
                 </div>
             <?php endif; ?>
 
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo e(session('error')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
                     <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
@@ -114,13 +122,36 @@
                                         <strong class="fs-6 text-dark"><?php echo e($ic->insegnamento->nome ?? 'Insegnamento N/D'); ?></strong>
                                         <span class="text-muted d-block small">Codice: <?php echo e($ic->insegnamento_id); ?></span>
                                     </div>
-                                    <div class="text-end">
-                                        <span class="badge border border-unibs text-unibs bg-transparent rounded-pill px-3 py-2 fw-bold me-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge border border-unibs text-unibs bg-transparent rounded-pill px-3 py-2 fw-bold">
                                             <?php echo e($ic->cfu); ?> CFU
                                         </span>
                                         <span class="badge border border-unibs text-unibs bg-transparent rounded-pill px-3 py-2 fw-bold">
                                             <?php echo e($ic->durata); ?> ore
                                         </span>
+
+                                        <!-- Tasto Modifica -->
+                                        <a href="#" 
+                                           class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center ms-2" 
+                                           style="width: 36px; height: 36px;" 
+                                           title="Modifica Insegnamento">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+
+                                        <!-- Tasto Elimina con Modal Personalizzato -->
+                                        <form action="<?php echo e(route('admin.corsi.insegnamenti.destroy', $ic->ins_corso_id)); ?>" 
+                                              method="POST" 
+                                              data-confirm="Sei sicuro di voler rimuovere l'insegnamento '<?php echo e($ic->insegnamento->nome ?? ''); ?>' dal piano di studi?" 
+                                              class="d-inline m-0">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
+                                            <button type="submit" 
+                                                    class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
+                                                    style="width: 36px; height: 36px;" 
+                                                    title="Rimuovi Insegnamento">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </li>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -133,6 +164,9 @@
                 </div>
             <?php endfor; ?>
         </div>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="<?php echo e(asset('js/confirmDelete.js')); ?>"></script>
 
     </body>
 </html><?php /**PATH C:\xampp\htdocs\gestioneDate\gestioneDate\resources\views/admin/corsi/piano_di_studi.blade.php ENDPATH**/ ?>

@@ -15,9 +15,10 @@
     </head>
     <body class="min-vh-100" style="background-color: #e1edf7;">
 
-        <!-- Script Bootstrap & Popper -->
         <script src="{{ asset('js/popper.min.js') }}"></script>
         <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+
+        <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
         <!-- Navbar Istituzionale -->
         <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
@@ -56,6 +57,20 @@
         <!-- Contenuto Principale -->
         <div class="container py-3">
 
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <!-- Intestazione -->
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <div>
@@ -73,7 +88,7 @@
 
             <!-- Pulsante Aggiungi Aula -->
             <div class="mb-4">
-                <a href="#" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
+                <a href="{{ route('admin.sedi.createAula', $edificio->edificio_id) }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
                     <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Aula
                 </a>
             </div>
@@ -108,7 +123,7 @@
                                     <td class="py-3 px-4 text-center text-nowrap">
                                         <div class="d-flex justify-content-center gap-2">
                                             <!-- Tasto Modifica -->
-                                            <a href="#" 
+                                            <a href="{{ route('admin.sedi.editAula', $aula->aula_id) }}" 
                                                class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
                                                style="width: 36px; height: 36px;" 
                                                title="Modifica Aula">
@@ -116,10 +131,10 @@
                                             </a>
 
                                             <!-- Tasto Elimina -->
-                                            <form action="#" 
-                                                  method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questa aula?');" 
-                                                  class="d-inline m-0">
+                                            <form action="{{ route('admin.sedi.destroyAula', $aula->aula_id) }}" 
+                                                method="POST" 
+                                                data-confirm="Sei sicuro di voler eliminare l'aula '{{ $aula->nome }}'?" 
+                                                class="d-inline m-0">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 

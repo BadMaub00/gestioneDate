@@ -5,10 +5,36 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Appello;
 use App\Models\Sessione;
+use App\Models\Aula;
+use App\Models\Edificio;
+use App\Models\InsegnamentiCorso;
 use Carbon\Carbon;
 
 class appelloController extends Controller
 {
+    /**
+     * Form per la creazione di un nuovo appello (Docente)
+     */
+    public function create(Request $request)
+    {
+        $request->validate([
+            'ins_corso_id' => 'required|exists:insegnamento_corso,ins_corso_id',
+            'sessione_id'  => 'required|exists:sessione_esami,sessione_id',
+        ]);
+
+        $sessione = Sessione::findOrFail($request->sessione_id);
+
+        // Blocco se la sessione è già passata
+        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile creare un appello per una sessione già conclusa.');
+        }
+
+        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($request->ins_corso_id);
+        $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
+
+        return view('docente.appelli.create', compact('sessione', 'insegnamentoCorso', 'edifici'));
+    }
+
     /**
      * Salvataggio nuovo appello (Docente / Admin)
      */
@@ -63,7 +89,31 @@ class appelloController extends Controller
 
         Appello::create($validated);
 
-        return back()->with('success', 'Appello creato con successo!');
+        return redirect()->route('docente.appelliInsegnamento', $request->ins_corso_id)
+            ->with('success', 'Appello creato con successo!');
+    }
+
+    /**
+     * Form di modifica appello (Docente)
+     */
+    public function edit($id)
+    {
+        $appello = Appello::with([
+            'sessione',
+            'insegnamentoCorso.insegnamento',
+            'insegnamentoCorso.corso',
+            'aula.edificio'
+        ])->findOrFail($id);
+
+        if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {
+            return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
+        }
+
+        $sessione = $appello->sessione;
+        $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
+        $aule = Aula::orderBy('nome', 'asc')->get();
+
+        return view('docente.appelli.edit', compact('appello', 'sessione', 'edifici', 'aule'));
     }
 
     /**
@@ -74,12 +124,10 @@ class appelloController extends Controller
         $appello = Appello::with('sessione')->findOrFail($id);
         $sessione = $appello->sessione;
 
-        // 1. Blocco modifica se la sessione è passata
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
         }
 
-        // 2. Validazione regole di business su date e orari
         $validated = $request->validate([
             'aula_id'    => 'required|exists:aula,aula_id',
             'ora_inizio' => 'required|date_format:H:i|after_or_equal:08:00',
@@ -106,7 +154,8 @@ class appelloController extends Controller
 
         $appello->update($validated);
 
-        return back()->with('success', 'Appello aggiornato con successo!');
+        return redirect()->route('docente.appelliInsegnamento', $appello->ins_corso_id)
+            ->with('success', 'Appello aggiornato con successo!');
     }
 
     /**

@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="card-body p-4 bg-white">
-                    <form action="{{ route('appelli.update', $appello->getKey()) }}" method="POST">
+                    <form action="{{ route('docente.appelli.update', $appello->getKey()) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -233,7 +233,6 @@
             </div>
 
         </div>
-
 
     </body>
 </html>

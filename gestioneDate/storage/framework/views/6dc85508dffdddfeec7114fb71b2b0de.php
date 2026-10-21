@@ -72,6 +72,23 @@
 
         <!-- Contenuto Principale -->
         <div class="container py-3">
+
+            <?php if(session('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><?php echo e(session('success')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i><?php echo e(session('error')); ?>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
+
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                     <i class="bi bi-mortarboard-fill me-2"></i>Seleziona un Corso di Laurea
@@ -82,7 +99,6 @@
             </div>
             <hr class="border-unibs border-2 opacity-100 mb-4">
 
-            <!-- Pulsante Aggiungi Corso -->
             <!-- Pulsante Aggiungi Corso -->
             <div class="mb-4">
                 <a href="<?php echo e(route('admin.corsi.create')); ?>" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
@@ -102,7 +118,7 @@
                                         <h5 class="card-title fw-bold text-unibs m-0 pe-2"><?php echo e($corso->nome); ?></h5>
                                         
                                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                                            <!-- Tasto Modifica (Sfondo bianco, bordo e icona blu Unibs) -->
+                                            <!-- Tasto Modifica -->
                                             <a href="#" 
                                                class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
                                                style="width: 36px; height: 36px;" 
@@ -110,10 +126,10 @@
                                                 <i class="bi bi-pencil-fill"></i>
                                             </a>
 
-                                            <!-- Tasto Elimina (Sfondo bianco, bordo e icona rossa) -->
+                                            <!-- Tasto Elimina con Modal Personalizzato -->
                                             <form action="#" 
                                                   method="POST" 
-                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo corso?');" 
+                                                  data-confirm="Sei sicuro di voler eliminare il corso '<?php echo e($corso->nome); ?>'? Verranno rimossi anche i relativi piani di studio associati." 
                                                   class="d-inline m-0">
                                                 <?php echo csrf_field(); ?>
                                                 <?php echo method_field('DELETE'); ?>
@@ -127,10 +143,14 @@
                                         </div>
                                     </div>
 
-                                    <p class="text-muted small mb-3">Codice: <?php echo e($corso->codice ?? 'N/D'); ?></p>
+                                    <!-- Tipologia del Corso -->
+                                    <p class="text-muted small mb-3 fw-medium">
+                                        <i class="bi bi-mortarboard me-1 text-unibs"></i><?php echo e($corso->tipo_corso); ?>
+
+                                    </p>
                                 </div>
 
-                                <a href="<?php echo e(route('admin.corsi.pianoDiStudi', $corso->corso_id)); ?>" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
+                                <a href="<?php echo e(route('admin.corsi.piano_di_studi', $corso->corso_id)); ?>" class="btn btn-unibs text-white fw-bold w-100 rounded-pill shadow-sm mt-3">
                                     Visualizza Piano di Studi <i class="bi bi-arrow-right ms-1"></i>
                                 </a>
                             </div>
@@ -143,6 +163,9 @@
                 <?php endif; ?>
             </div>
         </div>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="<?php echo e(asset('js/confirmDelete.js')); ?>"></script>
 
     </body>
 </html><?php /**PATH C:\xampp\htdocs\gestioneDate\gestioneDate\resources\views/admin/corsi/index.blade.php ENDPATH**/ ?>

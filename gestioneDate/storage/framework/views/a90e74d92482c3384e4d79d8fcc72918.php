@@ -200,11 +200,11 @@
                                                         </a>
                                                     <?php endif; ?>
 
-                                                    <!-- Elimina (Sempre Attivo) -->
+                                                    <!-- Elimina con Modal Personalizzato contenente Anno e Nome Sessione -->
                                                     <form action="<?php echo e(route('admin.sessioni.destroy', $sessione->sessione_id)); ?>" 
                                                           method="POST" 
                                                           class="d-inline m-0 p-0"
-                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questa sessione?');">
+                                                          data-confirm="Sei sicuro di voler eliminare la sessione '<?php echo e($sessione->nome); ?>' dell'anno <?php echo e($sessione->anno); ?>?">
                                                         <?php echo csrf_field(); ?>
                                                         <?php echo method_field('DELETE'); ?>
                                                         <button type="submit" 
@@ -264,6 +264,9 @@
                 });
             });
         </script>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="<?php echo e(asset('js/confirmDelete.js')); ?>"></script>
 
     </body>
 </html><?php /**PATH C:\xampp\htdocs\gestioneDate\gestioneDate\resources\views/admin/sessioni/index.blade.php ENDPATH**/ ?>

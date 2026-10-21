@@ -175,7 +175,7 @@
                                     </button>
                                 @else
                                     <!-- DOCENTE PRIMARIO: Pulsante Attivo per Creazione Appello -->
-                                    <a href="{{ route('appelli.create', ['ins_corso_id' => $insegnamentoCorso->ins_corso_id, 'sessione_id' => $sessione->sessione_id]) }}" 
+                                    <a href="{{ route('docente.appelli.create', ['ins_corso_id' => $insegnamentoCorso->ins_corso_id, 'sessione_id' => $sessione->sessione_id]) }}" 
                                        class="btn btn-light text-unibs btn-sm fw-bold rounded-3 shadow-sm px-3 py-1.5 d-inline-flex align-items-center">
                                         <i class="bi bi-plus-circle-fill me-1.5 text-unibs"></i> Aggiungi Appello
                                     </a>
@@ -233,17 +233,17 @@
                                                     <div class="d-flex justify-content-end gap-1">
                                                         @if(!$isTermineSuperato && $isPrimario)
                                                             <!-- Pulsanti Attivi (Modifica & Elimina) -->
-                                                            <a href="{{ route('appelli.edit', $appello->appello_id) }}" 
+                                                            <a href="{{ route('docente.appelli.edit', $appello->appello_id) }}" 
                                                                class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
                                                                style="width: 32px; height: 32px;" 
                                                                title="Modifica Appello">
                                                                 <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                             </a>
 
-                                                            <form action="{{ route('appelli.destroy', $appello->appello_id) }}" 
+                                                            <form action="{{ route('docente.appelli.destroy', $appello->appello_id) }}" 
                                                                   method="POST" 
                                                                   class="d-inline m-0 p-0"
-                                                                  onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');">
+                                                                  data-confirm="Sei sicuro di voler eliminare questo appello d'esame?">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" 
@@ -322,6 +322,9 @@
                 });
             });
         </script>
+
+        <!-- Modal di Conferma Eliminazione Personalizzato -->
+        <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>
 </html>

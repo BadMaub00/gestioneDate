@@ -194,11 +194,11 @@
                                                         </a>
                                                     @endif
 
-                                                    <!-- Elimina (Sempre Attivo) -->
+                                                    <!-- Elimina con Modal Personalizzato contenente Anno e Nome Sessione -->
                                                     <form action="{{ route('admin.sessioni.destroy', $sessione->sessione_id) }}" 
                                                           method="POST" 
                                                           class="d-inline m-0 p-0"
-                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questa sessione?');">
+                                                          data-confirm="Sei sicuro di voler eliminare la sessione '{{ $sessione->nome }}' dell'anno {{ $sessione->anno }}?">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" 
@@ -258,6 +258,9 @@
                 });
             });
         </script>
+
+        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>
 </html>

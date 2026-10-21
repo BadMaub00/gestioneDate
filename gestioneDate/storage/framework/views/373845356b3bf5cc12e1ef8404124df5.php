@@ -79,8 +79,8 @@
                         <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
                             <i class="bi bi-person-plus-fill me-2"></i>Associa Docente a Insegnamento
                         </h1>
-                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
+                        <a href="<?php echo e(route('admin.personale.associazioni_index')); ?>" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
                         </a>
                     </div>
                     <hr class="border-unibs border-2 opacity-100 mb-4">
