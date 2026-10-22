@@ -37,6 +37,45 @@ class adminController extends Controller
         return view('admin.corsi.piano_di_studi', compact('corso', 'insegnamentiPerAnno', 'durataAnni'));
     }
 
+    public function editInsegnamentoCorso($id) {
+        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($id);
+        $corso = $insegnamentoCorso->corso;
+        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
+        $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
+
+        return view('admin.corsi.editInsCorso', compact('insegnamentoCorso', 'corso', 'durataAnni', 'insegnamenti'));
+    }
+
+    public function updateInsegnamentoCorso(Request $request, $id) {
+        $insegnamentoCorso = InsegnamentiCorso::findOrFail($id);
+        $corso_id = $insegnamentoCorso->corso_id;
+        $corso = Corso::findOrFail($corso_id);
+        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
+
+        $data = $request->validate([
+            'insegnamento_id' => 'required|exists:insegnamento,insegnamento_id',
+            'anno_di_corso'   => "required|integer|min:1|max:{$durataAnni}",
+            'cfu'             => 'required|integer|min:1|max:30',
+            'durata'          => 'required|integer|min:1',
+        ]);
+
+        $giaPresente = InsegnamentiCorso::where('corso_id', $corso_id)
+            ->where('insegnamento_id', $data['insegnamento_id'])
+            ->where('ins_corso_id', '!=', $id)
+            ->exists();
+
+        if ($giaPresente) {
+            return back()
+                ->withErrors(['insegnamento_id' => 'Questo insegnamento fa già parte del piano di studi di questo corso!'])
+                ->withInput();
+        }
+
+        $insegnamentoCorso->update($data);
+
+        return redirect()->route('admin.corsi.piano_di_studi', $corso_id)
+            ->with('success', 'Insegnamento del piano di studi aggiornato con successo!');
+    }
+
     // --- PERSONALE ---
 
     public function indexPersonale() {
