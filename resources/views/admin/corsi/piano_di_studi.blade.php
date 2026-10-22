@@ -128,7 +128,7 @@
                                         </span>
 
                                         <!-- Tasto Modifica -->
-                                        <a href="#" 
+                                        <a href="{{ route('admin.corsi.insegnamenti.edit', $ic->ins_corso_id) }}" 
                                            class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center ms-2" 
                                            style="width: 36px; height: 36px;" 
                                            title="Modifica Insegnamento">

@@ -70,7 +70,11 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/corsi/{corso_id}/insegnamenti/crea', [adminController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
     Route::post('/corsi/{corso_id}/insegnamenti', [adminController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
     Route::delete('/corsi/insegnamenti/{id}', [adminController::class, 'destroyInsegnamentoCorso'])->name('admin.corsi.insegnamenti.destroy');
-
+    // Modifica Insegnamento del Piano di Studi
+    Route::get('/corsi/insegnamenti/{id}/edit', [adminController::class, 'editInsegnamentoCorso'])->name('admin.corsi.insegnamenti.edit');
+    Route::put('/corsi/insegnamenti/{id}', [adminController::class, 'updateInsegnamentoCorso'])->name('admin.corsi.insegnamenti.update');
+   
+   
     // 3. Personale e Associazioni (admin/personale)
     Route::get('/personale', [adminController::class, 'indexPersonale'])->name('admin.personale.index');
     Route::get('/personale/crea', [adminController::class, 'createPersonale'])->name('admin.personale.create');
