@@ -37,45 +37,6 @@ class adminController extends Controller
         return view('admin.corsi.piano_di_studi', compact('corso', 'insegnamentiPerAnno', 'durataAnni'));
     }
 
-    public function editInsegnamentoCorso($id) {
-        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($id);
-        $corso = $insegnamentoCorso->corso;
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-        $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
-
-        return view('admin.corsi.editInsCorso', compact('insegnamentoCorso', 'corso', 'durataAnni', 'insegnamenti'));
-    }
-
-    public function updateInsegnamentoCorso(Request $request, $id) {
-        $insegnamentoCorso = InsegnamentiCorso::findOrFail($id);
-        $corso_id = $insegnamentoCorso->corso_id;
-        $corso = Corso::findOrFail($corso_id);
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-
-        $data = $request->validate([
-            'insegnamento_id' => 'required|exists:insegnamento,insegnamento_id',
-            'anno_di_corso'   => "required|integer|min:1|max:{$durataAnni}",
-            'cfu'             => 'required|integer|min:1|max:30',
-            'durata'          => 'required|integer|min:1',
-        ]);
-
-        $giaPresente = InsegnamentiCorso::where('corso_id', $corso_id)
-            ->where('insegnamento_id', $data['insegnamento_id'])
-            ->where('ins_corso_id', '!=', $id)
-            ->exists();
-
-        if ($giaPresente) {
-            return back()
-                ->withErrors(['insegnamento_id' => 'Questo insegnamento fa già parte del piano di studi di questo corso!'])
-                ->withInput();
-        }
-
-        $insegnamentoCorso->update($data);
-
-        return redirect()->route('admin.corsi.piano_di_studi', $corso_id)
-            ->with('success', 'Insegnamento del piano di studi aggiornato con successo!');
-    }
-
     // --- PERSONALE ---
 
     public function indexPersonale() {
@@ -250,11 +211,10 @@ class adminController extends Controller
             return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
         }
 
-        $sessioni = Sessione::all();
         $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
         $aule = Aula::orderBy('nome', 'asc')->get();
 
-        return view('admin.appelli.edit', compact('appello', 'sessioni', 'edifici', 'aule'));
+        return view('admin.appelli.edit', compact('appello', 'edifici', 'aule'));
     }
 
     public function updateAppello(Request $request, $id) {
@@ -415,6 +375,45 @@ class adminController extends Controller
         return redirect()->route('admin.corsi.index')->with('success', 'Corso di laurea aggiornato con successo!');
     }
 
+        public function editInsegnamentoCorso($id) {
+        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($id);
+        $corso = $insegnamentoCorso->corso;
+        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
+        $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
+
+        return view('admin.corsi.editInsCorso', compact('insegnamentoCorso', 'corso', 'durataAnni', 'insegnamenti'));
+    }
+
+    public function updateInsegnamentoCorso(Request $request, $id) {
+        $insegnamentoCorso = InsegnamentiCorso::findOrFail($id);
+        $corso_id = $insegnamentoCorso->corso_id;
+        $corso = Corso::findOrFail($corso_id);
+        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
+
+        $data = $request->validate([
+            'insegnamento_id' => 'required|exists:insegnamento,insegnamento_id',
+            'anno_di_corso'   => "required|integer|min:1|max:{$durataAnni}",
+            'cfu'             => 'required|integer|min:1|max:30',
+            'durata'          => 'required|integer|min:1',
+        ]);
+
+        $giaPresente = InsegnamentiCorso::where('corso_id', $corso_id)
+            ->where('insegnamento_id', $data['insegnamento_id'])
+            ->where('ins_corso_id', '!=', $id)
+            ->exists();
+
+        if ($giaPresente) {
+            return back()
+                ->withErrors(['insegnamento_id' => 'Questo insegnamento fa già parte del piano di studi di questo corso!'])
+                ->withInput();
+        }
+
+        $insegnamentoCorso->update($data);
+
+        return redirect()->route('admin.corsi.piano_di_studi', $corso_id)
+            ->with('success', 'Insegnamento del piano di studi aggiornato con successo!');
+    }
+
     // --- CALENDARIO ---
 
     public function viewcalendario_generale(Request $request) {
@@ -422,8 +421,22 @@ class adminController extends Controller
         $corso_id = $request->input('corso_id');
         $anno_di_corso = $request->input('anno_di_corso');
 
-        // Recupera sessioni in ordine di data di inizio
+        // Recupera sessioni in ordine di data di inizio (ognuna appartiene a un corso)
         $sessioni = Sessione::orderBy('data_inizio', 'asc')->get();
+
+        // Link o filtri parziali: se c'è solo la sessione, il corso è quello della sessione;
+        // se sessione e corso non corrispondono, la sessione viene ignorata
+        if ($sessione_id) {
+            $sessioneScelta = $sessioni->firstWhere('sessione_id', (int) $sessione_id);
+
+            if (!$sessioneScelta) {
+                $sessione_id = null;
+            } elseif (!$corso_id) {
+                $corso_id = $sessioneScelta->corso_id;
+            } elseif ((int) $sessioneScelta->corso_id !== (int) $corso_id) {
+                $sessione_id = null;
+            }
+        }
         
         // Recupera corsi in ordine alfabetico e calcola la durata
         $corsi = Corso::orderBy('nome', 'asc')->get();
@@ -432,7 +445,7 @@ class adminController extends Controller
         }
 
         $query = Appello::with([
-            'sessione',
+            'sessione.corso',
             'insegnamentoCorso.insegnamento',
             'insegnamentoCorso.corso',
             'aula.edificio'

@@ -85,6 +85,16 @@
                             </div>
 
                             <div class="card-body p-4 bg-white">
+                                @if($errors->any())
+                                    <div class="alert alert-danger rounded-3 mb-3">
+                                        <ul class="m-0 ps-3">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
                                 <form action="{{ route('docente.procedicalendario_generale') }}" method="POST">
                                     @csrf
 
@@ -120,17 +130,17 @@
                                     <!-- 3. SELECT SESSIONE -->
                                     <div class="mb-4">
                                         <label for="sessione_id" class="form-label fw-bold text-dark mb-1">
-                                            3. Sessione d'Esame:
+                                            3. Sessione d'Esame (del corso scelto):
                                         </label>
-                                        <select class="form-select border-2 border-unibs shadow-none py-2" id="sessione_id" name="sessione_id" required>
-                                            <option value="" selected disabled>-- Seleziona Sessione --</option>
-                                            @forelse ($sessioni as $sessione)
-                                                <option value="{{ $sessione->sessione_id }}">
+                                        <select class="form-select border-2 border-unibs shadow-none py-2" id="sessione_id" name="sessione_id" required disabled
+                                                data-testo-vuoto="-- Seleziona prima un Corso --"
+                                                data-testo-attivo="-- Seleziona Sessione --">
+                                            <option value="" selected disabled>-- Seleziona prima un Corso --</option>
+                                            @foreach ($sessioni as $sessione)
+                                                <option value="{{ $sessione->sessione_id }}" data-corso="{{ $sessione->corso_id }}">
                                                     {{ $sessione->nome }} ({{ $sessione->anno }}) - [dal {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}]
                                                 </option>
-                                            @empty
-                                                <option value="" disabled>Nessuna sessione disponibile</option>
-                                            @endforelse
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -153,5 +163,6 @@
 
         <!-- Script JS Esterno -->
         <script src="{{ asset('js/selezionaFiltriGenerale.js') }}"></script>
+        <script src="{{ asset('js/sessioniPerCorso.js') }}"></script>
     </body>
 </html>

@@ -24,18 +24,40 @@ class docenteController extends Controller
 
     public function selezionaSessione()
     {
-        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        /** @var Utente $user */
+        $user = Auth::user();
 
-        return view('docente.selezionaSessione', compact('sessioni'));
+        // Prima si sceglie il corso (tra quelli del docente), poi la sessione di quel corso
+        $corsi = $this->insAssociati($user)->pluck('corso')->filter()->unique('corso_id')->sortBy('nome')->values();
+        $sessioni = Sessione::whereIn('corso_id', $corsi->pluck('corso_id'))->orderBy('data_inizio', 'desc')->get();
+
+        return view('docente.selezionaSessione', compact('corsi', 'sessioni'));
     }
 
     public function procediCalendarioPersonale(Request $request)
     {
         $request->validate([
+            'corso_id'    => 'required|exists:corso,corso_id',
             'sessione_id' => 'required|exists:sessione_esami,sessione_id',
         ]);
 
-        return redirect()->route('docente.calendario', ['sessione_id' => $request->sessione_id]);
+        /** @var Utente $user */
+        $user = Auth::user();
+
+        $corsoDelDocente = $this->insAssociati($user)->contains(fn ($ic) => (int) $ic->corso_id === (int) $request->corso_id);
+        if (!$corsoDelDocente) {
+            return back()->withErrors(['corso_id' => 'Non hai insegnamenti associati al corso selezionato.'])->withInput();
+        }
+
+        $sessione = Sessione::findOrFail($request->sessione_id);
+        if ((int) $sessione->corso_id !== (int) $request->corso_id) {
+            return back()->withErrors(['sessione_id' => 'La sessione selezionata non appartiene al corso scelto.'])->withInput();
+        }
+
+        return redirect()->route('docente.calendario', [
+            'sessione_id' => $sessione->sessione_id,
+            'corso_id'    => $sessione->corso_id,
+        ]);
     }
 
     public function viewCalendarioPersonale(int $sessione_id)
@@ -43,8 +65,12 @@ class docenteController extends Controller
         /** @var Utente $user */
         $user = Auth::user();
 
-        $sessione = Sessione::findOrFail($sessione_id);
-        $insegnamentiCorsi = $this->insAssociati($user);
+        $sessione = Sessione::with('corso')->findOrFail($sessione_id);
+
+        // La sessione appartiene a un solo corso: mostro solo gli insegnamenti del docente in quel corso
+        $insegnamentiCorsi = $this->insAssociati($user)
+            ->filter(fn ($ic) => (int) $ic->corso_id === (int) $sessione->corso_id)
+            ->values();
 
         // Caricamento Eager della relazione aula ed edificio per ogni appello
         $insegnamentiCorsi->load(['appelli' => function($query) use ($sessione_id) {
@@ -54,7 +80,9 @@ class docenteController extends Controller
                 ->orderBy('ora_inizio');
         }]);
 
-        return view('docente.calendario_personale', compact('insegnamentiCorsi', 'sessione'));
+        $corso = $sessione->corso;
+
+        return view('docente.calendario_personale', compact('insegnamentiCorsi', 'sessione', 'corso'));
     }
 
     public function selezionaFiltriGenerale()
@@ -64,7 +92,7 @@ class docenteController extends Controller
 
         $insegnamentiCorsi = $this->insAssociati($user);
         $corsi = $insegnamentiCorsi->pluck('corso')->filter()->unique('corso_id')->values();
-        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
+        $sessioni = Sessione::whereIn('corso_id', $corsi->pluck('corso_id'))->orderBy('data_inizio', 'desc')->get();
 
         return view('docente.selezionaFiltriGenerale', compact('corsi', 'sessioni'));
     }
@@ -95,6 +123,11 @@ class docenteController extends Controller
             'sessione_id' => 'required|exists:sessione_esami,sessione_id',
         ]);
 
+        $sessione = Sessione::findOrFail($request->sessione_id);
+        if ((int) $sessione->corso_id !== (int) $request->corso_id) {
+            return back()->withErrors(['sessione_id' => 'La sessione selezionata non appartiene al corso scelto.'])->withInput();
+        }
+
         return redirect()->route('docente.calendario.generale', [
             'sessione_id' => $request->sessione_id,
             'annoCorso' => $request->annoCorso,
@@ -117,6 +150,11 @@ class docenteController extends Controller
 
         if (!$sessione || !$corso) {
             return redirect()->route('docente.selezionaFiltriGenerale')->withErrors(['msg' => 'Sessione o corso selezionato non valido.']);
+        }
+
+        // La sessione appartiene a un solo corso: deve coincidere con quello richiesto
+        if ((int) $sessione->corso_id !== (int) $corso->corso_id) {
+            return redirect()->route('docente.selezionaFiltriGenerale')->withErrors(['msg' => 'La sessione selezionata non appartiene al corso scelto.']);
         }
 
         // Filtra gli appelli relativi allo stesso corso, anno e sessione (in ordine cronologico)
@@ -226,7 +264,8 @@ class docenteController extends Controller
             ->where('utente_id', $user->getKey())
             ->first();
 
-        $sessioni = Sessione::orderBy('data_inizio', 'asc')->get();
+        // Solo le sessioni del corso a cui appartiene l'insegnamento
+        $sessioni = Sessione::where('corso_id', $insegnamentoCorso->corso_id)->orderBy('data_inizio', 'asc')->get();
 
         // Inclusione delle relazioni aula ed edificio per gli appelli della sessione
         foreach ($sessioni as $sessione) {

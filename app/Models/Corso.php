@@ -24,4 +24,9 @@ class Corso extends Model
     {
         return $this->hasMany(InsegnamentiCorso::class, 'corso_id', 'corso_id');
     }
+
+    public function sessioni()
+    {
+        return $this->hasMany(Sessione::class, 'corso_id', 'corso_id');
+    }
 }

@@ -90,7 +90,7 @@
                     </div>
                 @endif
 
-                <!-- FILTRO OPZIONALE PER ANNO SESSIONE -->
+                <!-- FILTRI OPZIONALI: CORSO E ANNO SESSIONE -->
                 @php
                     $anniDisponibili = $sessioni->pluck('anno')->unique()->sort()->values();
                 @endphp
@@ -99,18 +99,26 @@
                     <div class="card shadow-sm border-0 rounded-3 mb-4 p-3 bg-white">
                         <div class="row align-items-center g-2">
                             <div class="col-12 col-md-auto fw-bold text-unibs d-flex align-items-center">
-                                <i class="bi bi-funnel-fill me-2"></i>Filtra per Anno Sessione:
+                                <i class="bi bi-funnel-fill me-2"></i>Filtra:
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <select id="filtroCorsoSessione" class="form-select form-select-sm shadow-sm border-unibs fw-semibold text-dark">
+                                    <option value="tutti" selected>Tutti i corsi</option>
+                                    @foreach($corsi as $corso)
+                                        <option value="{{ $corso->corso_id }}">{{ $corso->nome }} - {{ $corso->tipo_corso }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col-12 col-md-3">
                                 <select id="filtroAnnoSessione" class="form-select form-select-sm shadow-sm border-unibs fw-semibold text-dark">
-                                    <option value="tutti" selected>Tutti gli anni (Mostra tutto)</option>
+                                    <option value="tutti" selected>Tutti gli anni</option>
                                     @foreach($anniDisponibili as $anno)
                                         <option value="{{ $anno }}">Anno {{ $anno }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-12 col-md-auto text-muted small ms-md-auto">
-                                <i class="bi bi-info-circle me-1"></i> Seleziona un anno per restringere l'elenco delle sessioni
+                                <i class="bi bi-info-circle me-1"></i> I filtri si possono combinare
                             </div>
                         </div>
                     </div>
@@ -119,8 +127,8 @@
                 <!-- Avviso in caso nessun risultato corrisponda al filtro -->
                 <div id="noSessioniMatchFilter" class="card shadow-sm border-0 rounded-3 p-4 text-center text-muted d-none mb-4 bg-white">
                     <i class="bi bi-funnel fs-3 text-secondary mb-2"></i>
-                    <h6 class="fw-bold m-0">Nessuna sessione trovata per l'anno selezionato.</h6>
-                    <small>Seleziona "Tutti gli anni" per mostrare nuovamente tutte le sessioni d'esame.</small>
+                    <h6 class="fw-bold m-0">Nessuna sessione trovata per i filtri selezionati.</h6>
+                    <small>Imposta "Tutti i corsi" e "Tutti gli anni" per mostrare nuovamente tutte le sessioni d'esame.</small>
                 </div>
 
                 <!-- Bottone Aggiungi Sessione -->
@@ -137,23 +145,33 @@
                             <table class="table table-hover table-striped align-middle mb-0">
                                 <thead class="table-light border-bottom">
                                     <tr>
-                                        <th class="ps-4 py-3 text-unibs" style="width: 25%;">Nome</th>
-                                        <th class="py-3 text-unibs text-center" style="width: 15%;">Anno</th>
-                                        <th class="py-3 text-unibs text-center" style="width: 25%;">Periodo</th>
-                                        <th class="py-3 text-unibs text-center" style="width: 15%;">N° Appelli</th>
-                                        <th class="pe-4 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
+                                        <th class="ps-4 py-3 text-unibs" style="width: 20%;">Nome</th>
+                                        <th class="py-3 text-unibs" style="width: 25%;">Corso di Studi</th>
+                                        <th class="py-3 text-unibs text-center" style="width: 8%;">Anno</th>
+                                        <th class="py-3 text-unibs text-center" style="width: 22%;">Periodo</th>
+                                        <th class="py-3 text-unibs text-center" style="width: 10%;">N° Appelli</th>
+                                        <th class="pe-4 py-3 text-unibs text-end" style="width: 15%;">Azioni</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($sessioni->sortBy('data_inizio') as $sessione)
+                                    @forelse($sessioni->sortBy([['data_inizio', 'asc'], ['corso_id', 'asc']]) as $sessione)
                                         @php
                                             // Verifica se la sessione si è conclusa prima di oggi
                                             $isPassata = \Carbon\Carbon::parse($sessione->data_fine)->lt(\Carbon\Carbon::today());
                                         @endphp
-                                        <tr class="sessione-row" data-anno="{{ $sessione->anno }}">
+                                        <tr class="sessione-row" data-anno="{{ $sessione->anno }}" data-corso="{{ $sessione->corso_id }}">
                                             <!-- Nome -->
                                             <td class="ps-4 py-3 fw-bold text-dark">
                                                 {{ $sessione->nome }}
+                                            </td>
+
+                                            <!-- Corso di Studi -->
+                                            <td class="py-3 text-dark">
+                                                @if($sessione->corso)
+                                                    {{ $sessione->corso->nome }} <span class="text-muted small">- {{ $sessione->corso->tipo_corso }}</span>
+                                                @else
+                                                    <span class="text-muted">Non assegnato</span>
+                                                @endif
                                             </td>
 
                                             <!-- Anno -->
@@ -198,7 +216,7 @@
                                                     <form action="{{ route('admin.sessioni.destroy', $sessione->sessione_id) }}" 
                                                           method="POST" 
                                                           class="d-inline m-0 p-0"
-                                                          data-confirm="Sei sicuro di voler eliminare la sessione '{{ $sessione->nome }}' dell'anno {{ $sessione->anno }}?">
+                                                          data-confirm="Sei sicuro di voler eliminare la sessione '{{ $sessione->nome }}' dell'anno {{ $sessione->anno }}{{ $sessione->corso ? ' per il corso ' . $sessione->corso->nome . ' (' . $sessione->corso->tipo_corso . ')' : '' }}?">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" 
@@ -213,7 +231,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted fw-medium">
+                                            <td colspan="6" class="text-center py-4 text-muted fw-medium">
                                                 <i class="bi bi-info-circle me-1 text-secondary"></i> Nessuna sessione d'esame registrata.
                                             </td>
                                         </tr>
@@ -227,22 +245,26 @@
             </div>
         </div>
 
-        <!-- Script Filtraggio Dinamico per Anno Sessione -->
+        <!-- Script Filtraggio Dinamico per Corso e Anno Sessione -->
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const filterSelect = document.getElementById('filtroAnnoSessione');
-                if (!filterSelect) return;
+                const filtroAnno = document.getElementById('filtroAnnoSessione');
+                const filtroCorso = document.getElementById('filtroCorsoSessione');
+                if (!filtroAnno || !filtroCorso) return;
 
                 const sessionRows = document.querySelectorAll('.sessione-row');
                 const noMatchAlert = document.getElementById('noSessioniMatchFilter');
 
-                filterSelect.addEventListener('change', () => {
-                    const selectedAnno = filterSelect.value;
+                function applicaFiltri() {
+                    const anno = filtroAnno.value;
+                    const corso = filtroCorso.value;
                     let visibleCount = 0;
 
                     sessionRows.forEach(row => {
-                        const rowAnno = row.getAttribute('data-anno');
-                        if (selectedAnno === 'tutti' || rowAnno === selectedAnno) {
+                        const okAnno = anno === 'tutti' || row.getAttribute('data-anno') === anno;
+                        const okCorso = corso === 'tutti' || row.getAttribute('data-corso') === corso;
+
+                        if (okAnno && okCorso) {
                             row.classList.remove('d-none');
                             visibleCount++;
                         } else {
@@ -250,12 +272,11 @@
                         }
                     });
 
-                    if (visibleCount === 0) {
-                        noMatchAlert.classList.remove('d-none');
-                    } else {
-                        noMatchAlert.classList.add('d-none');
-                    }
-                });
+                    noMatchAlert.classList.toggle('d-none', visibleCount !== 0 || sessionRows.length === 0);
+                }
+
+                filtroAnno.addEventListener('change', applicaFiltri);
+                filtroCorso.addEventListener('change', applicaFiltri);
             });
         </script>
 

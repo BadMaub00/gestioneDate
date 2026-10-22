@@ -16,12 +16,32 @@ class Sessione extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'corso_id',
         'data_inizio', 
         'data_fine', 
         'nome', 
         'anno', 
         'numero_appelli'
     ];
+
+    public function corso()
+    {
+        return $this->belongsTo(Corso::class, 'corso_id', 'corso_id');
+    }
+
+    /**
+     * Le "sorelle" di questa sessione: le righe create insieme per altri corsi
+     * (stesso nome, anno, periodo e numero di appelli). Include la sessione stessa.
+     */
+    public function gruppo()
+    {
+        return static::where('nome', $this->nome)
+            ->where('anno', $this->anno)
+            ->where('data_inizio', $this->data_inizio)
+            ->where('data_fine', $this->data_fine)
+            ->where('numero_appelli', $this->numero_appelli)
+            ->get();
+    }
 
     public function appelli()
     {

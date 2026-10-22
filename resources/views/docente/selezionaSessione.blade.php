@@ -84,23 +84,50 @@
                             </div>
 
                             <div class="card-body p-4 bg-white">
+                                @if($errors->any())
+                                    <div class="alert alert-danger rounded-3 mb-3">
+                                        <ul class="m-0 ps-3">
+                                            @foreach($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                @endif
+
                                 <form action="{{ route('docente.procediCalendario') }}" method="POST">
                                     @csrf
 
-                                    <div class="mb-4">
-                                        <label for="sessione_id" class="form-label fw-bold text-dark mb-2">
-                                            Scegli una sessione disponibile:
+                                    <!-- 1. SELECT CORSO -->
+                                    <div class="mb-3">
+                                        <label for="corso_id" class="form-label fw-bold text-dark mb-2">
+                                            1. Corso di Studi:
                                         </label>
-                                        
-                                        <select class="form-select border-2 border-unibs shadow-none py-2" id="sessione_id" name="sessione_id" required>
-                                            <option value="" selected disabled>-- Seleziona Sessione --</option>
-                                            @forelse($sessioni as $sessione)
-                                                <option value="{{ $sessione->sessione_id }}">
-                                                    {{ $sessione->nome }} ({{ $sessione->anno }}) - [dal {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}]
+                                        <select class="form-select border-2 border-unibs shadow-none py-2" id="corso_id" name="corso_id" required>
+                                            <option value="" selected disabled>-- Seleziona Corso --</option>
+                                            @forelse($corsi as $corso)
+                                                <option value="{{ $corso->corso_id }}" {{ old('corso_id') == $corso->corso_id ? 'selected' : '' }}>
+                                                    {{ $corso->nome }} - {{ $corso->tipo_corso }}
                                                 </option>
                                             @empty
-                                                <option value="" disabled>Nessuna sessione d'esame trovata</option>
+                                                <option value="" disabled>Nessun corso disponibile</option>
                                             @endforelse
+                                        </select>
+                                    </div>
+
+                                    <!-- 2. SELECT SESSIONE (dipende dal corso) -->
+                                    <div class="mb-4">
+                                        <label for="sessione_id" class="form-label fw-bold text-dark mb-2">
+                                            2. Sessione d'Esame:
+                                        </label>
+                                        <select class="form-select border-2 border-unibs shadow-none py-2" id="sessione_id" name="sessione_id" required disabled
+                                                data-testo-vuoto="-- Seleziona prima un Corso --"
+                                                data-testo-attivo="-- Seleziona Sessione --">
+                                            <option value="" selected disabled>-- Seleziona prima un Corso --</option>
+                                            @foreach($sessioni as $sessione)
+                                                <option value="{{ $sessione->sessione_id }}" data-corso="{{ $sessione->corso_id }}" {{ old('sessione_id') == $sessione->sessione_id ? 'selected' : '' }}>
+                                                    {{ $sessione->nome }} ({{ $sessione->anno }}) - [dal {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}]
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
 
@@ -121,5 +148,6 @@
             </div>
         </div>
 
+            <script src="{{ asset('js/sessioniPerCorso.js') }}"></script>
     </body>
 </html>

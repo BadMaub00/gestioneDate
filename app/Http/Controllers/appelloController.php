@@ -44,12 +44,15 @@ class appelloController extends Controller
         $this->autorizza((int) $request->ins_corso_id);
 
         $sessione = Sessione::findOrFail($request->sessione_id);
+        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($request->ins_corso_id);
+
+        if ((int) $sessione->corso_id !== (int) $insegnamentoCorso->corso_id) {
+            return back()->with('error', 'Questa sessione non appartiene al corso dell\'insegnamento.');
+        }
 
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile creare un appello per una sessione già conclusa.');
         }
-
-        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($request->ins_corso_id);
         $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
 
         return view('docente.appelli.create', compact('sessione', 'insegnamentoCorso', 'edifici'));
@@ -65,6 +68,11 @@ class appelloController extends Controller
         $this->autorizza((int) $request->ins_corso_id);
 
         $sessione = Sessione::findOrFail($request->sessione_id);
+        $insegnamentoCorso = InsegnamentiCorso::findOrFail($request->ins_corso_id);
+
+        if ((int) $sessione->corso_id !== (int) $insegnamentoCorso->corso_id) {
+            return back()->withErrors(['sessione_id' => 'La sessione selezionata non appartiene al corso di questo insegnamento.'])->withInput();
+        }
 
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile creare un appello per una sessione già conclusa.');

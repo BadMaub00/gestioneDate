@@ -78,6 +78,8 @@
                                     <input type="text" name="nome" id="nome" class="form-control" placeholder="es. Sessione Invernale" required value="{{ old('nome') }}">
                                 </div>
 
+                                @include('admin.sessioni._corsi', ['corsi' => $corsi, 'selezionati' => []])
+
                                 <div class="mb-3">
                                     <label for="numero_appelli" class="form-label fw-bold">N° Appelli Previsti (1-4) <span class="text-danger">*</span></label>
                                     <input type="number" name="numero_appelli" id="numero_appelli" class="form-control" min="1" max="4" required value="{{ old('numero_appelli', 2) }}">
@@ -114,5 +116,6 @@
 
         <!-- Collegamento allo script esterno -->
         <script src="{{ asset('js/createSessione.js') }}"></script>
+        <script src="{{ asset('js/selezioneCorsiSessione.js') }}"></script>
     </body>
 </html>

@@ -93,20 +93,7 @@
                 <div class="card-body p-3">
                     <form action="{{ route('admin.calendario') }}" method="GET" class="row g-3 align-items-end">
                         
-                        <!-- 1. Filtro Sessione (Facoltativo) -->
-                        <div class="col-12 col-md-3">
-                            <label for="sessione_id" class="form-label fw-bold text-dark small mb-1">Sessione:</label>
-                            <select name="sessione_id" id="sessione_id" class="form-select form-select-sm shadow-sm">
-                                <option value="">-- Tutte le Sessioni --</option>
-                                @foreach($sessioni as $sessione)
-                                    <option value="{{ $sessione->sessione_id }}" {{ ($sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
-                                        {{ $sessione->nome }} ({{ $sessione->anno }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- 2. Filtro Corso (Facoltativo) -->
+                        <!-- 1. Filtro Corso (Facoltativo) -->
                         <div class="col-12 col-md-3">
                             <label for="corso_id" class="form-label fw-bold text-dark small mb-1">Corso di Laurea:</label>
                             <select name="corso_id" id="corso_id" class="form-select form-select-sm shadow-sm">
@@ -121,7 +108,25 @@
                             </select>
                         </div>
 
-                        <!-- 3. Filtro Anno di Corso (Disabilitato se nessun corso è selezionato) -->
+                        <!-- 2. Filtro Sessione (dipende dal corso scelto) -->
+                        <div class="col-12 col-md-3">
+                            <label for="sessione_id" class="form-label fw-bold text-dark small mb-1">Sessione:</label>
+                            <select name="sessione_id" id="sessione_id" class="form-select form-select-sm shadow-sm"
+                                    data-testo-vuoto="-- Seleziona prima un Corso --"
+                                    data-testo-attivo="-- Tutte le Sessioni del corso --"
+                                    {{ $corso_id ? '' : 'disabled' }}>
+                                <option value="">-- {{ $corso_id ? 'Tutte le Sessioni del corso' : 'Seleziona prima un Corso' }} --</option>
+                                @foreach($sessioni as $sessione)
+                                    <option value="{{ $sessione->sessione_id }}" 
+                                            data-corso="{{ $sessione->corso_id }}"
+                                            {{ ($sessione_id == $sessione->sessione_id) ? 'selected' : '' }}>
+                                        {{ $sessione->nome }} ({{ $sessione->anno }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- 3. Filtro Anno di Corso (dipende dal corso scelto) -->
                         <div class="col-12 col-md-3">
                             <label for="anno_di_corso" class="form-label fw-bold text-dark small mb-1">Anno di Corso:</label>
                             <select name="anno_di_corso" 
@@ -163,7 +168,7 @@
                     <div class="card shadow-sm border-0 rounded-3 mb-4 overflow-hidden">
                         <div class="card-header bg-unibs text-white py-3 px-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2">
                             <h5 class="m-0 fw-bold fs-6">
-                                <i class="bi bi-calendar-range-fill me-2"></i>Sessione: {{ $sessione->nome }} ({{ $sessione->anno }})
+                                <i class="bi bi-calendar-range-fill me-2"></i>Sessione: {{ $sessione->nome }} ({{ $sessione->anno }}){{ $sessione->corso ? ' - ' . $sessione->corso->nome . ' (' . $sessione->corso->tipo_corso . ')' : '' }}
                             </h5>
                             <span class="badge bg-white text-unibs fw-bold px-3 py-1.5 rounded-pill align-self-start align-self-md-auto">
                                 Periodo: {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}
@@ -284,6 +289,7 @@
 
         <!-- Collegamento allo script dei filtri del calendario -->
         <script src="{{ asset('js/filtriCalendario.js') }}"></script>
+        <script src="{{ asset('js/sessioniPerCorso.js') }}"></script>
 
     </body>
 </html>

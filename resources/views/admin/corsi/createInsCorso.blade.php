@@ -58,7 +58,7 @@
 
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                            <i class="bi bi-person-plus-fill me-2"></i>Associa Docente a Insegnamento
+                            <i class="bi bi-person-plus-fill me-2"></i>Aggiungi Insegnamento al Corso
                         </h1>
                         <a href="{{ route('admin.corsi.piano_di_studi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
                             <i class="bi bi-arrow-left me-1"></i>Torna Indietro
