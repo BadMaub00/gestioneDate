@@ -75,6 +75,10 @@ class appelloController extends Controller
             return back()->withErrors(['sessione_id' => 'La sessione selezionata non appartiene al corso di questo insegnamento.'])->withInput();
         }
 
+        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
+            return back()->with('error', 'Impossibile creare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        }
+
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile creare un appello per una sessione già conclusa.');
         }
@@ -118,12 +122,17 @@ class appelloController extends Controller
         ])->findOrFail($id);
 
         $this->autorizza((int) $appello->ins_corso_id);
+        $sessione = $appello->sessione;
+
+        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
+            return back()->with('error', 'Impossibile modificare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        }
 
         if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
         }
 
-        $sessione = $appello->sessione;
+       
         $edifici = Edificio::with('aule')->orderBy('nome', 'asc')->get();
         $aule = Aula::orderBy('nome', 'asc')->get();
 
@@ -137,6 +146,10 @@ class appelloController extends Controller
         $this->autorizza((int) $appello->ins_corso_id);
 
         $sessione = $appello->sessione;
+
+        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
+            return back()->with('error', 'Impossibile modificare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        }
 
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile modificare un appello appartenente a una sessione passata.');
@@ -164,6 +177,11 @@ class appelloController extends Controller
         $appello = Appello::with('sessione')->findOrFail($id);
 
         $this->autorizza((int) $appello->ins_corso_id);
+        $sessione = $appello->sessione;
+
+        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
+            return back()->with('error', 'Impossibile eliminare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        }
 
         if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile eliminare un appello appartenente a una sessione passata.');
