@@ -90,7 +90,7 @@
 
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0">
+                            <table class="table table-hover table-striped align-middle mb-0">
                                 <thead class="table-light border-bottom">
                                     <tr>
                                         <th class="py-3 ps-4 text-unibs fw-bold" style="width: 32%;">Insegnamento</th>
@@ -108,8 +108,11 @@
                                             </td>
 
                                             <!-- Corso di Studi -->
-                                            <td class="py-3 text-dark fw-medium">
-                                                {{ $insC->corso->nome }}
+                                            <td class="py-3 text-dark">
+                                                <div class="fw-medium">{{ $insC->corso->nome }}</div>
+                                                <div class="small text-muted fst-italic mt-1">
+                                                    <i class="bi bi-bar-chart-steps me-1 text-unibs"></i>Anno di corso: {{ $insC->anno_di_corso }}
+                                                </div>
                                             </td>
 
                                             <!-- Ruolo Docente -->
