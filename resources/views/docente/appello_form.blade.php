@@ -189,10 +189,11 @@
                                 <table class="table table-hover table-striped align-middle mb-0">
                                     <thead class="table-light border-bottom">
                                         <tr>
-                                            <th class="ps-4 py-3 text-unibs" style="width: 25%;">Data & Orario</th>
-                                            <th class="py-3 text-unibs" style="width: 30%;">Insegnamento</th>
-                                            <th class="py-3 text-unibs" style="width: 25%;">Sede d'Esame</th>
-                                            <th class="pe-4 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
+                                            <th class="ps-4 py-3 text-unibs" style="width: 20%;">Data & Orario</th>
+                                            <th class="py-3 text-unibs" style="width: 25%;">Insegnamento</th>
+                                            <th class="py-3 text-unibs" style="width: 20%;">Sede d'Esame</th>
+                                            <th class="py-3 text-unibs" style="width: 20%;">Note / Info</th>
+                                            <th class="pe-4 py-3 text-unibs text-end" style="width: 15%;">Azioni</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -226,6 +227,17 @@
                                                     <div class="small text-muted">
                                                         {{ $appello->aula->edificio->nome ?? 'Edificio N/D' }}
                                                     </div>
+                                                </td>
+
+                                                <!-- Note / Info Aggiuntive -->
+                                                <td class="py-3 text-dark">
+                                                    @if(!empty($appello->note))
+                                                        <span class="small text-muted d-block text-break" style="max-width: 220px;">
+                                                            <i class="bi bi-chat-left-text-fill text-unibs me-1"></i>{{ $appello->note }}
+                                                        </span>
+                                                    @else
+                                                        <span class="small text-muted fst-italic">Nessuna nota</span>
+                                                    @endif
                                                 </td>
 
                                                 <!-- Azioni -->
@@ -275,7 +287,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="text-center py-4 text-muted fw-medium">
+                                                <td colspan="5" class="text-center py-4 text-muted fw-medium">
                                                     <i class="bi bi-info-circle me-1 text-secondary"></i> Nessun appello fissato per questo insegnamento in questa sessione.
                                                 </td>
                                             </tr>

@@ -216,6 +216,21 @@
                                 </select>
                             </div>
 
+                            <!-- 6. Note / Informazioni Aggiuntive -->
+                            <div class="col-12">
+                                <label for="note" class="form-label fw-bold text-dark small mb-1">
+                                    Note / Informazioni Aggiuntive <span class="text-muted fw-normal">(opzionale)</span>
+                                </label>
+                                <textarea name="note" 
+                                          id="note" 
+                                          class="form-control shadow-sm @error('note') is-invalid @enderror" 
+                                          rows="3" 
+                                          placeholder="Es. Modalità d'esame, uso calcolatrice, suddivisione turni, materiale consentito...">{{ old('note', $appello->note ?? '') }}</textarea>
+                                @error('note')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                         </div>
 
                         <!-- Bottoni d'Azione -->

@@ -159,7 +159,7 @@
                                 </div>
 
                                 <!-- Selezione Aula -->
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="aula_id" class="form-label fw-bold small text-dark">Aula <span class="text-danger">*</span></label>
                                     <select name="aula_id" id="aula_id" class="form-select shadow-sm" required>
                                         <option value="" disabled>-- Seleziona prima un Edificio --</option>
@@ -171,6 +171,19 @@
                                             </option>
                                         @endforeach
                                     </select>
+                                </div>
+
+                                <!-- Note / Informazioni Aggiuntive -->
+                                <div class="mb-4">
+                                    <label for="note" class="form-label fw-bold small text-dark">Note / Informazioni Aggiuntive (opzionale)</label>
+                                    <textarea name="note" 
+                                              id="note" 
+                                              class="form-control shadow-sm @error('note') is-invalid @enderror" 
+                                              rows="3" 
+                                              placeholder="Es. Modalità d'esame, uso calcolatrice, suddivisione turni...">{{ old('note', $appello->note ?? '') }}</textarea>
+                                    @error('note')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="d-grid">

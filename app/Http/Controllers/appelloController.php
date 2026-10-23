@@ -99,6 +99,7 @@ class appelloController extends Controller
                 'sessione_id'  => 'required|exists:sessione_esami,sessione_id',
                 'ins_corso_id' => 'required|exists:insegnamento_corso,ins_corso_id',
                 'aula_id'      => 'required|exists:aula,aula_id',
+                'note'         => 'nullable|string|max:500',
             ],
             AppelloRules::messaggi($sessione)
         );
@@ -159,6 +160,7 @@ class appelloController extends Controller
         $validated = $request->validate(
             AppelloRules::regole($sessione) + [
                 'aula_id' => 'required|exists:aula,aula_id',
+                'note'         => 'nullable|string|max:500',
             ],
             AppelloRules::messaggi($sessione)
         );

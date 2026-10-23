@@ -20,6 +20,7 @@ class Appello extends Model
         'ora_inizio', 
         'ora_fine',
         'aula_id',
+        'note',
     ];
 
     public function sessione()

@@ -79,7 +79,7 @@
                 <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
                     <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i>Attenzione:</div>
                     <ul class="mb-0 ps-3">
-                        @foreach ($errors->all() as $error)
+                        @foreach ($errors->all() as$error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
@@ -117,7 +117,7 @@
                                                 <i class="bi bi-book-fill me-2 text-unibs"></i>{{ $insegnamentoCorso->insegnamento->nome }}
                                             </h6>
                                             <small class="text-muted mt-1">
-                                                Corso: <strong>{{ $insegnamentoCorso->corso->nome }}</strong> ({{ $insegnamentoCorso->anno_di_corso }}° Anno)
+                                                Corso: <strong>{{ $insegnamentoCorso->corso->nome }}</strong> ({{$insegnamentoCorso->anno_di_corso }}° Anno)
                                             </small>
                                         </div>
                                     </div>
@@ -127,7 +127,7 @@
                                         <div class="card bg-light border-unibs border-start border-4 rounded-3 p-3 h-100">
                                             <span class="badge bg-unibs text-white px-2.5 py-1 mb-1 align-self-start">Sessione d'Esame</span>
                                             <h6 class="fw-bold text-dark m-0 fs-6">
-                                                <i class="bi bi-calendar-range-fill me-2 text-unibs"></i>{{ $sessione->nome }} ({{ $sessione->anno }})
+                                                <i class="bi bi-calendar-range-fill me-2 text-unibs"></i>{{ $sessione->nome }} ({{$sessione->anno }})
                                             </h6>
                                             <small class="text-muted mt-1">
                                                 Periodo: 
@@ -178,7 +178,7 @@
                                 </label>
                                 <select id="edificio_id" class="form-select shadow-sm" required>
                                     <option value="" disabled selected>-- Seleziona Edificio --</option>
-                                    @foreach($edifici as $edificio)
+                                    @foreach($edifici as$edificio)
                                         <option value="{{ $edificio->edificio_id }}">
                                             {{ $edificio->nome }}
                                         </option>
@@ -193,16 +193,31 @@
                                 </label>
                                 <select name="aula_id" id="aula_id" class="form-select shadow-sm" required disabled>
                                     <option value="" disabled selected>-- Seleziona prima l'Edificio --</option>
-                                    @foreach($edifici as $edificio)
-                                        @foreach($edificio->aule as $aula)
+                                    @foreach($edifici as$edificio)
+                                        @foreach($edificio->aule as$aula)
                                             <option value="{{ $aula->aula_id }}" 
                                                     data-edificio-id="{{ $edificio->edificio_id }}"
                                                     {{ old('aula_id') == $aula->aula_id ? 'selected' : '' }}>
-                                                {{ $aula->nome }} (Capienza: {{ $aula->capienza ?? 'N/D' }})
+                                                {{ $aula->nome }} (Capienza: {{$aula->capienza ?? 'N/D' }})
                                             </option>
                                         @endforeach
                                     @endforeach
                                 </select>
+                            </div>
+
+                            <!-- 6. Note / Informazioni Aggiuntive -->
+                            <div class="col-12">
+                                <label for="note" class="form-label fw-bold text-dark small mb-1">
+                                    Note / Informazioni Aggiuntive <span class="text-muted fw-normal">(opzionale)</span>
+                                </label>
+                                <textarea name="note" 
+                                          id="note" 
+                                          class="form-control shadow-sm @error('note') is-invalid @enderror" 
+                                          rows="3" 
+                                          placeholder="Es. Modalità d'esame, uso calcolatrice, suddivisione turni, materiale consentito...">{{ old('note') }}</textarea>
+                                @error('note')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
                         </div>

@@ -231,6 +231,7 @@ class adminController extends Controller
                 'edificio_id' => 'required|exists:edificio,edificio_id',
                 // l'aula deve appartenere all'edificio scelto
                 'aula_id'     => ['required', Rule::exists('aula', 'aula_id')->where('edificio_id', $request->input('edificio_id'))],
+                'note'        => 'nullable|string|max:500',
             ],
             AppelloRules::messaggi($sessione) + [
                 'aula_id.exists' => "L'aula selezionata non appartiene all'edificio scelto.",
@@ -246,6 +247,7 @@ class adminController extends Controller
             'ora_inizio' => $validatedData['ora_inizio'],
             'ora_fine'   => $validatedData['ora_fine'],
             'aula_id'    => $validatedData['aula_id'],
+            'note'       => $validatedData['note'],
         ]);
 
         return redirect()->route('admin.calendario', [
