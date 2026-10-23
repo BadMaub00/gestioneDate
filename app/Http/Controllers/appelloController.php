@@ -30,6 +30,7 @@ class appelloController extends Controller
 
         $associato = DocenteInsegnamento::where('utente_id', $utente->getKey())
             ->where('ins_corso_id', $insCorsoId)
+            ->where('ruolo', 'Primario')
             ->exists();
 
         abort_unless($associato, 403, 'Non sei associato a questo insegnamento.');
