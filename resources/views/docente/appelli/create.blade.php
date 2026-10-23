@@ -79,7 +79,7 @@
                 <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
                     <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i>Attenzione:</div>
                     <ul class="mb-0 ps-3">
-                        @foreach ($errors->all() as$error)
+                        @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
@@ -178,7 +178,7 @@
                                 </label>
                                 <select id="edificio_id" class="form-select shadow-sm" required>
                                     <option value="" disabled selected>-- Seleziona Edificio --</option>
-                                    @foreach($edifici as$edificio)
+                                    @foreach($edifici as $edificio)
                                         <option value="{{ $edificio->edificio_id }}">
                                             {{ $edificio->nome }}
                                         </option>
@@ -193,8 +193,8 @@
                                 </label>
                                 <select name="aula_id" id="aula_id" class="form-select shadow-sm" required disabled>
                                     <option value="" disabled selected>-- Seleziona prima l'Edificio --</option>
-                                    @foreach($edifici as$edificio)
-                                        @foreach($edificio->aule as$aula)
+                                    @foreach($edifici as $edificio)
+                                        @foreach($edificio->aule as $aula)
                                             <option value="{{ $aula->aula_id }}" 
                                                     data-edificio-id="{{ $edificio->edificio_id }}"
                                                     {{ old('aula_id') == $aula->aula_id ? 'selected' : '' }}>

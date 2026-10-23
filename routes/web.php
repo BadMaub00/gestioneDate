@@ -6,6 +6,8 @@ use App\Http\Controllers\docenteController;
 use App\Http\Controllers\appelloController;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\sessioneController;
+use App\Http\Controllers\CorsoController;
+
 use App\Http\Middleware\AdminMiddleware;
 
 // Autenticazione e Login
@@ -59,20 +61,20 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
     
     // 2. Corsi di Laurea e Piani di Studi (admin/corsi)
-    Route::get('/corsi', [adminController::class, 'indexCorsi'])->name('admin.corsi.index');
-    Route::get('/corsi/crea', [adminController::class, 'createCorso'])->name('admin.corsi.create');
-    Route::post('/corsi', [adminController::class, 'storeCorso'])->name('admin.corsi.store');
-    Route::get('/corsi/{corso_id}/piano-di-studi', [adminController::class, 'viewPianoDiStudi'])->name('admin.corsi.piano_di_studi');
-    Route::get('/corsi/{corso_id}/modifica', [adminController::class, 'editCorso'])->name('admin.corsi.edit');
-    Route::put('/corsi/{corso_id}', [adminController::class, 'updateCorso'])->name('admin.corsi.update');
+    Route::get('/corsi', [CorsoController::class, 'index'])->name('admin.corsi.index');
+    Route::get('/corsi/crea', [CorsoController::class, 'create'])->name('admin.corsi.create');
+    Route::post('/corsi', [CorsoController::class, 'store'])->name('admin.corsi.store');
+    Route::get('/corsi/{corso_id}/piano-di-studi', [CorsoController::class, 'viewPianoDiStudi'])->name('admin.corsi.piano_di_studi');
+    Route::get('/corsi/{corso_id}/modifica', [CorsoController::class, 'edit'])->name('admin.corsi.edit');
+    Route::put('/corsi/{corso_id}', [CorsoController::class, 'update'])->name('admin.corsi.update');
+    Route::delete('/corsi/{corso_id}', [CorsoController::class, 'destroy'])->name('admin.corsi.destroy');
     
     // Gestione Insegnamenti del Piano di Studi
-    Route::get('/corsi/{corso_id}/insegnamenti/crea', [adminController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
-    Route::post('/corsi/{corso_id}/insegnamenti', [adminController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
+    Route::get('/corsi/{corso_id}/insegnamenti/crea', [CorsoController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
+    Route::post('/corsi/{corso_id}/insegnamenti', [CorsoController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
     Route::delete('/corsi/insegnamenti/{id}', [adminController::class, 'destroyInsegnamentoCorso'])->name('admin.corsi.insegnamenti.destroy');
-    // Modifica Insegnamento del Piano di Studi
-    Route::get('/corsi/insegnamenti/{id}/edit', [adminController::class, 'editInsegnamentoCorso'])->name('admin.corsi.insegnamenti.edit');
-    Route::put('/corsi/insegnamenti/{id}', [adminController::class, 'updateInsegnamentoCorso'])->name('admin.corsi.insegnamenti.update');
+    Route::get('/corsi/insegnamenti/{id}/edit', [CorsoController::class, 'editInsegnamentoCorso'])->name('admin.corsi.insegnamenti.edit');
+    Route::put('/corsi/insegnamenti/{id}', [CorsoController::class, 'updateInsegnamentoCorso'])->name('admin.corsi.insegnamenti.update');
    
    
     // 3. Personale e Associazioni (admin/personale)

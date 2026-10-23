@@ -24,19 +24,6 @@ class adminController extends Controller
         return view('admin.dashboard', compact('sessioni'));
     }
 
-    public function indexCorsi() {
-        $corsi = Corso::orderBy('nome', 'asc')->get();
-        return view('admin.corsi.index', compact('corsi'));
-    }
-
-    public function viewPianoDiStudi($corso_id) {
-        $corso = Corso::with(['insegnamenti' => fn($q) => $q->orderBy('anno_di_corso', 'asc')])->findOrFail($corso_id);
-        $insegnamentiPerAnno = $corso->insegnamenti->groupBy('anno_di_corso');
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-
-        return view('admin.corsi.piano_di_studi', compact('corso', 'insegnamentiPerAnno', 'durataAnni'));
-    }
-
     // --- PERSONALE ---
 
     public function indexPersonale() {
@@ -273,7 +260,7 @@ class adminController extends Controller
         ])->with('success', 'Appello eliminato con successo.');
     }
 
-    // --- INSEGNAMENTI E CORSI ---
+    // --- INSEGNAMENTI ---
 
     public function indexInsegnamenti() {
         $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
@@ -309,100 +296,6 @@ class adminController extends Controller
         $insegnamento->update($validated);
 
         return redirect()->route('admin.insegnamenti.index')->with('success', 'Insegnamento aggiornato con successo!');
-    }
-
-    public function createCorso() {
-        return view('admin.corsi.create');
-    }
-
-    public function storeCorso(Request $request) {
-        Corso::create($request->validate([
-            'nome'       => 'required|string|max:150',
-            'tipo_corso' => 'required|in:Triennale,Magistrale,Magistrale a ciclo unico',
-        ]));
-        return redirect()->route('admin.corsi.index')->with('success', 'Corso di laurea creato con successo!');
-    }
-
-    public function createInsegnamentoCorso($corso_id)
-    {
-        $corso = Corso::findOrFail($corso_id);
-        $insegnamenti = Insegnamento::all();
-
-        return view('admin.corsi.createInsCorso', compact('corso', 'insegnamenti'));
-    }
-
-    public function storeInsegnamentoCorso(Request $request, $corso_id) {
-        $corso = Corso::findOrFail($corso_id);
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-
-        $data = $request->validate([
-            'insegnamento_id' => 'required|exists:insegnamento,insegnamento_id',
-            'anno_di_corso'   => "required|integer|min:1|max:{$durataAnni}",
-            'cfu'             => 'required|integer|min:1|max:30',
-            'durata'          => 'required|integer|min:1',
-        ]);
-
-        $giaPresente = InsegnamentiCorso::where('corso_id', $corso_id)
-            ->where('insegnamento_id', $data['insegnamento_id'])
-            ->exists();
-
-        if ($giaPresente) {
-            return back()
-                ->withErrors(['insegnamento_id' => 'Questo insegnamento fa già parte del piano di studi di questo corso!'])
-                ->withInput();
-        }
-
-        $data['corso_id'] = $corso_id;
-        InsegnamentiCorso::create($data);
-
-        return redirect()->route('admin.corsi.piano_di_studi', $corso_id)
-            ->with('success', 'Insegnamento aggiunto al piano di studi con successo!');
-    }
-
-    public function editCorso($corso_id) {
-        $corso = Corso::findOrFail($corso_id);
-        return view('admin.corsi.edit', compact('corso'));
-    }
-
-    public function updateCorso(Request $request, $corso_id) {
-        $corso = Corso::findOrFail($corso_id);
-
-        $validated = $request->validate([
-            'nome'       => 'required|string|max:150',
-            'tipo_corso' => 'required|in:Triennale,Magistrale,Magistrale a ciclo unico',
-        ]);
-
-        $corso->update($validated);
-
-        return redirect()->route('admin.corsi.index')->with('success', 'Corso di laurea aggiornato con successo!');
-    }
-
-        public function editInsegnamentoCorso($id) {
-        $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($id);
-        $corso = $insegnamentoCorso->corso;
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-        $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
-
-        return view('admin.corsi.editInsCorso', compact('insegnamentoCorso', 'corso', 'durataAnni', 'insegnamenti'));
-    }
-
-    public function updateInsegnamentoCorso(Request $request, $id) {
-        $insegnamentoCorso = InsegnamentiCorso::findOrFail($id);
-        $corso = Corso::findOrFail($insegnamentoCorso->corso_id);
-        $durataAnni = $this->getDurataAnni($corso->tipo_corso);
-
-        // Validiamo solo Anno di Corso, CFU e Durata
-        $data = $request->validate([
-            'anno_di_corso' => "required|integer|min:1|max:{$durataAnni}",
-            'cfu'           => 'required|integer|min:1|max:30',
-            'durata'        => 'required|integer|min:1',
-        ]);
-
-        // Aggiornamento dei soli campi consentiti
-        $insegnamentoCorso->update($data);
-
-        return redirect()->route('admin.corsi.piano_di_studi', $insegnamentoCorso->corso_id)
-            ->with('success', 'Insegnamento del piano di studi aggiornato con successo!');
     }
 
     // --- CALENDARIO ---

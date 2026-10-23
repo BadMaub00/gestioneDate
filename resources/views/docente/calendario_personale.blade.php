@@ -135,7 +135,6 @@
                                                 <th class="ps-3 py-3 text-unibs" style="width: 25%;">Data & Orario</th>
                                                 <th class="py-3 text-unibs" style="width: 30%;">Insegnamento</th>
                                                 <th class="py-3 text-unibs" style="width: 25%;">Sede</th>
-                                                <th class="pe-3 py-3 text-unibs text-end" style="width: 20%;">Azioni</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -174,36 +173,6 @@
                                                             </div>
                                                             <div class="small text-muted">
                                                                 {{ $appello->aula->edificio->nome ?? 'Edificio N/D' }}
-                                                            </div>
-                                                        </td>
-
-                                                        <!-- Pulsanti Azione -->
-                                                        <td class="text-end pe-3 py-3 text-nowrap">
-                                                            <div class="d-flex justify-content-end gap-1">
-                                                                @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
-                                                                    <a href="{{ route('docente.appelli.edit', $appello->appello_id) }}" 
-                                                                       class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
-                                                                       style="width: 32px; height: 32px;" title="Modifica Appello">
-                                                                        <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
-                                                                    </a>
-
-                                                                    <form action="{{ route('docente.appelli.destroy', $appello->appello_id) }}" 
-                                                                          method="POST" class="d-inline m-0 p-0"
-                                                                          onsubmit="return confirm('Sei sicuro di voler eliminare questo appello?');">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;" title="Elimina Appello">
-                                                                            <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
-                                                                        </button>
-                                                                    </form>
-                                                                @else
-                                                                    <button type="button" class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" disabled style="width: 32px; height: 32px;" title="Azione riservata al docente primario">
-                                                                        <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
-                                                                    </button>
-                                                                    <button type="button" class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" disabled style="width: 32px; height: 32px;" title="Azione riservata al docente primario">
-                                                                        <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
-                                                                    </button>
-                                                                @endif
                                                             </div>
                                                         </td>
                                                     </tr>

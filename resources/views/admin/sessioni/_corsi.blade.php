@@ -8,8 +8,8 @@
     <div class="d-flex align-items-center justify-content-between mb-1">
         <label class="form-label fw-bold m-0">Corsi di Studi <span class="text-danger">*</span></label>
         <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" id="selezionaTuttiCorsi">Seleziona tutti</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" id="deselezionaTuttiCorsi">Deseleziona</button>
+            <button type="button" class="btn bg-white text-unibs border border-unibs fw-bold shadow-sm btn-sm py-0 px-2" id="selezionaTuttiCorsi">SELEZIONA TUTTI</button>
+            <button type="button" class="btn bg-white text-unibs border border-unibs fw-bold shadow-sm btn-sm py-0 px-2" id="deselezionaTuttiCorsi">DESELEZIONA</button>
         </div>
     </div>
 

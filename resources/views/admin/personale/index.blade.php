@@ -133,7 +133,7 @@
                                             </a>
 
                                             <!-- Pulsante Circolare Elimina con Modal Personalizzato -->
-                                            <form action="#" method="POST" class="d-inline m-0" data-confirm="Sei sicuro di voler eliminare l'utente '{{ $p->nome }} {{ $p->cognome }}'?">
+                                            <form action="{{ route('admin.personale.destroy', $p->utente_id) }}" method="POST" class="d-inline m-0" data-confirm="Sei sicuro di voler eliminare l'utente '{{ $p->nome }} {{ $p->cognome }}'?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Elimina Utente">

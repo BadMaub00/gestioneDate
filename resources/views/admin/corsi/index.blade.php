@@ -125,15 +125,15 @@
                                             </a>
 
                                             <!-- Tasto Elimina con Modal Personalizzato -->
-                                            <form action="#" 
-                                                  method="POST" 
-                                                  data-confirm="Sei sicuro di voler eliminare il corso '{{ $corso->nome }}'? Verranno rimossi anche i relativi piani di studio associati." 
-                                                  class="d-inline m-0">
+                                            <form action="{{ route('admin.corsi.destroy', $corso) }}" 
+                                                method="POST" 
+                                                data-confirm="Sei sicuro di voler eliminare il corso '{{ $corso->nome }}'? Verranno rimossi anche i relativi piani di studio associati." 
+                                                class="d-inline m-0">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" 
-                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                                        style="width: 36px; height: 36px;" 
+                                                <button type="submit"
+                                                        class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center"
+                                                        style="width: 36px; height: 36px;"
                                                         title="Elimina Corso">
                                                     <i class="bi bi-trash-fill"></i>
                                                 </button>
