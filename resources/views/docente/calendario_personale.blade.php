@@ -61,6 +61,7 @@
                         'ora_fine' => $appello->ora_fine,
                         'nome_insegnamento' => $insC->insegnamento->nome,
                         'nome_corso' => $insC->corso->nome,
+                        'anno_di_corso' => $insC->anno_di_corso,
                         'ruolo_docente' => $insC->ruolo_docente ?? 'Secondario',
                         'nome_aula' => $appello->aula->nome ?? 'N/D',
                         'nome_edificio' => $appello->aula->edificio->nome ?? 'N/D',
@@ -144,7 +145,7 @@
                                                     @php $hasAppelli = true; @endphp
                                                     <tr>
                                                         <!-- Data e Orario -->
-                                                        <td class="ps-3 py-2.5 text-dark fs-7">
+                                                        <td class="ps-3 py-3 text-dark fs-7">
                                                             <div class="fw-bold">
                                                                 <i class="bi bi-calendar-event text-unibs me-1"></i>
                                                                 {{ \Carbon\Carbon::parse($appello->data)->format('d/m/Y') }}
@@ -156,15 +157,18 @@
                                                         </td>
 
                                                         <!-- Insegnamento -->
-                                                        <td class="py-2.5 text-dark">
+                                                        <td class="py-3 text-dark">
                                                             <div class="fw-semibold text-dark">{{ $insC->insegnamento->nome }}</div>
-                                                            <div class="small text-muted fst-italic">
+                                                            <div class="small text-muted fst-italic mt-1">
                                                                 <i class="bi bi-mortarboard me-1 text-unibs"></i>{{ $insC->corso->nome }}
+                                                            </div>
+                                                            <div class="small text-muted fst-italic">
+                                                                <i class="bi bi-bar-chart-steps me-1 text-unibs"></i>Anno di corso: {{ $insC->anno_di_corso }}
                                                             </div>
                                                         </td>
 
                                                         <!-- Sede (Colonna Separata) -->
-                                                        <td class="py-2.5 text-dark">
+                                                        <td class="py-3 text-dark">
                                                             <div class="fw-semibold text-dark">
                                                                 <i class="bi bi-geo-alt-fill text-unibs me-1"></i>{{ $appello->aula->nome ?? 'Aula N/D' }}
                                                             </div>
@@ -174,7 +178,7 @@
                                                         </td>
 
                                                         <!-- Pulsanti Azione -->
-                                                        <td class="text-end pe-3 py-2.5 text-nowrap">
+                                                        <td class="text-end pe-3 py-3 text-nowrap">
                                                             <div class="d-flex justify-content-end gap-1">
                                                                 @if(($insC->ruolo_docente ?? 'Secondario') === 'Primario')
                                                                     <a href="{{ route('docente.appelli.edit', $appello->appello_id) }}" 

@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const oraInizio = app.ora_inizio.substring(0, 5);
                         const oraFine = app.ora_fine.substring(0, 5);
                         const corsoStr = app.nome_corso || 'Corso non specificato';
+                        const annoStr = app.anno_di_corso ? `Anno ${app.anno_di_corso}` : 'Anno N/D';
                         const aulaStr = app.nome_aula || 'Aula N/D';
                         const edificioStr = app.nome_edificio || 'Edificio N/D';
 
@@ -161,8 +162,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                             ${edificioStr}
                                         </div>
                                     </div>
-                                    <div class="small fst-italic text-truncate opacity-90 mt-1" style="font-size: 0.75rem;" title="${corsoStr}">
-                                        <i class="bi bi-mortarboard"></i> ${corsoStr}
+                                    <div class="mt-1">
+                                        <div class="small fst-italic text-truncate opacity-90" style="font-size: 0.75rem;" title="${corsoStr}">
+                                            <i class="bi bi-mortarboard"></i> ${corsoStr}
+                                        </div>
+                                        <div class="small fst-italic text-truncate opacity-90" style="font-size: 0.75rem;" title="${annoStr}">
+                                            <i class="bi bi-bar-chart-steps"></i> ${annoStr}
+                                        </div>
                                     </div>
                                 </div>`;
                         }

@@ -21,6 +21,7 @@ class appelloController extends Controller
      */
     private function autorizza(int $insCorsoId): void
     {
+        /** @var Utente $utente */
         $utente = Auth::user();
 
         if ($utente->ruolo === 'Amministratore') {

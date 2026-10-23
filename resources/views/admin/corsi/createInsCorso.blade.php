@@ -105,7 +105,7 @@
                                         @php
                                             $durataAnni = match($corso->tipo_corso ?? '') {
                                                 'Magistrale' => 2,
-                                                'Ciclo Unico' => 5,
+                                                'Magistrale a ciclo unico' => 5,
                                                 default => 3,
                                             };
                                         @endphp
