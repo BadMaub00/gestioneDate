@@ -160,7 +160,7 @@ class appelloController extends Controller
         $validated = $request->validate(
             AppelloRules::regole($sessione) + [
                 'aula_id' => 'required|exists:aula,aula_id',
-                'note'         => 'nullable|string|max:500',
+                'note' => 'nullable|string|max:500',
             ],
             AppelloRules::messaggi($sessione)
         );
