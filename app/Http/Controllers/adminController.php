@@ -175,7 +175,7 @@ class adminController extends Controller
         }
 
         DocenteInsegnamento::create($validated);
-        return redirect()->route('admin.personale.associazioni_index.index')->with('success', 'Docente associato con successo!');
+        return redirect()->route('admin.personale.associazioni_index')->with('success', 'Docente associato con successo!');
     }
 
     public function destroyAssociazioneDocente($id) {
@@ -229,13 +229,18 @@ class adminController extends Controller
             return back()->withErrors($errore)->withInput();
         }
 
-        $appello->update([
+        $campi = [
             'data'       => $validatedData['data'],
             'ora_inizio' => $validatedData['ora_inizio'],
             'ora_fine'   => $validatedData['ora_fine'],
             'aula_id'    => $validatedData['aula_id'],
-            'note'       => $validatedData['note'],
-        ]);
+        ];
+        // le note si aggiornano solo se il campo è stato inviato (il form lo invia sempre; vuoto = cancella)
+        if (array_key_exists('note', $validatedData)) {
+            $campi['note'] = $validatedData['note'];
+        }
+
+        $appello->update($campi);
 
         return redirect()->route('admin.calendario', [
             'sessione_id' => $appello->sessione_id,

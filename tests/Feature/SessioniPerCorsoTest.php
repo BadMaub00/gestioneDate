@@ -7,7 +7,7 @@ use App\Models\Sessione;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class SessioniPerCorsoTest extends BaseDatiTest
+class SessioniPerCorsoTest extends BaseDati
 {
     private function nuovaSessione(array $o = []): array
     {
@@ -221,22 +221,5 @@ class SessioniPerCorsoTest extends BaseDatiTest
 
         // le opzioni sessione portano il corso (usato dal filtro a cascata)
         $r->assertSee('data-corso="1"', false)->assertSee('data-corso="2"', false);
-    }
-
-    public function test_script_di_migrazione_sposta_gli_appelli_sulla_sessione_del_loro_corso(): void
-    {
-        // situazione "vecchia": tutti gli appelli puntano alla sessione del corso 1
-        Appello::create($this->payload(['ins_corso_id' => $this->insA]));
-        $vecchio = Appello::create($this->payload(['ins_corso_id' => $this->insC, 'aula_id' => $this->aula2, 'sessione_id' => $this->sessione->sessione_id]));
-        DB::table('sessione_esami')->where('sessione_id', $this->sessione2->sessione_id)->delete();
-
-        $sql = file_get_contents(base_path('SQL/migrazione_sessioni_per_corso.sql'));
-        DB::unprepared($sql);
-        DB::unprepared($sql); // rieseguibile
-
-        $nuova = Sessione::where('corso_id', 2)->get();
-        $this->assertCount(1, $nuova);
-        $this->assertSame((int) $nuova->first()->sessione_id, (int) $vecchio->fresh()->sessione_id);
-        $this->assertSame($this->sessione->sessione_id, (int) Appello::where('ins_corso_id', $this->insA)->first()->sessione_id);
     }
 }

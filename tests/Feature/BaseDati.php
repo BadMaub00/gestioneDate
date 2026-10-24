@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
-abstract class BaseDatiTest extends TestCase
+abstract class BaseDati extends TestCase
 {
     protected Sessione $sessione;      // sessione del corso 1
     protected Sessione $sessione2;     // sessione del corso 2 (stesso periodo)

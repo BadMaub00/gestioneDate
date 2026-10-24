@@ -7,6 +7,7 @@ use App\Http\Controllers\appelloController;
 use App\Http\Controllers\adminController;
 use App\Http\Controllers\sessioneController;
 use App\Http\Controllers\CorsoController;
+use App\Http\Controllers\ImportExcelController;
 
 use App\Http\Middleware\AdminMiddleware;
 
@@ -59,6 +60,11 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
 
     // 1. Dashboard Admin
     Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
+
+    // Importazione da Excel di corsi, piani di studio e associazioni docenti
+    Route::get('/import', [ImportExcelController::class, 'index'])->name('admin.import.index');
+    Route::get('/import/modello', [ImportExcelController::class, 'modello'])->name('admin.import.modello');
+    Route::post('/import', [ImportExcelController::class, 'store'])->name('admin.import.store');
     
     // 2. Corsi di Laurea e Piani di Studi (admin/corsi)
     Route::get('/corsi', [CorsoController::class, 'index'])->name('admin.corsi.index');

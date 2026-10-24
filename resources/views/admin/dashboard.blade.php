@@ -144,6 +144,14 @@
                                     </a>
                                 </div>
 
+                                <!-- 8. Importa da Excel -->
+                                <div class="col-12 col-sm-4">
+                                    <a href="{{ route('admin.import.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                        <i class="bi bi-file-earmark-excel text-unibs fs-1 mb-2"></i>
+                                        <span class="fw-semibold">Importa da Excel</span>
+                                    </a>
+                                </div>
+
                             </div>
                         </div>
 

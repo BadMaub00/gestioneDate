@@ -6,7 +6,7 @@ use App\Models\Appello;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class AppelliRegoleTest extends BaseDatiTest
+class AppelliRegoleTest extends BaseDati
 {
     public function test_docente_crea_appello_proprio(): void
     {

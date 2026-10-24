@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\Utente;
 use Illuminate\Support\Facades\DB;
 
-class EliminazioniTest extends BaseDatiTest
+class EliminazioniTest extends BaseDati
 {
     /** Estrae action dei form di eliminazione (quelli con data-confirm) di una pagina. */
     private function formEliminazione(string $html, string $contiene): array
