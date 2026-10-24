@@ -13,6 +13,9 @@ class Appello extends Model
     protected $primaryKey = 'appello_id';
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'ins_corso_id', 
         'sessione_id', 

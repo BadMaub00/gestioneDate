@@ -13,6 +13,10 @@ class Utente extends Authenticatable
 
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
+
     public function incarichi()
     {
         return $this->hasMany(DocenteInsegnamento::class, 'utente_id', 'utente_id');

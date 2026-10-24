@@ -13,6 +13,10 @@ class Edificio extends Model
     protected $primaryKey = 'edificio_id';
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
+
     protected $fillable = [
         'nome',
         'via',

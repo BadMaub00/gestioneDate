@@ -10,6 +10,10 @@ class InsegnamentiCorso extends Model
     protected $primaryKey = 'ins_corso_id';
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
+
     protected $fillable = [
         'corso_id',
         'insegnamento_id',

@@ -13,6 +13,9 @@ class Aula extends Model
     protected $primaryKey = 'aula_id';
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'nome',
         'edificio_id',

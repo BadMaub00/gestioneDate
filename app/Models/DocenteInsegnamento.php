@@ -15,6 +15,9 @@ class DocenteInsegnamento extends Model
     // Disabilita la gestione automatica dei timestamp
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'ins_corso_id',
         'utente_id',

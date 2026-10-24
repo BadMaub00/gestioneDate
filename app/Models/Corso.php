@@ -15,6 +15,9 @@ class Corso extends Model
     // Disabilita la gestione automatica delle colonne created_at e updated_at
     public $timestamps = false;
 
+    public $incrementing = true;
+    protected $keyType = 'int';
+    
     protected $fillable = [
         'nome', 
         'tipo_corso'
