@@ -52,6 +52,10 @@ class appelloController extends Controller
             return back()->with('error', 'Questa sessione non appartiene al corso dell\'insegnamento.');
         }
 
+        if ($sessione->terminiInserimentoScaduti()) {
+            return back()->with('error', 'Impossibile creare un appello: il termine per l\'inserimento degli appelli di questa sessione è scaduto il ' . $sessione->scadenza_effettiva->format('d/m/Y') . '.');
+        }
+
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
             return back()->with('error', 'Impossibile creare un appello per una sessione già conclusa.');
         }
@@ -76,8 +80,8 @@ class appelloController extends Controller
             return back()->withErrors(['sessione_id' => 'La sessione selezionata non appartiene al corso di questo insegnamento.'])->withInput();
         }
 
-        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
-            return back()->with('error', 'Impossibile creare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        if ($sessione->terminiInserimentoScaduti()) {
+            return back()->with('error', 'Impossibile creare un appello: il termine per l\'inserimento degli appelli di questa sessione è scaduto il ' . $sessione->scadenza_effettiva->format('d/m/Y') . '.');
         }
 
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
@@ -126,8 +130,8 @@ class appelloController extends Controller
         $this->autorizza((int) $appello->ins_corso_id);
         $sessione = $appello->sessione;
 
-        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
-            return back()->with('error', 'Impossibile modificare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        if ($sessione->terminiInserimentoScaduti()) {
+            return back()->with('error', 'Impossibile modificare un appello: il termine per l\'inserimento degli appelli di questa sessione è scaduto il ' . $sessione->scadenza_effettiva->format('d/m/Y') . '.');
         }
 
         if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {
@@ -149,8 +153,8 @@ class appelloController extends Controller
 
         $sessione = $appello->sessione;
 
-        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
-            return back()->with('error', 'Impossibile modificare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        if ($sessione->terminiInserimentoScaduti()) {
+            return back()->with('error', 'Impossibile modificare un appello: il termine per l\'inserimento degli appelli di questa sessione è scaduto il ' . $sessione->scadenza_effettiva->format('d/m/Y') . '.');
         }
 
         if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
@@ -182,8 +186,8 @@ class appelloController extends Controller
         $this->autorizza((int) $appello->ins_corso_id);
         $sessione = $appello->sessione;
 
-        if (Carbon::today()->diffInDays(Carbon::parse($sessione->data_inizio), false) < 30) {
-            return back()->with('error', 'Impossibile eliminare un appello quando mancano meno di 30 giorni dall\'inizio della sessione.');
+        if ($sessione->terminiInserimentoScaduti()) {
+            return back()->with('error', 'Impossibile eliminare un appello: il termine per l\'inserimento degli appelli di questa sessione è scaduto il ' . $sessione->scadenza_effettiva->format('d/m/Y') . '.');
         }
 
         if (Carbon::parse($appello->sessione->data_fine)->lt(Carbon::today())) {

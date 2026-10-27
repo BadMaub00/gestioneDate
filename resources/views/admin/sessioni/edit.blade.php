@@ -97,6 +97,12 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label for="scadenza_inserimento" class="form-label fw-bold">Scadenza inserimento appelli</label>
+                                    <input type="date" name="scadenza_inserimento" id="scadenza_inserimento" class="form-control" value="{{ old('scadenza_inserimento', $sessione->scadenza_inserimento) }}">
+                                    <div class="form-text small">Facoltativa. Ultimo giorno in cui i docenti possono inserire gli appelli; se vuota viene impostata a un mese prima dell'inizio della sessione.</div>
+                                </div>
+
                                 <button type="submit" class="btn btn-unibs text-white fw-bold w-100 rounded-pill py-2 mt-2 shadow-sm">
                                     <i class="bi bi-pencil-square me-2"></i>Aggiorna Sessione
                                 </button>

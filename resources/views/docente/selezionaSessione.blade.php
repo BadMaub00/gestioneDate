@@ -125,7 +125,7 @@
                                             <option value="" selected disabled>-- Seleziona prima un Corso --</option>
                                             @foreach($sessioni as $sessione)
                                                 <option value="{{ $sessione->sessione_id }}" data-corso="{{ $sessione->corso_id }}" {{ old('sessione_id') == $sessione->sessione_id ? 'selected' : '' }}>
-                                                    {{ $sessione->nome }} ({{ $sessione->anno }}) - [dal {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}]
+                                                    {{ $sessione->nome }} ({{ $sessione->anno }}) - [dal {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}] · scadenza inserimento: {{ $sessione->scadenza_effettiva->format('d/m/Y') }}
                                                 </option>
                                             @endforeach
                                         </select>

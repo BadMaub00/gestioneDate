@@ -128,7 +128,8 @@
                                             <small class="text-muted mt-1">
                                                 Periodo: 
                                                 <strong>{{ \Carbon\Carbon::parse($sessione->data_inizio ?? $appello->sessione->data_inizio)->format('d/m/Y') }}</strong> - 
-                                                <strong>{{ \Carbon\Carbon::parse($sessione->data_fine ?? $appello->sessione->data_fine)->format('d/m/Y') }}</strong>
+                                                <strong>{{ \Carbon\Carbon::parse($sessione->data_fine ?? $appello->sessione->data_fine)->format('d/m/Y') }}</strong><br>
+                                                Scadenza inserimento appelli: <strong>{{ (isset($sessione) ? $sessione : $appello->sessione)->scadenza_effettiva->format('d/m/Y') }}</strong>
                                             </small>
                                         </div>
                                     </div>

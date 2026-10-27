@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Sessione extends Model
 {
@@ -24,8 +25,27 @@ class Sessione extends Model
         'data_fine', 
         'nome', 
         'anno', 
-        'numero_appelli'
+        'numero_appelli',
+        'scadenza_inserimento',
     ];
+
+    /**
+     * Ultimo giorno (incluso) in cui i docenti possono inserire/modificare/eliminare appelli.
+     * Se la sessione non ha una scadenza esplicita, vale un mese prima dell'inizio.
+     * Uso: $sessione->scadenza_effettiva
+     */
+    public function getScadenzaEffettivaAttribute(): Carbon
+    {
+        return $this->scadenza_inserimento
+            ? Carbon::parse($this->scadenza_inserimento)->startOfDay()
+            : Carbon::parse($this->data_inizio)->subMonth()->startOfDay();
+    }
+
+    /** True se la scadenza per l'inserimento degli appelli è già trascorsa. */
+    public function terminiInserimentoScaduti(): bool
+    {
+        return Carbon::today()->gt($this->scadenza_effettiva);
+    }
 
     public function corso()
     {

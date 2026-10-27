@@ -2,9 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const dataInizioInput = document.getElementById('data_inizio');
     const dataFineInput = document.getElementById('data_fine');
     const annoInput = document.getElementById('anno');
+    const scadenzaInput = document.getElementById('scadenza_inserimento');
 
     function updateAnnoAndMinFine() {
         if (dataInizioInput.value) {
+            // La scadenza per l'inserimento degli appelli non può superare l'inizio della sessione
+            if (scadenzaInput) {
+                scadenzaInput.max = dataInizioInput.value;
+            }
+
             const inizio = new Date(dataInizioInput.value);
 
             // Estrae e imposta l'anno accademico dalla data di inizio

@@ -183,6 +183,7 @@
                                             <td class="py-3 text-center text-muted fw-medium">
                                                 {{ \Carbon\Carbon::parse($sessione->data_inizio)->format('d/m/Y') }} - 
                                                 {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}
+                                                <div class="small text-secondary">Scad. inserimento: {{ $sessione->scadenza_effettiva->format('d/m/Y') }}</div>
                                             </td>
 
                                             <!-- N° Appelli -->

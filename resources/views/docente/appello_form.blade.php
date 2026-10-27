@@ -129,7 +129,8 @@
                 @foreach($sessioni as $sessione)
                     @php
                         $dataInizioSessione = \Carbon\Carbon::parse($sessione->data_inizio);
-                        $isTermineSuperato = \Carbon\Carbon::today()->greaterThanOrEqualTo($dataInizioSessione->copy()->subDays(30));
+                        $scadenzaInserimento = $sessione->scadenza_effettiva;
+                        $isTermineSuperato = $sessione->terminiInserimentoScaduti();
                         $isPrimario = ($docenteInsegnamento->ruolo ?? 'Secondario') === 'Primario';
 
                         // Controllo del limite massimo di appelli
@@ -148,6 +149,7 @@
                                 <span class="small text-white-50 fw-medium">
                                     Dal {{ $dataInizioSessione->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($sessione->data_fine)->format('d/m/Y') }}
                                     · <strong class="text-white">Max {{ $sessione->numero_appelli }} Appelli</strong> (Inseriti: {{ $numAppelliAttuali }})
+                                    · <i class="bi bi-alarm me-1"></i>Scadenza inserimento appelli: <strong class="text-white">{{ $scadenzaInserimento->format('d/m/Y') }}</strong>
                                 </span>
                             </div>
 
@@ -158,11 +160,11 @@
                                         Utente non abilitato
                                     </span>
                                 @elseif($isTermineSuperato)
-                                    <!-- Bottone Disabilitato per Scadenza Termini (30 giorni) -->
+                                    <!-- Bottone Disabilitato per Scadenza Termini (scadenza_inserimento della sessione) -->
                                     <button type="button" 
                                             class="btn btn-light text-secondary btn-sm fw-bold rounded-3 shadow-sm px-3 py-1.5 opacity-50 d-inline-flex align-items-center" 
                                             disabled 
-                                            title="La sessione è passata o mancano meno di 30 giorni al suo inizio">
+                                            title="Il termine per l'inserimento degli appelli è scaduto il {{ $scadenzaInserimento->format('d/m/Y') }}">
                                         <i class="bi bi-clock-history me-1.5"></i> Termini di modifica superati
                                     </button>
                                 @elseif($limiteRaggiunto)
@@ -271,14 +273,14 @@
                                                                     class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
                                                                     disabled 
                                                                     style="width: 32px; height: 32px;" 
-                                                                    title="{{ $isTermineSuperato ? 'Termini di modifica superati (mancano meno di 30 giorni)' : 'Azione riservata al docente primario' }}">
+                                                                    title="{{ $isTermineSuperato ? 'Termini di modifica superati (scadenza: ' . $scadenzaInserimento->format('d/m/Y') . ')' : 'Azione riservata al docente primario' }}">
                                                                 <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
                                                             </button>
                                                             <button type="button" 
                                                                     class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
                                                                     disabled 
                                                                     style="width: 32px; height: 32px;" 
-                                                                    title="{{ $isTermineSuperato ? 'Termini di eliminazione superati (mancano meno di 30 giorni)' : 'Azione riservata al docente primario' }}">
+                                                                    title="{{ $isTermineSuperato ? 'Termini di eliminazione superati (scadenza: ' . $scadenzaInserimento->format('d/m/Y') . ')' : 'Azione riservata al docente primario' }}">
                                                                 <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                             </button>
                                                         @endif

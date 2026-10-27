@@ -37,9 +37,10 @@ class sessioneController extends Controller
         $minDataInizio = Carbon::today()->addMonth()->format('Y-m-d');
 
         $validated = $request->validate(
-            $this->regole() + [
-                'data_inizio' => ['required', 'date', 'after_or_equal:' . $minDataInizio],
-            ],
+            array_merge($this->regole(), [
+                'data_inizio'          => ['required', 'date', 'after_or_equal:' . $minDataInizio],
+                'scadenza_inserimento' => ['nullable', 'date', 'after_or_equal:today', 'before_or_equal:data_inizio'],
+            ]),
             $this->messaggi() + [
                 'data_inizio.after_or_equal' => 'La data di inizio della sessione deve essere programmata con almeno un mese di anticipo rispetto a oggi.',
             ]
@@ -200,6 +201,10 @@ class sessioneController extends Controller
             'numero_appelli' => $validated['numero_appelli'],
             'data_inizio'    => $validated['data_inizio'],
             'data_fine'      => $validated['data_fine'],
+            // Facoltativa: se vuota, un mese prima dell'inizio della sessione
+            'scadenza_inserimento' => !empty($validated['scadenza_inserimento'])
+                ? $validated['scadenza_inserimento']
+                : Carbon::parse($validated['data_inizio'])->subMonth()->format('Y-m-d'),
         ];
     }
 
@@ -257,6 +262,7 @@ class sessioneController extends Controller
             'numero_appelli' => 'required|integer|min:1|max:4',
             'corsi'          => 'required|array|min:1',
             'corsi.*'        => 'integer|distinct|exists:corso,corso_id',
+            'scadenza_inserimento' => ['nullable', 'date', 'before_or_equal:data_inizio'],
             'data_fine'      => ['required', 'date', 'after_or_equal:data_inizio', function ($attribute, $value, $fail) {
                 $inizio = request('data_inizio');
 
@@ -272,6 +278,8 @@ class sessioneController extends Controller
         return [
             'numero_appelli.min' => 'Il numero minimo di appelli previsti è 1.',
             'numero_appelli.max' => 'Il numero massimo di appelli previsti per una sessione è 4.',
+            'scadenza_inserimento.after_or_equal'  => 'La scadenza per l\'inserimento degli appelli non può essere nel passato.',
+            'scadenza_inserimento.before_or_equal' => 'La scadenza per l\'inserimento degli appelli non può essere successiva alla data di inizio della sessione.',
             'corsi.required'     => 'Seleziona almeno un corso di studi.',
             'corsi.min'          => 'Seleziona almeno un corso di studi.',
             'corsi.*.exists'     => 'Uno dei corsi selezionati non esiste.',
