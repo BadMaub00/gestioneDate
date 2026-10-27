@@ -303,6 +303,30 @@ class adminController extends Controller
         return redirect()->route('admin.insegnamenti.index')->with('success', 'Insegnamento aggiornato con successo!');
     }
 
+    public function destroyInsegnamentoCorso($id) {
+    $insegnamentoCorso = InsegnamentiCorso::with('insegnamento')->findOrFail($id);
+    $corso_id = $insegnamentoCorso->corso_id;
+    $nome = $insegnamentoCorso->insegnamento->nome ?? 'Insegnamento';
+
+    // Blocco se esistono appelli in sessioni già concluse (si perderebbe lo storico)
+    $haAppelliPassati = $insegnamentoCorso->appelli()
+        ->whereHas('sessione', function ($q) {
+            $q->where('data_fine', '<', Carbon::today());
+        })
+        ->exists();
+
+    if ($haAppelliPassati) {
+        return back()->with('error', "Impossibile rimuovere '{$nome}' dal piano di studi: esistono appelli in sessioni già concluse.");
+    }
+
+    // Le FK sono ON DELETE CASCADE: vengono eliminati anche gli appelli futuri
+    // e le associazioni docente collegate a questo insegnamento del corso.
+    $insegnamentoCorso->delete();
+
+    return redirect()->route('admin.corsi.piano_di_studi', ['corso_id' => $corso_id])
+        ->with('success', "'{$nome}' rimosso dal piano di studi.");
+}
+
     // --- CALENDARIO ---
 
     public function viewcalendario_generale(Request $request) {
