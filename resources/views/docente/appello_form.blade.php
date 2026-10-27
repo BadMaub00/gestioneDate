@@ -278,7 +278,7 @@
                                                                     class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
                                                                     disabled 
                                                                     style="width: 32px; height: 32px;" 
-                                                                    title="{{ $isTermineSuperato ? 'Termini di modifica superati (mancano meno di 30 giorni)' : 'Azione riservata al docente primario' }}">
+                                                                    title="{{ $isTermineSuperato ? 'Termini di eliminazione superati (mancano meno di 30 giorni)' : 'Azione riservata al docente primario' }}">
                                                                 <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
                                                             </button>
                                                         @endif
