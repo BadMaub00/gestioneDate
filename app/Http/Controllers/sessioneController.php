@@ -70,7 +70,7 @@ class sessioneController extends Controller
     {
         $sessione = Sessione::findOrFail($id);
 
-        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+        if ($sessione->isConclusa()) {
             return back()->with('error', 'Impossibile modificare una sessione d\'esame già passata.');
         }
 
@@ -91,7 +91,7 @@ class sessioneController extends Controller
     {
         $sessione = Sessione::findOrFail($id);
 
-        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+        if ($sessione->isConclusa()) {
             return back()->with('error', 'Impossibile modificare una sessione d\'esame già passata.');
         }
 
@@ -174,7 +174,7 @@ class sessioneController extends Controller
     {
         $sessione = Sessione::findOrFail($id);
 
-        if (Carbon::parse($sessione->data_fine)->lt(Carbon::today())) {
+        if ($sessione->isConclusa()) {
             return back()->with('error', 'Impossibile eliminare una sessione d\'esame già passata.');
         }
 

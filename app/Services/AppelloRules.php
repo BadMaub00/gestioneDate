@@ -81,4 +81,31 @@ class AppelloRules
 
         return null;
     }
+
+    /**
+     * Blocchi comuni su un appello esistente/nuovo lato AMMINISTRATORE:
+     * solo la sessione già conclusa. $azione: 'creare' | 'modificare' | 'eliminare'.
+     * Restituisce il messaggio d'errore oppure null se l'operazione è consentita.
+     */
+    public static function bloccoAdmin(Sessione $sessione, string $azione): ?string
+    {
+        if (!$sessione->isConclusa()) {
+            return null;
+        }
+
+        return $azione === 'creare'
+            ? 'Impossibile creare un appello per una sessione già conclusa.'
+            : "Impossibile {$azione} un appello appartenente a una sessione passata.";
+    }
+
+    /** Come bloccoAdmin, ma il DOCENTE è soggetto anche alla scadenza di inserimento. */
+    public static function bloccoDocente(Sessione $sessione, string $azione): ?string
+    {
+        if ($sessione->terminiInserimentoScaduti()) {
+            return "Impossibile {$azione} un appello: il termine per l'inserimento degli appelli di questa sessione è scaduto il "
+                . $sessione->scadenza_effettiva->format('d/m/Y') . '.';
+        }
+
+        return self::bloccoAdmin($sessione, $azione);
+    }
 }

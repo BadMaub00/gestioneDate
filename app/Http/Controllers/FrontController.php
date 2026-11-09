@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Utente;
 use Illuminate\Support\Facades\Auth;
 
-class frontController extends Controller
+class FrontController extends Controller
 {
     public function getLogin(){
         // Se l'utente è già loggato, reindirizza direttamente alla dashboard corretta
@@ -40,8 +41,8 @@ class frontController extends Controller
     /**
      * Reindirizza l'utente alla vista corrispondente al suo ruolo.
      */
-    private function redirectUserByRole($user){
-        if ($user->ruolo === 'Amministratore') {
+    private function redirectUserByRole(Utente $user){
+        if ($user->isAdmin()) {
             return redirect()->route('admin.dashboard');
         }
 

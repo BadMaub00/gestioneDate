@@ -71,11 +71,7 @@ class ImportStrutturaDidattica
 
     public static function durataAnni(string $tipo): int
     {
-        return match ($tipo) {
-            'Magistrale' => 2,
-            'Magistrale a ciclo unico' => 5,
-            default => 3,
-        };
+        return Corso::durataPerTipo($tipo);
     }
 
     private function norm(?string $s): string

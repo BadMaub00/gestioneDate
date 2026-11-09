@@ -11,7 +11,7 @@
         
         <!-- CSS Personalizzati -->
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/docente.css') }}">
+          
     </head>
     <body class="min-vh-100" style="background-color: #e1edf7;">
 

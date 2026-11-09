@@ -41,6 +41,12 @@ class Sessione extends Model
             : Carbon::parse($this->data_inizio)->subMonth()->startOfDay();
     }
 
+    /** True se la sessione è già terminata (data_fine nel passato). */
+    public function isConclusa(): bool
+    {
+        return Carbon::parse($this->data_fine)->lt(Carbon::today());
+    }
+
     /** True se la scadenza per l'inserimento degli appelli è già trascorsa. */
     public function terminiInserimentoScaduti(): bool
     {

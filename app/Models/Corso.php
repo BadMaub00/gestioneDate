@@ -23,6 +23,21 @@ class Corso extends Model
         'tipo_corso'
     ];
 
+    /** Durata legale in anni per tipo di corso (unica definizione per tutta l'app). */
+    public static function durataPerTipo(string $tipo): int
+    {
+        return match ($tipo) {
+            'Magistrale' => 2,
+            'Magistrale a ciclo unico' => 5,
+            default => 3,
+        };
+    }
+
+    public function durataAnni(): int
+    {
+        return self::durataPerTipo($this->tipo_corso);
+    }
+
     public function insegnamenti()
     {
         return $this->hasMany(InsegnamentiCorso::class, 'corso_id', 'corso_id');

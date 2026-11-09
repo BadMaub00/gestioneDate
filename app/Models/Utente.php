@@ -6,6 +6,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Utente extends Authenticatable
 {
+    public const RUOLO_ADMIN = 'Amministratore';
+    public const RUOLO_DOCENTE = 'Docente';
+
     protected $table = 'utente';
     protected $primaryKey = 'utente_id';
     protected $fillable = ['username','password','nome','cognome','data_nascita','ruolo'];
@@ -16,6 +19,16 @@ class Utente extends Authenticatable
     public $incrementing = true;
     protected $keyType = 'int';
     
+
+    public function isAdmin(): bool
+    {
+        return $this->ruolo === self::RUOLO_ADMIN;
+    }
+
+    public function isDocente(): bool
+    {
+        return $this->ruolo === self::RUOLO_DOCENTE;
+    }
 
     public function incarichi()
     {
