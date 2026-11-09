@@ -109,8 +109,8 @@
                     <table class="table table-hover table-striped align-middle mb-0">
                         <thead class="bg-white border-bottom">
                             <tr>
-                                <th class="py-3 px-4 text-dark fw-bold">Nome</th>
                                 <th class="py-3 px-4 text-dark fw-bold">Cognome</th>
+                                <th class="py-3 px-4 text-dark fw-bold">Nome</th>
                                 <th class="py-3 px-4 text-center text-dark fw-bold">Ruolo</th>
                                 <th class="py-3 px-4 text-center text-dark fw-bold">Azioni</th>
                             </tr>
@@ -118,8 +118,8 @@
                         <tbody>
                             @forelse($personale as $p)
                                 <tr>
-                                    <td class="py-3 px-4 fw-semibold text-dark">{{ $p->nome }}</td>
                                     <td class="py-3 px-4 fw-semibold text-dark">{{ $p->cognome }}</td>
+                                    <td class="py-3 px-4 fw-semibold text-dark">{{ $p->nome }}</td>
                                     <td class="py-3 px-4 text-center">
                                         <span class="badge border border-unibs text-unibs bg-transparent rounded-pill py-2 fw-bold d-inline-block" style="width: 140px;">
                                             {{ $p->ruolo }}
