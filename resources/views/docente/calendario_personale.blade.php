@@ -1,54 +1,11 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Calendario Personale - Docente</title>
-
-        <!-- CSS Bootstrap & Icone -->
-        <link rel="stylesheet" href="{{ asset('css/bootstrap_v2.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('bootstrap-icons/bootstrap-icons.css') }}">
-        
-        <!-- CSS Personalizzati -->
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    </head>
+    <x-html-head titolo="Calendario Personale - Docente" />
     <body class="min-vh-100" style="background-color: #e1edf7;">
 
-        <script src="{{ asset('js/popper.min.js') }}"></script>
-        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <x-bootstrap-scripts />
 
-        <nav class="navbar navbar-expand-lg bg-white shadow-sm border-bottom border-3 border-unibs py-2 mb-4">
-            <div class="container-fluid px-3 px-md-5">
-                <a class="navbar-brand py-0" href="#">
-                    <img class="img-logo" src="{{ asset('images/unibsLogo.png') }}" alt="Unibs" style="max-height: 70px;">
-                </a>
-
-                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2 mt-3 mt-lg-0">
-                        <li class="nav-item">
-                            <a class="btn btn-unibs btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" 
-                               href="{{ route('docente.dashboard') }}" style="width: 115px;">
-                                <i class="bi bi-house-door-fill text-center me-2" style="width: 18px;"></i>
-                                <span>Home</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST" class="m-0">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-sm text-white fw-bold px-3 py-1.5 rounded-pill shadow-sm d-inline-flex align-items-center justify-content-start" style="width: 115px;">
-                                    <i class="bi bi-box-arrow-right text-center me-2" style="width: 18px;"></i>
-                                    <span>Logout</span>
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        <x-navbar />
 
         @php
             $appelliArray = [];
@@ -196,14 +153,7 @@
 
                 </div>
 
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <a href="{{ route('docente.dashboard') }}" 
-                           class="btn btn-outline-unibs fw-bold py-2.5 rounded-3 shadow-sm w-100 d-inline-flex align-items-center justify-content-center">
-                            <i class="bi bi-arrow-left me-2 fs-6"></i>Torna alla Dashboard
-                        </a>
-                    </div>
-                </div>
+                <x-back-dashboard />
 
             </div>
         </div>

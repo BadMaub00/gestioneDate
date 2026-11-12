@@ -45,10 +45,11 @@ class AssociazioneDocenteController extends Controller
 
     public function create()
     {
+        $corsi = Corso::orderBy('nome', 'asc')->get();
         $docenti = $this->docenti();
         $insegnamentiCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->orderBy('corso_id', 'asc')->get();
 
-        return view('admin.personale.associa', compact('docenti', 'insegnamentiCorso'));
+        return view('admin.personale.associa', compact('corsi', 'docenti', 'insegnamentiCorso'));
     }
 
     public function store(Request $request)

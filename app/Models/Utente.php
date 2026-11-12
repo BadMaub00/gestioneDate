@@ -30,6 +30,15 @@ class Utente extends Authenticatable
         return $this->ruolo === self::RUOLO_DOCENTE;
     }
 
+    /**
+     * URL della dashboard corretta in base al ruolo (Amministratore o Docente).
+     * Usato dai componenti Blade condivisi (navbar, pulsante "Torna alla Dashboard").
+     */
+    public function dashboardRoute(): string
+    {
+        return route($this->isAdmin() ? 'admin.dashboard' : 'docente.dashboard');
+    }
+
     public function incarichi()
     {
         return $this->hasMany(DocenteInsegnamento::class, 'utente_id', 'utente_id');

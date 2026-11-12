@@ -1,23 +1,9 @@
 <!DOCTYPE html>
 <html lang="it">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Accedi - Gestione Date d'Esame</title>
-
-        <!-- CSS Bootstrap & Icone -->
-        <link rel="stylesheet" href="{{ asset('css/bootstrap_v2.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('bootstrap-icons/bootstrap-icons.css') }}">
-        
-        <!-- CSS Personalizzati -->
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-          
-    </head>
+    <x-html-head titolo="Accedi - Gestione Date d'Esame" />
     <body class="min-vh-100 d-flex flex-column justify-content-between" style="background-color: #e1edf7;">
 
-        <!-- Script Bootstrap & Popper -->
-        <script src="{{ asset('js/popper.min.js') }}"></script>
-        <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+        <x-bootstrap-scripts />
 
         <!-- Contenuto Principale: Card di Login Centrata -->
         <div class=" my-auto py-4">

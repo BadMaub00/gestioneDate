@@ -13,8 +13,6 @@ class adminController extends Controller
 {
     public function dashboard()
     {
-        $sessioni = Sessione::orderBy('data_inizio', 'desc')->get();
-
-        return view('admin.dashboard', compact('sessioni'));
+        return view('admin.dashboard');
     }
 }
