@@ -21,4 +21,10 @@ class Insegnamento extends Model
     protected $fillable = [
         'nome',
     ];
+
+    /** Presenze di questo insegnamento nei piani di studio dei corsi. */
+    public function insegnamentiCorso()
+    {
+        return $this->hasMany(InsegnamentiCorso::class, 'insegnamento_id', 'insegnamento_id');
+    }
 }

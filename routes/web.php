@@ -2,20 +2,24 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FrontController;
-use App\Http\Controllers\docenteController;
-use App\Http\Controllers\appelloController;
-use App\Http\Controllers\adminController;
-use App\Http\Controllers\sessioneController;
-use App\Http\Controllers\CorsoController;
-use App\Http\Controllers\ImportExcelController;
+
+use App\Http\Controllers\Docente\AppelloController as DocenteAppelloController;
 use App\Http\Controllers\Docente\CalendarioController as DocenteCalendarioController;
-use App\Http\Controllers\Admin\PersonaleController;
-use App\Http\Controllers\Admin\AssociazioneDocenteController;
-use App\Http\Controllers\Admin\InsegnamentoController;
-use App\Http\Controllers\Admin\EdificioController;
-use App\Http\Controllers\Admin\AulaController;
+use App\Http\Controllers\Docente\DashboardController as DocenteDashboardController;
+use App\Http\Controllers\Docente\InsegnamentoController as DocenteInsegnamentoController;
+
 use App\Http\Controllers\Admin\AppelloAdminController;
+use App\Http\Controllers\Admin\AssociazioneDocenteController;
+use App\Http\Controllers\Admin\AulaController;
 use App\Http\Controllers\Admin\CalendarioAdminController;
+use App\Http\Controllers\Admin\CorsoController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\EdificioController;
+use App\Http\Controllers\Admin\ImportExcelController;
+use App\Http\Controllers\Admin\InsegnamentoController;
+use App\Http\Controllers\Admin\PersonaleController;
+use App\Http\Controllers\Admin\PianoDiStudiController;
+use App\Http\Controllers\Admin\SessioneController;
 
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\DocenteMiddleware;
@@ -30,11 +34,11 @@ Route::post('/logout', [FrontController::class, 'logout'])->name('logout');
 // ==========================================
 Route::middleware(['auth', DocenteMiddleware::class])->prefix('docente')->group(function () {
 
-    Route::get('/dashboard', [docenteController::class, 'dashboard'])->name('docente.dashboard');
+    Route::get('/dashboard', [DocenteDashboardController::class, 'dashboard'])->name('docente.dashboard');
 
     // Dettaglio e gestione appelli di uno specifico InsegnamentoCorso
-    Route::get('/insegnamento/{ins_corso_id}', [docenteController::class, 'dettaglioInsegnamento'])->name('docente.dettaglioInsegnamento');
-    Route::get('/insegnamento/{ins_corso_id}/appelli', [docenteController::class, 'gestioneAppelliInsegnamento'])->name('docente.appelliInsegnamento');
+    Route::get('/insegnamento/{ins_corso_id}', [DocenteInsegnamentoController::class, 'dettaglioInsegnamento'])->name('docente.dettaglioInsegnamento');
+    Route::get('/insegnamento/{ins_corso_id}/appelli', [DocenteInsegnamentoController::class, 'gestioneAppelliInsegnamento'])->name('docente.appelliInsegnamento');
 
     // Selezione e visualizzazione calendari
     Route::get('/calendario-personale/seleziona', [DocenteCalendarioController::class, 'selezionaSessione'])->name('docente.selezionaSessione');
@@ -49,11 +53,11 @@ Route::middleware(['auth', DocenteMiddleware::class])->prefix('docente')->group(
         ->name('docente.calendario.generale');
 
     // Gestione Appelli (CRUD Docente, solo Primario dell'insegnamento)
-    Route::get('/appelli/crea', [appelloController::class, 'create'])->name('docente.appelli.create');
-    Route::post('/appelli', [appelloController::class, 'store'])->name('docente.appelli.store');
-    Route::get('/appelli/{id}/modifica', [appelloController::class, 'edit'])->name('docente.appelli.edit');
-    Route::put('/appelli/{id}', [appelloController::class, 'update'])->name('docente.appelli.update');
-    Route::delete('/appelli/{id}', [appelloController::class, 'destroy'])->name('docente.appelli.destroy');
+    Route::get('/appelli/crea', [DocenteAppelloController::class, 'create'])->name('docente.appelli.create');
+    Route::post('/appelli', [DocenteAppelloController::class, 'store'])->name('docente.appelli.store');
+    Route::get('/appelli/{id}/modifica', [DocenteAppelloController::class, 'edit'])->name('docente.appelli.edit');
+    Route::put('/appelli/{id}', [DocenteAppelloController::class, 'update'])->name('docente.appelli.update');
+    Route::delete('/appelli/{id}', [DocenteAppelloController::class, 'destroy'])->name('docente.appelli.destroy');
 });
 
 // ==========================================
@@ -61,7 +65,7 @@ Route::middleware(['auth', DocenteMiddleware::class])->prefix('docente')->group(
 // ==========================================
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
 
-    Route::get('/dashboard', [adminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'dashboard'])->name('admin.dashboard');
 
     // Importazione da Excel di corsi, piani di studio e associazioni docenti
     Route::get('/import', [ImportExcelController::class, 'index'])->name('admin.import.index');
@@ -72,17 +76,17 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/corsi', [CorsoController::class, 'index'])->name('admin.corsi.index');
     Route::get('/corsi/crea', [CorsoController::class, 'create'])->name('admin.corsi.create');
     Route::post('/corsi', [CorsoController::class, 'store'])->name('admin.corsi.store');
-    Route::get('/corsi/{corso_id}/piano-di-studi', [CorsoController::class, 'viewPianoDiStudi'])->name('admin.corsi.piano_di_studi');
+    Route::get('/corsi/{corso_id}/piano-di-studi', [PianoDiStudiController::class, 'show'])->name('admin.corsi.piano_di_studi');
     Route::get('/corsi/{corso_id}/modifica', [CorsoController::class, 'edit'])->name('admin.corsi.edit');
     Route::put('/corsi/{corso_id}', [CorsoController::class, 'update'])->name('admin.corsi.update');
     Route::delete('/corsi/{corso_id}', [CorsoController::class, 'destroy'])->name('admin.corsi.destroy');
 
     // Insegnamenti del Piano di Studi
-    Route::get('/corsi/{corso_id}/insegnamenti/crea', [CorsoController::class, 'createInsegnamentoCorso'])->name('admin.corsi.insegnamenti.create');
-    Route::post('/corsi/{corso_id}/insegnamenti', [CorsoController::class, 'storeInsegnamentoCorso'])->name('admin.corsi.insegnamenti.store');
-    Route::delete('/corsi/insegnamenti/{id}', [CorsoController::class, 'destroyInsegnamentoCorso'])->name('admin.corsi.insegnamenti.destroy');
-    Route::get('/corsi/insegnamenti/{id}/edit', [CorsoController::class, 'editInsegnamentoCorso'])->name('admin.corsi.insegnamenti.edit');
-    Route::put('/corsi/insegnamenti/{id}', [CorsoController::class, 'updateInsegnamentoCorso'])->name('admin.corsi.insegnamenti.update');
+    Route::get('/corsi/{corso_id}/insegnamenti/crea', [PianoDiStudiController::class, 'create'])->name('admin.corsi.insegnamenti.create');
+    Route::post('/corsi/{corso_id}/insegnamenti', [PianoDiStudiController::class, 'store'])->name('admin.corsi.insegnamenti.store');
+    Route::delete('/corsi/insegnamenti/{id}', [PianoDiStudiController::class, 'destroy'])->name('admin.corsi.insegnamenti.destroy');
+    Route::get('/corsi/insegnamenti/{id}/edit', [PianoDiStudiController::class, 'edit'])->name('admin.corsi.insegnamenti.edit');
+    Route::put('/corsi/insegnamenti/{id}', [PianoDiStudiController::class, 'update'])->name('admin.corsi.insegnamenti.update');
 
     // Personale
     Route::get('/personale', [PersonaleController::class, 'index'])->name('admin.personale.index');
@@ -115,12 +119,12 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::put('/insegnamenti/{insegnamento_id}', [InsegnamentoController::class, 'update'])->name('admin.insegnamenti.update');
 
     // Sessioni d'esame
-    Route::get('/sessioni', [sessioneController::class, 'index'])->name('admin.sessioni.index');
-    Route::get('/sessioni/crea', [sessioneController::class, 'create'])->name('admin.sessioni.create');
-    Route::post('/sessioni', [sessioneController::class, 'store'])->name('admin.sessioni.store');
-    Route::get('/sessioni/{id}/modifica', [sessioneController::class, 'edit'])->name('admin.sessioni.edit');
-    Route::put('/sessioni/{id}', [sessioneController::class, 'update'])->name('admin.sessioni.update');
-    Route::delete('/sessioni/{id}', [sessioneController::class, 'destroy'])->name('admin.sessioni.destroy');
+    Route::get('/sessioni', [SessioneController::class, 'index'])->name('admin.sessioni.index');
+    Route::get('/sessioni/crea', [SessioneController::class, 'create'])->name('admin.sessioni.create');
+    Route::post('/sessioni', [SessioneController::class, 'store'])->name('admin.sessioni.store');
+    Route::get('/sessioni/{id}/modifica', [SessioneController::class, 'edit'])->name('admin.sessioni.edit');
+    Route::put('/sessioni/{id}', [SessioneController::class, 'update'])->name('admin.sessioni.update');
+    Route::delete('/sessioni/{id}', [SessioneController::class, 'destroy'])->name('admin.sessioni.destroy');
 
     // Sedi: edifici e aule
     Route::get('/sedi/edifici', [EdificioController::class, 'index'])->name('admin.sedi.edifici');

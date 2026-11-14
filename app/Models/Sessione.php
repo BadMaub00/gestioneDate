@@ -29,6 +29,12 @@ class Sessione extends Model
         'scadenza_inserimento',
     ];
 
+    /** Scadenza di inserimento appelli quando non è indicata: un mese prima dell'inizio della sessione. */
+    public static function scadenzaPredefinita($dataInizio): Carbon
+    {
+        return Carbon::parse($dataInizio)->subMonth()->startOfDay();
+    }
+
     /**
      * Ultimo giorno (incluso) in cui i docenti possono inserire/modificare/eliminare appelli.
      * Se la sessione non ha una scadenza esplicita, vale un mese prima dell'inizio.
@@ -38,7 +44,7 @@ class Sessione extends Model
     {
         return $this->scadenza_inserimento
             ? Carbon::parse($this->scadenza_inserimento)->startOfDay()
-            : Carbon::parse($this->data_inizio)->subMonth()->startOfDay();
+            : static::scadenzaPredefinita($this->data_inizio);
     }
 
     /** True se la sessione è già terminata (data_fine nel passato). */
@@ -75,5 +81,65 @@ class Sessione extends Model
     public function appelli()
     {
         return $this->hasMany(Appello::class, 'sessione_id', 'sessione_id');
+    }
+
+    // ---------------------------------------------------------------- regole sulle date
+
+    /** True se la sessione è quella del corso indicato. */
+    public function appartieneACorso(int $corsoId): bool
+    {
+        return (int) $this->corso_id === $corsoId;
+    }
+
+    /**
+     * Prima sessione dello stesso corso che dista meno di un mese dal periodo indicato
+     * (sovrapposizione compresa), oppure null. $escludiIds: sessioni da ignorare
+     * (quelle che si stanno modificando).
+     *
+     * @param int[] $escludiIds
+     */
+    public static function vicinaA(int $corsoId, string $inizio, string $fine, array $escludiIds = []): ?self
+    {
+        $inizio = Carbon::parse($inizio);
+        $fine = Carbon::parse($fine);
+
+        return static::where('corso_id', $corsoId)
+            ->when($escludiIds, fn ($q) => $q->whereNotIn('sessione_id', $escludiIds))
+            ->get()
+            ->first(function ($altra) use ($inizio, $fine) {
+                $altraInizio = Carbon::parse($altra->data_inizio);
+                $altraFine = Carbon::parse($altra->data_fine);
+
+                return $inizio->lt($altraFine->copy()->addMonth())
+                    && $altraInizio->lt($fine->copy()->addMonth());
+            });
+    }
+
+    // ---------------------------------------------------------------- appelli della sessione
+
+    /** Quanti appelli ha già un insegnamento del corso in questa sessione. */
+    public function contaAppelli(int $insCorsoId): int
+    {
+        return $this->appelli()->where('ins_corso_id', $insCorsoId)->count();
+    }
+
+    /** Quanti appelli sono fuori dal periodo indicato (da spostare o eliminare prima di cambiare le date). */
+    public function appelliFuoriPeriodo(string $inizio, string $fine): int
+    {
+        return $this->appelli()
+            ->where(function ($q) use ($inizio, $fine) {
+                $q->where('data', '<', $inizio)->orWhere('data', '>', $fine);
+            })
+            ->count();
+    }
+
+    /** Il maggior numero di appelli che un singolo insegnamento ha in questa sessione. */
+    public function maxAppelliPerInsegnamento(): int
+    {
+        return (int) $this->appelli()
+            ->selectRaw('COUNT(*) AS n')
+            ->groupBy('ins_corso_id')
+            ->orderByDesc('n')
+            ->value('n');
     }
 }

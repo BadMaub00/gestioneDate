@@ -35,7 +35,7 @@ class ImportStrutturaDidattica
     public const FOGLIO_ISTRUZIONI = 'Istruzioni';
 
     public const TIPI = ['Triennale', 'Magistrale', 'Magistrale a ciclo unico'];
-    public const RUOLI = ['Primario', 'Secondario'];
+    public const RUOLI = DocenteInsegnamento::RUOLI;
 
     private const MAX_RIGHE = 5000;
     private const MAX_ERRORI = 100;

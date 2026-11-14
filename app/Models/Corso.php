@@ -38,6 +38,18 @@ class Corso extends Model
         return self::durataPerTipo($this->tipo_corso);
     }
 
+    /** Uso: $corso->durata_anni (comodo nelle viste). */
+    public function getDurataAnniAttribute(): int
+    {
+        return $this->durataAnni();
+    }
+
+    /** Nome del corso con il tipo, per messaggi e liste: "Informatica (Triennale)". */
+    public function etichetta(): string
+    {
+        return "{$this->nome} ({$this->tipo_corso})";
+    }
+
     public function insegnamenti()
     {
         return $this->hasMany(InsegnamentiCorso::class, 'corso_id', 'corso_id');

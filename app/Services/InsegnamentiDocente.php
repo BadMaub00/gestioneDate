@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\DocenteInsegnamento;
 use App\Models\InsegnamentiCorso;
+use App\Models\Sessione;
 use App\Models\Utente;
 use Illuminate\Support\Collection;
 
@@ -17,7 +18,7 @@ class InsegnamentiDocente
     /** Insegnamenti del docente (con insegnamento e corso), ordinati per corso e nome; ruolo in ->ruolo_docente. */
     public function associati(Utente $docente): Collection
     {
-        return DocenteInsegnamento::where('utente_id', $docente->getKey())
+        return DocenteInsegnamento::delDocente($docente->getKey())
             ->with(['insegnamentiCorso.insegnamento', 'insegnamentiCorso.corso'])
             ->get()
             ->map(function ($docIns) {
@@ -51,7 +52,7 @@ class InsegnamentiDocente
     public function haCorso(Utente $docente, int $corsoId): bool
     {
         return InsegnamentiCorso::where('corso_id', $corsoId)
-            ->whereIn('ins_corso_id', DocenteInsegnamento::where('utente_id', $docente->getKey())->select('ins_corso_id'))
+            ->whereIn('ins_corso_id', DocenteInsegnamento::delDocente($docente->getKey())->select('ins_corso_id'))
             ->exists();
     }
 
@@ -59,7 +60,34 @@ class InsegnamentiDocente
     public function incarico(Utente $docente, int $insCorsoId): ?DocenteInsegnamento
     {
         return DocenteInsegnamento::where('ins_corso_id', $insCorsoId)
-            ->where('utente_id', $docente->getKey())
+            ->delDocente($docente->getKey())
             ->first();
+    }
+
+    /** True se il docente è il Primario dell'insegnamento (l'unico a poter gestirne gli appelli). */
+    public function isPrimario(Utente $docente, int $insCorsoId): bool
+    {
+        return DocenteInsegnamento::where('ins_corso_id', $insCorsoId)
+            ->delDocente($docente->getKey())
+            ->primari()
+            ->exists();
+    }
+
+    /** Anni di corso in cui il docente ha insegnamenti nel corso indicato. */
+    public function anniCorso(Utente $docente, int $corsoId): Collection
+    {
+        return InsegnamentiCorso::where('corso_id', $corsoId)
+            ->whereIn('ins_corso_id', DocenteInsegnamento::delDocente($docente->getKey())->select('ins_corso_id'))
+            ->distinct()
+            ->orderBy('anno_di_corso', 'asc')
+            ->pluck('anno_di_corso');
+    }
+
+    /** Sessioni dei corsi in cui il docente insegna (le più recenti per prime). */
+    public function sessioni(Utente $docente): Collection
+    {
+        return Sessione::whereIn('corso_id', $this->corsi($docente)->pluck('corso_id'))
+            ->orderBy('data_inizio', 'desc')
+            ->get();
     }
 }

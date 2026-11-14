@@ -16,17 +16,15 @@ return Application::configure(basePath: dirname(__DIR__))
         // Qui puoi registrare middleware personalizzati o modificarne il comportamento
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Sessione scaduta (token CSRF non valido): per le richieste AJAX/API risposta JSON;
+        // per le pagine web si torna null, così Laravel mostra resources/views/errors/4xx (stato 419).
         $exceptions->render(function (TokenMismatchException $e, Request $request) {
-            // Se la richiesta è via AJAX/API (si aspetta JSON)
             if ($request->expectsJson()) {
                 return response()->json([
                     'message' => 'Sessione scaduta. Ricarica la pagina e riprova.'
                 ], 419);
             }
 
-            // Per richieste web tradizionali, reindirizza alla rotta 'login'
-            return redirect()
-                ->route('login')
-                ->with('warning', 'La tua sessione è scaduta. Effettua nuovamente il login.');
+            return null;
         });
     })->create();

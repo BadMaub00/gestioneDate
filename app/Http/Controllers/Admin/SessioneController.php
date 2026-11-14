@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Sessione;
-use App\Models\Appello;
 use App\Models\Corso;
 use Carbon\Carbon;
 
-class sessioneController extends Controller
+class SessioneController extends Controller
 {
     public function index()
     {
@@ -48,7 +48,7 @@ class sessioneController extends Controller
 
         $corsiIds = array_map('intval', $validated['corsi']);
 
-        if ($errori = $this->conflittiDistanza($corsiIds, $validated['data_inizio'], $validated['data_fine'], [])) {
+        if ($errori = $this->conflittiDistanza($corsiIds, $validated['data_inizio'], $validated['data_fine'])) {
             return back()->withErrors($errori)->withInput();
         }
 
@@ -124,12 +124,7 @@ class sessioneController extends Controller
 
         // Sessioni da aggiornare: appelli dentro il nuovo periodo e numero_appelli sufficiente
         foreach ($daAggiornare as $corsoId => $s) {
-            $fuoriPeriodo = Appello::where('sessione_id', $s->sessione_id)
-                ->where(function ($q) use ($validated) {
-                    $q->where('data', '<', $validated['data_inizio'])
-                      ->orWhere('data', '>', $validated['data_fine']);
-                })
-                ->count();
+            $fuoriPeriodo = $s->appelliFuoriPeriodo($validated['data_inizio'], $validated['data_fine']);
 
             if ($fuoriPeriodo > 0) {
                 $errori['data_inizio'] = "Per il corso '" . $this->nomeCorso($corsoId) . "' ci sono {$fuoriPeriodo} appelli già inseriti fuori dal nuovo periodo: spostali o eliminali prima di modificare le date.";
@@ -138,11 +133,7 @@ class sessioneController extends Controller
         }
 
         foreach ($daAggiornare as $corsoId => $s) {
-            $massimoPresente = (int) Appello::where('sessione_id', $s->sessione_id)
-                ->selectRaw('COUNT(*) AS n')
-                ->groupBy('ins_corso_id')
-                ->orderByDesc('n')
-                ->value('n');
+            $massimoPresente = $s->maxAppelliPerInsegnamento();
 
             if ($validated['numero_appelli'] < $massimoPresente) {
                 $errori['numero_appelli'] = "Per il corso '" . $this->nomeCorso($corsoId) . "' esiste già un insegnamento con {$massimoPresente} appelli in questa sessione: il numero previsto non può essere inferiore.";
@@ -204,15 +195,13 @@ class sessioneController extends Controller
             // Facoltativa: se vuota, un mese prima dell'inizio della sessione
             'scadenza_inserimento' => !empty($validated['scadenza_inserimento'])
                 ? $validated['scadenza_inserimento']
-                : Carbon::parse($validated['data_inizio'])->subMonth()->format('Y-m-d'),
+                : Sessione::scadenzaPredefinita($validated['data_inizio'])->format('Y-m-d'),
         ];
     }
 
     private function nomeCorso($corsoId): string
     {
-        $c = Corso::find($corsoId);
-
-        return $c ? "{$c->nome} ({$c->tipo_corso})" : "#{$corsoId}";
+        return Corso::find($corsoId)?->etichetta() ?? "#{$corsoId}";
     }
 
     /**
@@ -223,24 +212,12 @@ class sessioneController extends Controller
      * @param int[] $corsiIds
      * @param int[] $escludiSessioneIds sessioni da ignorare (quelle che si stanno modificando)
      */
-    private function conflittiDistanza(array $corsiIds, string $inizio, string $fine, array $escludiSessioneIds): array
+    private function conflittiDistanza(array $corsiIds, string $inizio, string $fine, array $escludiSessioneIds = []): array
     {
-        $inizio = Carbon::parse($inizio);
-        $fine = Carbon::parse($fine);
         $messaggi = [];
 
         foreach ($corsiIds as $corsoId) {
-            $vicina = Sessione::where('corso_id', $corsoId)
-                ->when($escludiSessioneIds, fn ($q) => $q->whereNotIn('sessione_id', $escludiSessioneIds))
-                ->get()
-                ->first(function ($altra) use ($inizio, $fine) {
-                    $altraInizio = Carbon::parse($altra->data_inizio);
-                    $altraFine = Carbon::parse($altra->data_fine);
-
-                    // "meno di un mese" di distanza (sovrapposizione compresa)
-                    return $inizio->lt($altraFine->copy()->addMonth())
-                        && $altraInizio->lt($fine->copy()->addMonth());
-                });
+            $vicina = Sessione::vicinaA($corsoId, $inizio, $fine, $escludiSessioneIds);
 
             if ($vicina) {
                 $messaggi[] = "Il corso '" . $this->nomeCorso($corsoId) . "' ha già la sessione '{$vicina->nome}' (dal "

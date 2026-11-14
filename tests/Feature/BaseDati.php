@@ -70,7 +70,7 @@ abstract class BaseDati extends TestCase
         $s->create('docente_insegnamento', function ($t) { $t->increments('doc_ins_id'); $t->integer('ins_corso_id'); $t->integer('utente_id'); $t->string('ruolo'); });
         $s->create('edificio', function ($t) { $t->integer('edificio_id')->primary(); $t->string('nome'); });
         $s->create('aula', function ($t) { $t->integer('aula_id')->primary(); $t->string('nome'); $t->integer('edificio_id'); $t->integer('capienza')->nullable(); });
-        $s->create('sessione_esami', function ($t) { $t->increments('sessione_id'); $t->integer('corso_id'); $t->string('nome'); $t->integer('anno'); $t->integer('numero_appelli'); $t->date('data_inizio'); $t->date('data_fine'); });
+        $s->create('sessione_esami', function ($t) { $t->increments('sessione_id'); $t->integer('corso_id'); $t->string('nome'); $t->integer('anno'); $t->integer('numero_appelli'); $t->date('data_inizio'); $t->date('data_fine'); $t->date('scadenza_inserimento')->nullable(); });
         $s->create('appello', function ($t) { $t->increments('appello_id'); $t->integer('ins_corso_id'); $t->integer('sessione_id'); $t->date('data'); $t->string('ora_inizio'); $t->string('ora_fine'); $t->integer('aula_id'); });
     }
 

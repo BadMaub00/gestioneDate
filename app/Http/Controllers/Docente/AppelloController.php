@@ -1,31 +1,31 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Docente;
 
+use App\Http\Controllers\Controller;
 use App\Models\Appello;
 use App\Models\Aula;
-use App\Models\DocenteInsegnamento;
 use App\Models\Edificio;
 use App\Models\InsegnamentiCorso;
 use App\Models\Sessione;
 use App\Services\AppelloRules;
+use App\Services\InsegnamentiDocente;
 use Illuminate\Http\Request;
 
 /**
  * CRUD degli appelli lato DOCENTE (rotte protette da DocenteMiddleware).
  * L'amministratore non passa da qui: usa Admin\AppelloAdminController.
  */
-class appelloController extends Controller
+class AppelloController extends Controller
 {
+    public function __construct(private InsegnamentiDocente $insegnamenti)
+    {
+    }
+
     /** Solo il docente Primario dell'insegnamento può operare sui suoi appelli. */
     private function autorizza(Request $request, int $insCorsoId): void
     {
-        $autorizzato = DocenteInsegnamento::where('utente_id', $request->user()->getKey())
-            ->where('ins_corso_id', $insCorsoId)
-            ->where('ruolo', 'Primario')
-            ->exists();
-
-        abort_unless($autorizzato, 403, 'Non sei associato a questo insegnamento.');
+        abort_unless($this->insegnamenti->isPrimario($request->user(), $insCorsoId), 403, 'Non sei associato a questo insegnamento.');
     }
 
     public function create(Request $request)
@@ -40,7 +40,7 @@ class appelloController extends Controller
         $sessione = Sessione::findOrFail($request->sessione_id);
         $insegnamentoCorso = InsegnamentiCorso::with(['insegnamento', 'corso'])->findOrFail($request->ins_corso_id);
 
-        if ((int) $sessione->corso_id !== (int) $insegnamentoCorso->corso_id) {
+        if (!$sessione->appartieneACorso((int) $insegnamentoCorso->corso_id)) {
             return back()->with('error', 'Questa sessione non appartiene al corso dell\'insegnamento.');
         }
 
@@ -65,7 +65,7 @@ class appelloController extends Controller
         $sessione = Sessione::findOrFail($request->sessione_id);
         $insegnamentoCorso = InsegnamentiCorso::findOrFail($request->ins_corso_id);
 
-        if ((int) $sessione->corso_id !== (int) $insegnamentoCorso->corso_id) {
+        if (!$sessione->appartieneACorso((int) $insegnamentoCorso->corso_id)) {
             return back()->withErrors(['sessione_id' => 'La sessione selezionata non appartiene al corso di questo insegnamento.'])->withInput();
         }
 
@@ -73,11 +73,7 @@ class appelloController extends Controller
             return back()->with('error', $errore);
         }
 
-        $appelliEsistenti = Appello::where('sessione_id', $sessione->sessione_id)
-            ->where('ins_corso_id', $request->ins_corso_id)
-            ->count();
-
-        if ($appelliEsistenti >= $sessione->numero_appelli) {
+        if ($sessione->contaAppelli((int) $request->ins_corso_id) >= $sessione->numero_appelli) {
             return back()->withErrors([
                 'limite_appelli' => "La sessione '{$sessione->nome}' consente al massimo {$sessione->numero_appelli} appelli per questo insegnamento. Limite raggiunto.",
             ])->withInput();

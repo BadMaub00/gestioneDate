@@ -53,12 +53,7 @@ class AppelloRules
      */
     public static function conflitto(int $insCorsoId, array $d, ?int $escludiAppelloId = null): ?array
     {
-        $sovrapposti = function () use ($d, $escludiAppelloId) {
-            return Appello::where('data', $d['data'])
-                ->where('ora_inizio', '<', $d['ora_fine'])
-                ->where('ora_fine', '>', $d['ora_inizio'])
-                ->when($escludiAppelloId, fn ($q) => $q->where('appello_id', '!=', $escludiAppelloId));
-        };
+        $sovrapposti = fn () => Appello::sovrapposti($d['data'], $d['ora_inizio'], $d['ora_fine'], $escludiAppelloId);
 
         if ($sovrapposti()->where('ins_corso_id', $insCorsoId)->exists()) {
             return ['ora_inizio' => 'Esiste già un appello per questo stesso insegnamento nello stesso intervallo orario!'];
@@ -69,14 +64,8 @@ class AppelloRules
         }
 
         $ins = InsegnamentiCorso::find($insCorsoId);
-        if ($ins) {
-            $stessoAnnoStessoCorso = InsegnamentiCorso::where('corso_id', $ins->corso_id)
-                ->where('anno_di_corso', $ins->anno_di_corso)
-                ->pluck('ins_corso_id');
-
-            if ($sovrapposti()->whereIn('ins_corso_id', $stessoAnnoStessoCorso)->exists()) {
-                return ['data' => 'Esiste già un appello per un insegnamento dello stesso anno di questo corso in questa data e orario!'];
-            }
+        if ($ins && $sovrapposti()->whereIn('ins_corso_id', $ins->idsStessoAnno())->exists()) {
+            return ['data' => 'Esiste già un appello per un insegnamento dello stesso anno di questo corso in questa data e orario!'];
         }
 
         return null;

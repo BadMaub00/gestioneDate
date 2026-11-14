@@ -40,4 +40,24 @@ class Appello extends Model
     {
         return $this->belongsTo(Aula::class, 'aula_id', 'aula_id');
     }
+
+    /** Appelli che occupano (anche in parte) la fascia oraria indicata nello stesso giorno. */
+    public function scopeSovrapposti($query, string $data, string $oraInizio, string $oraFine, ?int $escludiAppelloId = null)
+    {
+        return $query->where('data', $data)
+            ->where('ora_inizio', '<', $oraFine)
+            ->where('ora_fine', '>', $oraInizio)
+            ->when($escludiAppelloId, fn ($q) => $q->where('appello_id', '!=', $escludiAppelloId));
+    }
+
+    /** Appelli di insegnamenti di un corso (e, se indicato, di un anno di corso). */
+    public function scopeDelCorso($query, $corsoId, $annoCorso = null)
+    {
+        return $query->whereHas('insegnamentoCorso', function ($q) use ($corsoId, $annoCorso) {
+            $q->where('corso_id', $corsoId);
+            if ($annoCorso) {
+                $q->where('anno_di_corso', $annoCorso);
+            }
+        });
+    }
 }

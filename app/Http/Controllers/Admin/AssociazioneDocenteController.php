@@ -14,26 +14,7 @@ class AssociazioneDocenteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DocenteInsegnamento::with(['docente', 'insegnamentiCorso.insegnamento', 'insegnamentiCorso.corso']);
-
-        if ($request->filled('corso_id')) {
-            $query->whereHas('insegnamentiCorso', fn ($q) => $q->where('corso_id', $request->corso_id));
-        }
-        if ($request->filled('ins_corso_id')) {
-            $query->where('ins_corso_id', $request->ins_corso_id);
-        }
-        if ($request->filled('docente_id')) {
-            $query->where('utente_id', $request->docente_id);
-        }
-
-        // Ordinamento per corso, cognome, nome; raggruppamento per nome del corso
-        $associazioniGrouped = $query->get()->sortBy([
-            fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->nome ?? '', $b->insegnamentiCorso->corso->nome ?? ''),
-            fn ($a, $b) => strcmp($a->docente->cognome ?? '', $b->docente->cognome ?? ''),
-            fn ($a, $b) => strcmp($a->docente->nome ?? '', $b->docente->nome ?? ''),
-        ])
-        ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso->nome ?? 'N/D')
-        ->sortKeys();
+        $associazioniGrouped = DocenteInsegnamento::elencoPerCorso($request->only(['corso_id', 'ins_corso_id', 'docente_id']));
 
         // Dati per i menu a tendina dei filtri
         $corsi = Corso::orderBy('nome', 'asc')->get();
@@ -57,24 +38,17 @@ class AssociazioneDocenteController extends Controller
         $validated = $request->validate([
             'ins_corso_id' => 'required|exists:insegnamento_corso,ins_corso_id',
             'utente_id'    => 'required|exists:utente,utente_id',
-            'ruolo'        => 'required|in:Primario,Secondario',
+            'ruolo'        => 'required|in:' . implode(',', DocenteInsegnamento::RUOLI),
         ]);
 
-        // 1. Solo gli utenti con ruolo Docente possono essere associati
-        if (!Utente::findOrFail($validated['utente_id'])->isDocente()) {
-            return back()->withErrors(['utente_id' => 'Solo gli utenti con ruolo "Docente" possono essere associati ad un insegnamento!'])->withInput();
-        }
+        $errore = DocenteInsegnamento::erroreAssociazione(
+            (int) $validated['ins_corso_id'],
+            Utente::findOrFail($validated['utente_id']),
+            $validated['ruolo']
+        );
 
-        $perInsegnamento = DocenteInsegnamento::where('ins_corso_id', $validated['ins_corso_id']);
-
-        // 2. Associazione duplicata
-        if ((clone $perInsegnamento)->where('utente_id', $validated['utente_id'])->exists()) {
-            return back()->withErrors(['utente_id' => 'Questo docente è già associato a questo insegnamento!'])->withInput();
-        }
-
-        // 3. Un solo Primario per insegnamento
-        if ($validated['ruolo'] === 'Primario' && (clone $perInsegnamento)->where('ruolo', 'Primario')->exists()) {
-            return back()->withErrors(['ruolo' => 'Questo insegnamento ha già un docente con ruolo Primario!'])->withInput();
+        if ($errore) {
+            return back()->withErrors($errore)->withInput();
         }
 
         DocenteInsegnamento::create($validated);
