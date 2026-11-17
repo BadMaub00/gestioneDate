@@ -17,18 +17,12 @@
             </x-page-header>
 
             <!-- Pulsante Aggiungi Insegnamento al Corso -->
-            <div class="mb-4">
-                <a href="{{ route('admin.corsi.insegnamenti.create', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi insegnamenti al corso
-                </a>
-            </div>
+            <x-add-button :href="route('admin.corsi.insegnamenti.create', $corso->corso_id)">Aggiungi insegnamenti al corso</x-add-button>
 
             <!-- Anni del corso -->
             @for ($anno = 1; $anno <= $durataAnni; $anno++)
                 <div class="card shadow-sm mb-4 border-0 rounded-3 overflow-hidden">
-                    <div class="card-header bg-unibs text-white fw-bold py-2">
-                        <i class="bi bi-calendar3 me-2"></i>{{ $anno }}° Anno di Corso
-                    </div>
+                    <x-card-header icon="calendar3" :titolo="$anno . '° Anno di Corso'" size="xs" />
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush">
                             @forelse($insegnamentiPerAnno->get($anno, []) as $ic)
@@ -46,12 +40,7 @@
                                         </span>
 
                                         <!-- Tasto Modifica -->
-                                        <a href="{{ route('admin.corsi.insegnamenti.edit', $ic->ins_corso_id) }}" 
-                                           class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center ms-2" 
-                                           style="width: 36px; height: 36px;" 
-                                           title="Modifica Insegnamento">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </a>
+                                        <x-edit-button :href="route('admin.corsi.insegnamenti.edit', $ic->ins_corso_id)" title="Modifica Insegnamento" class="ms-2" />
 
                                         <!-- Tasto Elimina con Modal Personalizzato -->
                                         <x-delete-form :action="route('admin.corsi.insegnamenti.destroy', $ic->ins_corso_id)" title="Rimuovi Insegnamento">

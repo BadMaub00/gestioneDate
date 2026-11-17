@@ -12,25 +12,13 @@
             <div class="container-fluid px-md-4 px-lg-5">
                 
                 <!-- Intestazione Pagina con Pulsante a Destra -->
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
-                    <div>
-                        <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                            <i class="bi bi-calendar-event-fill me-2"></i>Gestione Appelli Insegnamento
-                        </h1>
-                        <p class="text-muted small m-0 mt-1 fw-medium">
-                            <strong>Materia:</strong> {{ $insegnamentoCorso->insegnamento->nome }} | 
-                            <strong>Corso:</strong> {{ $insegnamentoCorso->corso->nome }} ({{ $insegnamentoCorso->anno_di_corso }}° Anno) | 
-                            <strong>Ruolo:</strong> {{ $docenteInsegnamento->ruolo ?? 'Docente' }}
-                        </p>
-                    </div>
-
-                    <!-- Pulsante Torna alla Dashboard -->
-                    <a href="{{ route('docente.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase text-nowrap">
-                        <i class="bi bi-arrow-left me-2"></i>TORNA ALLA DASHBOARD
-                    </a>
-                </div>
-
-                <hr class="border-unibs border-2 opacity-100 mb-4">
+                <x-page-header icon="calendar-event-fill" titolo="Gestione Appelli Insegnamento" :back-href="route('docente.dashboard')" back-label="Torna alla Dashboard" upper stack>
+                    <p class="text-muted small m-0 mt-1 fw-medium">
+                        <strong>Materia:</strong> {{ $insegnamentoCorso->insegnamento->nome }} | 
+                        <strong>Corso:</strong> {{ $insegnamentoCorso->corso->nome }} ({{ $insegnamentoCorso->anno_di_corso }}° Anno) | 
+                        <strong>Ruolo:</strong> {{ $docenteInsegnamento->ruolo ?? 'Docente' }}
+                    </p>
+                </x-page-header>
 
                 <!-- Alert Messaggi di Successo/Errore -->
                 <x-flash-messages />
@@ -190,42 +178,21 @@
                                                     <div class="d-flex justify-content-end gap-1">
                                                         @if(!$isTermineSuperato && $isPrimario)
                                                             <!-- Pulsanti Attivi (Modifica & Elimina) -->
-                                                            <a href="{{ route('docente.appelli.edit', $appello->appello_id) }}" 
-                                                               class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
-                                                               style="width: 32px; height: 32px;" 
-                                                               title="Modifica Appello">
-                                                                <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
-                                                            </a>
+                                                            <x-edit-button :href="route('docente.appelli.edit', $appello->appello_id)" title="Modifica Appello" small />
 
                                                             <x-delete-form :action="route('docente.appelli.destroy', $appello->appello_id)" title="Elimina Appello" small>
                                                                 Sei sicuro di voler eliminare questo appello d'esame?
                                                             </x-delete-form>
                                                         @else
                                                             <!-- Pulsanti Disabilitati -->
-                                                            <button type="button" 
-                                                                    class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                    disabled 
-                                                                    style="width: 32px; height: 32px;" 
-                                                                    title="{{ $isTermineSuperato ? 'Termini di modifica superati (scadenza: ' . $scadenzaInserimento->format('d/m/Y') . ')' : 'Azione riservata al docente primario' }}">
-                                                                <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
-                                                            </button>
-                                                            <button type="button" 
-                                                                    class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                    disabled 
-                                                                    style="width: 32px; height: 32px;" 
-                                                                    title="{{ $isTermineSuperato ? 'Termini di eliminazione superati (scadenza: ' . $scadenzaInserimento->format('d/m/Y') . ')' : 'Azione riservata al docente primario' }}">
-                                                                <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
-                                                            </button>
+                                                            <x-edit-button :title="$isTermineSuperato ? 'Termini di modifica superati (scadenza: ' . $scadenzaInserimento->format('d/m/Y') . ')' : 'Azione riservata al docente primario'" disabled small />
+                                                            <x-delete-form :title="$isTermineSuperato ? 'Termini di eliminazione superati (scadenza: ' . $scadenzaInserimento->format('d/m/Y') . ')' : 'Azione riservata al docente primario'" disabled small />
                                                         @endif
                                                     </div>
                                                 </td>
                                             </tr>
                                         @empty
-                                            <tr>
-                                                <td colspan="5" class="text-center py-4 text-muted fw-medium">
-                                                    <i class="bi bi-info-circle me-1 text-secondary"></i> Nessun appello fissato per questo insegnamento in questa sessione.
-                                                </td>
-                                            </tr>
+                                            <x-empty-state colspan="5" compact>Nessun appello fissato per questo insegnamento in questa sessione.</x-empty-state>
                                         @endforelse
                                     </tbody>
                                 </table>

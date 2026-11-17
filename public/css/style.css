@@ -69,7 +69,31 @@ body.bg-dashboard {
 }
 
 /* Effetto al passaggio del mouse (Hover) */
-/*.card:hover {
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(0, 34, 68, 0.35) !important;
-}*/
+}
+
+.btn-change,
+.btn-delete {
+    transition: filter 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-change:hover,
+.btn-delete:hover {
+    filter: brightness(0.90); /* Riduce la luminosità al 90% (scurisce leggermente) */
+}
+
+/* Stile testo per i menu a tendina dei filtri */
+.select-filtro {
+    font-size: 0.8rem;
+    color: #495057;
+}
+
+.select-filtro option {
+    color: #212529;
+}

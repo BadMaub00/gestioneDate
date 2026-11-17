@@ -14,7 +14,8 @@ class AssociazioneDocenteController extends Controller
 {
     public function index(Request $request)
     {
-        $associazioniGrouped = DocenteInsegnamento::elencoPerCorso($request->only(['corso_id', 'ins_corso_id', 'docente_id']));
+        // Carica tutte le associazioni per consentire il filtraggio istantaneo lato client
+        $associazioniGrouped = DocenteInsegnamento::elencoPerCorso([]);
 
         // Dati per i menu a tendina dei filtri
         $corsi = Corso::orderBy('nome', 'asc')->get();

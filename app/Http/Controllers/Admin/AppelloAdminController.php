@@ -77,7 +77,7 @@ class AppelloAdminController extends Controller
 
     private function tornaAlCalendario(Appello $appello)
     {
-        return redirect()->route('admin.calendario', [
+        return redirect()->route('admin.appelli.calendario', [
             'sessione_id' => $appello->sessione_id,
             'corso_id'    => $appello->insegnamentoCorso->corso_id ?? null,
         ]);

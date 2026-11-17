@@ -41,9 +41,7 @@
                         </p>
                     </div>
 
-                    <a href="{{ route('docente.selezionaSessione') }}" class="btn btn-outline-unibs fw-bold rounded-3 shadow-sm px-3 py-2">
-                        <i class="bi bi-arrow-left me-1"></i> Cambia Sessione
-                    </a>
+                    <x-back-button :href="route('docente.selezionaSessione')" label="Cambia Sessione" outline />
                 </div>
 
                 <div class="row g-4 align-items-start">
@@ -137,12 +135,7 @@
                                             @endforeach
 
                                             @if(!$hasAppelli)
-                                                <tr>
-                                                    <td colspan="4" class="text-center py-5 text-muted fw-bold">
-                                                        <i class="bi bi-calendar-x fs-3 d-block mb-2 text-secondary"></i>
-                                                        Nessun appello fissato per le tue materie in questa sessione.
-                                                    </td>
-                                                </tr>
+                                                <x-empty-state colspan="4" icon="calendar-x">Nessun appello fissato per le tue materie in questa sessione.</x-empty-state>
                                             @endif
                                         </tbody>
                                     </table>

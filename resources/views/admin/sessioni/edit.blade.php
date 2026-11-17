@@ -10,12 +10,7 @@
         <div class="container py-4">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h1 class="h4 fw-bold text-unibs m-0">Modifica Sessione</h1>
-                        <a href="{{ route('admin.sessioni.index') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
-                        </a>
-                    </div>
+                    <x-form-header titolo="Modifica Sessione" :back-href="route('admin.sessioni.index')" />
 
                     <x-validation-errors />
 
@@ -54,9 +49,7 @@
                                     <div class="form-text small">Facoltativa. Ultimo giorno in cui i docenti possono inserire gli appelli; se vuota viene impostata a un mese prima dell'inizio della sessione.</div>
                                 </div>
 
-                                <button type="submit" class="btn btn-unibs text-white fw-bold w-100 rounded-pill py-2 mt-2 shadow-sm">
-                                    <i class="bi bi-pencil-square me-2"></i>Aggiorna Sessione
-                                </button>
+                                <x-submit-button icon="pencil-square" class="mt-2">Aggiorna Sessione</x-submit-button>
                             </form>
                         </div>
                     </div>

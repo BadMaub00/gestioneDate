@@ -25,9 +25,7 @@
 
             <!-- Card Form di Modifica -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                <div class="card-header bg-unibs text-white fw-bold py-2">
-                    <i class="bi bi-journal-text me-2"></i>Parametri Insegnamento
-                </div>
+                <x-card-header icon="journal-text" titolo="Parametri Insegnamento" size="xs" />
                 <div class="card-body p-4 bg-white">
                     <form action="{{ route('admin.corsi.insegnamenti.update', $insegnamentoCorso->ins_corso_id) }}" method="POST">
                         @csrf
@@ -77,10 +75,8 @@
 
                         <!-- Bottoni Azione -->
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="{{ route('admin.corsi.piano_di_studi', $corso->corso_id) }}" class="btn btn-secondary rounded-pill px-4">Annulla</a>
-                            <button type="submit" class="btn btn-unibs text-white fw-bold rounded-pill px-4">
-                                <i class="bi bi-check-circle-fill me-1"></i>Salva Modifiche
-                            </button>
+                            <x-cancel-button :href="route('admin.corsi.piano_di_studi', $corso->corso_id)" pill />
+                            <x-submit-button icon="check-circle-fill" :block="false">Salva Modifiche</x-submit-button>
                         </div>
                     </form>
                 </div>

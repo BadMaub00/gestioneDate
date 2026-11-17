@@ -11,14 +11,7 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6">
 
-                    <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                            <i class="bi bi-person-plus-fill me-2"></i>Aggiungi Insegnamento al Corso
-                        </h1>
-                        <a href="{{ route('admin.corsi.piano_di_studi', $corso->corso_id) }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
-                        </a>
-                    </div>
+                    <x-form-header icon="person-plus-fill" titolo="Aggiungi Insegnamento al Corso" :back-href="route('admin.corsi.piano_di_studi', $corso->corso_id)" :mb="4" />
 
                     <x-validation-errors />
 
@@ -96,9 +89,7 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-unibs text-white fw-bold w-100 rounded-pill py-2 shadow-sm">
-                                    <i class="bi bi-save me-2"></i>Salva Insegnamento
-                                </button>
+                                <x-submit-button icon="save">Salva Insegnamento</x-submit-button>
                             </form>
                         </div>
                     </div>

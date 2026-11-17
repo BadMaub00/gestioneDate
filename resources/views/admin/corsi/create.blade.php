@@ -37,11 +37,7 @@
                                     </select>
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-unibs text-white fw-bold py-2 rounded-pill shadow-sm">
-                                        <i class="bi bi-plus-circle me-1"></i>Salva Corso
-                                    </button>
-                                </div>
+                                <x-submit-button icon="plus-circle">Salva Corso</x-submit-button>
                             </form>
 
                         </div>

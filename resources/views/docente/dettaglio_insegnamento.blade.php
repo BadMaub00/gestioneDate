@@ -22,9 +22,7 @@
                         </p>
                     </div>
 
-                    <a href="{{ route('docente.dashboard') }}" class="btn btn-outline-unibs fw-bold rounded-3 shadow-sm px-3 py-2">
-                        <i class="bi bi-arrow-left me-1"></i> Dashboard
-                    </a>
+                    <x-back-button :href="route('docente.dashboard')" label="Dashboard" outline />
                 </div>
 
                 <!-- Banner Principale Insegnamento -->
@@ -105,11 +103,7 @@
 
                 <!-- Card Tabella Roster Docenti -->
                 <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
-                    <div class="card-header bg-unibs text-white py-3 px-4 border-0 d-flex align-items-center">
-                        <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                            <i class="bi bi-people-fill me-2 fs-5"></i> Copertura Didattica Insegnamento
-                        </h5>
-                    </div>
+                    <x-card-header icon="people-fill" titolo="Copertura Didattica Insegnamento" />
 
                     <div class="card-body p-0">
                         <div class="table-responsive">

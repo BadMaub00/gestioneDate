@@ -20,11 +20,7 @@
             </x-page-header>
 
             <!-- Pulsante Aggiungi Aula -->
-            <div class="mb-4">
-                <a href="{{ route('admin.sedi.createAula', $edificio->edificio_id) }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Aula
-                </a>
-            </div>
+            <x-add-button :href="route('admin.sedi.createAula', $edificio->edificio_id)">Aggiungi Aula</x-add-button>
 
             <!-- Tabella Aule -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
@@ -56,12 +52,7 @@
                                     <td class="py-3 px-4 text-center text-nowrap">
                                         <div class="d-flex justify-content-center gap-2">
                                             <!-- Tasto Modifica -->
-                                            <a href="{{ route('admin.sedi.editAula', $aula->aula_id) }}" 
-                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                               style="width: 36px; height: 36px;" 
-                                               title="Modifica Aula">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
+                                            <x-edit-button :href="route('admin.sedi.editAula', $aula->aula_id)" title="Modifica Aula" />
 
                                             <!-- Tasto Elimina -->
                                             <x-delete-form :action="route('admin.sedi.destroyAula', $aula->aula_id)" title="Elimina Aula">
@@ -71,12 +62,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="3" class="text-center text-muted py-5 fs-6">
-                                        <i class="bi bi-building-exclamation fs-3 d-block mb-2 text-secondary"></i>
-                                        Nessuna aula presente per questo edificio.
-                                    </td>
-                                </tr>
+                                <x-empty-state colspan="3" icon="building-exclamation">Nessuna aula presente per questo edificio.</x-empty-state>
                             @endforelse
                         </tbody>
                     </table>

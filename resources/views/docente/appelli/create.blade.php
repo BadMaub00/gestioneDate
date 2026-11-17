@@ -12,21 +12,9 @@
         <!-- Contenuto Principale -->
         <div class="container py-3">
             
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
-                <div>
-                    <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                        <i class="bi bi-calendar-plus-fill me-2"></i>Nuovo Appello d'Esame
-                    </h1>
-                    <p class="text-muted small m-0 mt-1">Programmazione data per l'insegnamento e la sessione selezionati</p>
-                </div>
-
-                <a href="{{ route('docente.appelliInsegnamento', $insegnamentoCorso->ins_corso_id) }}" 
-                   class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase">
-                    <i class="bi bi-arrow-left me-2"></i>Torna agli Appelli
-                </a>
-            </div>
-
-            <hr class="border-unibs border-2 opacity-100 mb-4">
+            <x-page-header icon="calendar-plus-fill" titolo="Nuovo Appello d'Esame" :back-href="route('docente.appelliInsegnamento', $insegnamentoCorso->ins_corso_id)" back-label="Torna agli Appelli" upper stack>
+                <p class="text-muted small m-0 mt-1">Programmazione data per l'insegnamento e la sessione selezionati</p>
+            </x-page-header>
 
             <!-- Gestione Messaggi di Errore -->
             @if ($errors->any())
@@ -43,11 +31,7 @@
 
             <!-- Form di Creazione Appello -->
             <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                <div class="card-header bg-unibs text-white py-3 px-4">
-                    <h5 class="card-title mb-0 fw-bold fs-6">
-                        <i class="bi bi-file-earmark-plus me-2"></i>Dettagli Appello
-                    </h5>
-                </div>
+                <x-card-header icon="file-earmark-plus" titolo="Dettagli Appello" size="sm" />
 
                 <div class="card-body p-4 bg-white">
                     <form action="{{ route('docente.appelli.store') }}" method="POST">
@@ -179,9 +163,7 @@
 
                         <!-- Pulsanti d'Azione -->
                         <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
-                            <a href="{{ route('docente.appelliInsegnamento', $insegnamentoCorso->ins_corso_id) }}" class="btn btn-outline-secondary fw-bold px-4 rounded-3">
-                                Annulla
-                            </a>
+                            <x-cancel-button :href="route('docente.appelliInsegnamento', $insegnamentoCorso->ins_corso_id)" />
                             <button type="submit" class="btn btn-unibs text-white fw-bold px-4 rounded-3 shadow-sm">
                                 <i class="bi bi-check-circle-fill me-1"></i> Salva Appello
                             </button>

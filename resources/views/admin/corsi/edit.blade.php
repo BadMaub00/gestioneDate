@@ -11,12 +11,7 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6">
 
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h1 class="h4 fw-bold text-unibs m-0">Modifica Corso di Laurea</h1>
-                        <a href="{{ route('admin.corsi.index') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Torna Indietro
-                        </a>
-                    </div>
+                    <x-form-header titolo="Modifica Corso di Laurea" :back-href="route('admin.corsi.index')" />
 
                     <x-validation-errors />
 
@@ -51,9 +46,7 @@
                                     </select>
                                 </div>
 
-                                <button type="submit" class="btn btn-unibs text-white fw-bold w-100 rounded-pill py-2 shadow-sm">
-                                    <i class="bi bi-pencil-square me-2"></i>Aggiorna Corso
-                                </button>
+                                <x-submit-button icon="pencil-square">Aggiorna Corso</x-submit-button>
                             </form>
                         </div>
                     </div>

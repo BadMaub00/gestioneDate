@@ -37,11 +37,7 @@
 
                 <!-- Card Tabella Insegnamenti -->
                 <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
-                    <div class="card-header bg-unibs text-white py-3 px-4 border-0">
-                        <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                            <i class="bi bi-journal-text me-2 fs-5"></i> Gestione Insegnamenti e Appelli
-                        </h5>
-                    </div>
+                    <x-card-header icon="journal-text" titolo="Gestione Insegnamenti e Appelli" />
 
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -107,11 +103,7 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="4" class="text-center py-4 text-muted fw-medium">
-                                                <i class="bi bi-info-circle me-1 text-secondary"></i> Nessun insegnamento associato al tuo profilo.
-                                            </td>
-                                        </tr>
+                                        <x-empty-state colspan="4" compact>Nessun insegnamento associato al tuo profilo.</x-empty-state>
                                     @endforelse
                                 </tbody>
                             </table>

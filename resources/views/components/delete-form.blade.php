@@ -6,25 +6,33 @@
             Sei sicuro di voler eliminare il corso '{{ $corso->nome }}'?
         </x-delete-form>
     Con "small" il pulsante è la variante più piccola (32px) usata nelle tabelle compatte.
+    Con "disabled" mostra invece un cestino grigio non cliccabile (action e slot non servono),
+    dove "title" è il motivo per cui l'eliminazione non è possibile:
+        <x-delete-form title="Non è possibile eliminare appelli di sessioni passate" disabled />
 --}}
-@props(['action', 'title', 'small' => false])
+@props(['action' => null, 'title', 'small' => false, 'disabled' => false])
 
-<form action="{{ $action }}" method="POST" class="{{ $small ? 'd-inline m-0 p-0' : 'd-inline m-0' }}" data-confirm="{{ $slot }}">
-    @csrf
-    @method('DELETE')
-    @if($small)
+@php
+    $size = $small ? '32px' : '36px';
+@endphp
+
+@if($disabled)
+    <button type="button"
+            {{ $attributes->merge(['class' => 'btn bg-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50']) }}
+            disabled
+            @style(["width: $size", "height: $size"])
+            title="{{ $title }}">
+        <i class="bi bi-trash-fill" @style(['font-size: 0.85rem' => $small])></i>
+    </button>
+@else
+    <form action="{{ $action }}" method="POST" @class(['d-inline', 'm-0', 'p-0' => $small]) data-confirm="{{ $slot }}">
+        @csrf
+        @method('DELETE')
         <button type="submit"
-                class="btn btn-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm"
-                style="width: 32px; height: 32px;"
+                {{ $attributes->merge(['class' => 'btn btn-delete bg-white text-danger border border-danger rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm']) }}
+                @style(["width: $size", "height: $size"])
                 title="{{ $title }}">
-            <i class="bi bi-trash-fill" style="font-size: 0.85rem;"></i>
+            <i class="bi bi-trash-fill" @style(['font-size: 0.85rem' => $small])></i>
         </button>
-    @else
-        <button type="submit"
-                class="btn bg-white border border-danger text-danger rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center"
-                style="width: 36px; height: 36px;"
-                title="{{ $title }}">
-            <i class="bi bi-trash-fill"></i>
-        </button>
-    @endif
-</form>
+    </form>
+@endif

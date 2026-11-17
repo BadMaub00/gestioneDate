@@ -27,7 +27,7 @@
 
                                 <!-- 1. Corsi -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.corsi.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">   
+                                    <a href="{{ route('admin.corsi.index') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">   
                                         <i class="bi bi-mortarboard-fill text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Corsi</span>
                                     </a>
@@ -35,7 +35,7 @@
 
                                 <!-- 2. Insegnamenti -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.insegnamenti.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.insegnamenti.index') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-journal-bookmark-fill text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Insegnamenti</span>
                                     </a>
@@ -43,7 +43,7 @@
 
                                 <!-- 3. Personale Universitario -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.personale.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.personale.index') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Personale universitario</span>
                                     </a>
@@ -51,7 +51,7 @@
 
                                 <!-- 4. Associa -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.personale.associazioni_index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.personale.associazioni_index') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-people-fill text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Incarichi Docenti</span>
                                     </a>
@@ -59,7 +59,7 @@
 
                                 <!-- 5. Appelli -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.calendario') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.appelli.calendario') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-calendar-check text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Appelli</span>
                                     </a>
@@ -67,7 +67,7 @@
 
                                 <!-- 6. Sessioni -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.sessioni.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.sessioni.index') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-calendar-range text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Sessioni</span>
                                     </a>
@@ -75,7 +75,7 @@
 
                                 <!-- 7. Sedi (Posizionato al centro della terza fila) -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.sedi.edifici') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.sedi.edifici') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-building text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Sedi</span>
                                     </a>
@@ -83,7 +83,7 @@
 
                                 <!-- 8. Importa da Excel -->
                                 <div class="col-12 col-sm-4">
-                                    <a href="{{ route('admin.import.index') }}" class="card shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
+                                    <a href="{{ route('admin.import.index') }}" class="card card-hover shadow-sm border-0 rounded-3 text-decoration-none text-dark h-100 p-4 d-flex flex-column align-items-center justify-content-center text-center">
                                         <i class="bi bi-file-earmark-excel text-unibs fs-1 mb-2"></i>
                                         <span class="fw-semibold">Importa da Excel</span>
                                     </a>

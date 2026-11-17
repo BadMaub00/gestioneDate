@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="border rounded-3 p-2 bg-white" style="max-height: 220px; overflow-y: auto;">
+    <div class="border rounded-3 p-2 bg-white" style="max-height: 110px; overflow-y: auto;">
         @forelse($corsi as $corso)
             <div class="form-check py-1">
                 <input class="form-check-input corso-checkbox" type="checkbox" name="corsi[]"

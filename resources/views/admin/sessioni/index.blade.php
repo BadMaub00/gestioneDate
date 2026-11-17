@@ -12,22 +12,11 @@
             <div class="container-fluid px-md-4 px-lg-5">
 
                 <!-- Intestazione Pagina con Pulsante Torna alla Dashboard -->
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
-                    <div>
-                        <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                            <i class="bi bi-calendar-range-fill me-2"></i>Gestione Sessioni d'Esame
-                        </h1>
-                        <p class="text-muted small m-0 mt-1 fw-medium">
-                            Elenco e gestione delle sessioni d'esame registrate nel sistema
-                        </p>
-                    </div>
-
-                    <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase text-nowrap">
-                        <i class="bi bi-arrow-left me-2"></i>TORNA ALLA DASHBOARD
-                    </a>
-                </div>
-
-                <hr class="border-unibs border-2 opacity-100 mb-4">
+                <x-page-header icon="calendar-range-fill" titolo="Gestione Sessioni d'Esame" :back-href="route('admin.dashboard')" back-label="Torna alla Dashboard" upper stack>
+                    <p class="text-muted small m-0 mt-1 fw-medium">
+                        Elenco e gestione delle sessioni d'esame registrate nel sistema
+                    </p>
+                </x-page-header>
 
                 <!-- Alert Messaggi di Successo/Errore -->
                 <x-flash-messages />
@@ -38,29 +27,44 @@
                 @endphp
 
                 @if($anniDisponibili->count() > 0)
-                    <div class="card shadow-sm border-0 rounded-3 mb-4 p-3 bg-white">
-                        <div class="row align-items-center g-2">
-                            <div class="col-12 col-md-auto fw-bold text-unibs d-flex align-items-center">
-                                <i class="bi bi-funnel-fill me-2"></i>Filtra:
-                            </div>
-                            <div class="col-12 col-md-4">
-                                <select id="filtroCorsoSessione" class="form-select form-select-sm shadow-sm border-unibs fw-semibold text-dark">
-                                    <option value="tutti" selected>Tutti i corsi</option>
-                                    @foreach($corsi as $corso)
-                                        <option value="{{ $corso->corso_id }}">{{ $corso->nome }} - {{ $corso->tipo_corso }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-3">
-                                <select id="filtroAnnoSessione" class="form-select form-select-sm shadow-sm border-unibs fw-semibold text-dark">
-                                    <option value="tutti" selected>Tutti gli anni</option>
-                                    @foreach($anniDisponibili as $anno)
-                                        <option value="{{ $anno }}">Anno {{ $anno }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-auto text-muted small ms-md-auto">
-                                <i class="bi bi-info-circle me-1"></i> I filtri si possono combinare
+                    <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                        <div class="card-body p-3">
+                            <div class="row g-2 align-items-end">
+                                
+                                <!-- Etichetta Filtra -->
+                                <div class="col-12 col-md-auto fw-bold text-unibs d-flex align-items-center pb-1">
+                                    <i class="bi bi-funnel-fill"></i>
+                                </div>
+
+                                <!-- 1. Filtro Corso -->
+                                <div class="col-12 col-md">
+                                    <label for="filtroCorsoSessione" class="form-label fw-bold text-dark small mb-1">Corso di Laurea:</label>
+                                    <select id="filtroCorsoSessione" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                        <option value="" selected>-- Tutti i Corsi --</option>
+                                        @foreach($corsi as $corso)
+                                            <option value="{{ $corso->corso_id }}">{{ $corso->nome }} - {{ $corso->tipo_corso }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- 2. Filtro Anno Sessione -->
+                                <div class="col-12 col-md">
+                                    <label for="filtroAnnoSessione" class="form-label fw-bold text-dark small mb-1">Anno:</label>
+                                    <select id="filtroAnnoSessione" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                        <option value="" selected>-- Tutti gli Anni --</option>
+                                        @foreach($anniDisponibili as $anno)
+                                            <option value="{{ $anno }}">Anno {{ $anno }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- 3. Pulsante Reset -->
+                                <div class="col-12 col-md-auto d-grid">
+                                    <button type="button" id="btnResetFiltriSessione" class="btn btn-outline-unibs btn-sm fw-bold shadow-sm rounded-2 px-3" title="Reset filtri">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -74,14 +78,10 @@
                 </div>
 
                 <!-- Bottone Aggiungi Sessione -->
-                <div class="mb-4">
-                    <a href="{{ route('admin.sessioni.create') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center text-uppercase">
-                        <i class="bi bi-plus-circle-fill me-2 fs-5"></i> AGGIUNGI SESSIONE
-                    </a>
-                </div>
+                <x-add-button :href="route('admin.sessioni.create')" upper>Aggiungi Sessione</x-add-button>
 
                 <!-- Tabella Sessioni d'Esame -->
-                <div class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
+                <div id="tabellaSessioniCard" class="card shadow-sm border-0 rounded-3 overflow-hidden mb-4">
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover table-striped align-middle mb-0">
@@ -138,21 +138,10 @@
                                                 <div class="d-flex justify-content-end gap-1">
                                                     @if($isPassata)
                                                         <!-- Modifica Disabilitata per Sessioni Passate -->
-                                                        <button type="button" 
-                                                                class="btn btn-white text-secondary border border-secondary rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm opacity-50" 
-                                                                disabled 
-                                                                style="width: 32px; height: 32px;" 
-                                                                title="Non è possibile modificare una sessione passata">
-                                                            <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
-                                                        </button>
+                                                        <x-edit-button title="Non è possibile modificare una sessione passata" disabled small />
                                                     @else
                                                         <!-- Modifica Attiva -->
-                                                        <a href="{{ route('admin.sessioni.edit', $sessione->sessione_id) }}" 
-                                                           class="btn btn-white text-unibs border border-unibs rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-sm" 
-                                                           style="width: 32px; height: 32px;" 
-                                                           title="Modifica Sessione">
-                                                            <i class="bi bi-pencil-fill" style="font-size: 0.85rem;"></i>
-                                                        </a>
+                                                        <x-edit-button :href="route('admin.sessioni.edit', $sessione->sessione_id)" title="Modifica Sessione" small />
                                                     @endif
 
                                                     <!-- Elimina con Modal Personalizzato contenente Anno e Nome Sessione -->
@@ -163,11 +152,7 @@
                                             </td>
                                         </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-4 text-muted fw-medium">
-                                                <i class="bi bi-info-circle me-1 text-secondary"></i> Nessuna sessione d'esame registrata.
-                                            </td>
-                                        </tr>
+                                        <x-empty-state colspan="6" compact>Nessuna sessione d'esame registrata.</x-empty-state>
                                     @endforelse
                                 </tbody>
                             </table>
@@ -178,40 +163,8 @@
             </div>
         </div>
 
-        <!-- Script Filtraggio Dinamico per Corso e Anno Sessione -->
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const filtroAnno = document.getElementById('filtroAnnoSessione');
-                const filtroCorso = document.getElementById('filtroCorsoSessione');
-                if (!filtroAnno || !filtroCorso) return;
-
-                const sessionRows = document.querySelectorAll('.sessione-row');
-                const noMatchAlert = document.getElementById('noSessioniMatchFilter');
-
-                function applicaFiltri() {
-                    const anno = filtroAnno.value;
-                    const corso = filtroCorso.value;
-                    let visibleCount = 0;
-
-                    sessionRows.forEach(row => {
-                        const okAnno = anno === 'tutti' || row.getAttribute('data-anno') === anno;
-                        const okCorso = corso === 'tutti' || row.getAttribute('data-corso') === corso;
-
-                        if (okAnno && okCorso) {
-                            row.classList.remove('d-none');
-                            visibleCount++;
-                        } else {
-                            row.classList.add('d-none');
-                        }
-                    });
-
-                    noMatchAlert.classList.toggle('d-none', visibleCount !== 0 || sessionRows.length === 0);
-                }
-
-                filtroAnno.addEventListener('change', applicaFiltri);
-                filtroCorso.addEventListener('change', applicaFiltri);
-            });
-        </script>
+        <!-- Collegamento allo script dei filtri delle sessioni -->
+        <script src="{{ asset('js/filtriSessioni.js') }}?v={{ filemtime(public_path('js/filtriSessioni.js')) }}"></script>
 
         <!-- Script Modal di Conferma Eliminazione Personalizzato -->
         <script src="{{ asset('js/confirmDelete.js') }}"></script>

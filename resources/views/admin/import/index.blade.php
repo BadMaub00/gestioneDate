@@ -11,12 +11,7 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-9">
 
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h1 class="h4 fw-bold text-unibs m-0">Importa da Excel</h1>
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 shadow-sm">
-                            <i class="bi bi-arrow-left me-1"></i>Torna alla Dashboard
-                        </a>
-                    </div>
+                    <x-form-header titolo="Importa da Excel" :back-href="route('admin.dashboard')" back-label="Torna alla Dashboard" />
 
                     @if(!$libreriaOk)
                         <div class="alert alert-warning rounded-3 mb-3">
@@ -98,9 +93,7 @@
                                             <input class="form-check-input" type="checkbox" name="solo_verifica" id="solo_verifica" value="1" {{ old('solo_verifica') ? 'checked' : '' }}>
                                             <label class="form-check-label" for="solo_verifica">Solo verifica (controlla il file senza salvare)</label>
                                         </div>
-                                        <button type="submit" class="btn btn-unibs text-white fw-bold rounded-pill px-4 shadow-sm">
-                                            <i class="bi bi-upload me-1"></i>Importa
-                                        </button>
+                                        <x-submit-button icon="upload" :block="false">Importa</x-submit-button>
                                     </form>
                                 </div>
                             </div>

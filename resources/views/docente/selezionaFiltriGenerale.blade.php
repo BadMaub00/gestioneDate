@@ -16,11 +16,7 @@
                         
                         <!-- Card Selezione Filtri Calendario Generale -->
                         <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
-                            <div class="card-header bg-unibs text-white py-3 px-4 border-0">
-                                <h5 class="card-title mb-0 fw-bold d-flex align-items-center">
-                                    <i class="bi bi-calendar3 me-2 fs-5"></i> Selezione Calendario Generale
-                                </h5>
-                            </div>
+                            <x-card-header icon="calendar3" titolo="Selezione Calendario Generale" />
 
                             <div class="card-body p-4 bg-white">
                                 <x-validation-errors />
@@ -75,9 +71,7 @@
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center gap-2 mt-4 pt-2 border-top">
-                                        <a href="{{ route('docente.dashboard') }}" class="btn btn-outline-secondary fw-bold px-3 py-2 rounded-3">
-                                            <i class="bi bi-arrow-left me-1"></i> Annulla
-                                        </a>
+                                        <x-cancel-button :href="route('docente.dashboard')" arrow />
                                         <button type="submit" class="btn btn-unibs text-white fw-bold px-4 py-2 rounded-3 shadow-sm">
                                             Visualizza Calendario <i class="bi bi-arrow-right ms-1"></i>
                                         </button>

@@ -17,37 +17,39 @@
                 <p class="text-muted small m-0 mt-1">Elenco e gestione dei docenti assegnati agli insegnamenti dei vari corsi</p>
             </x-page-header>
 
-            <!-- SCHEDA FILTRI FACOLTATIVI -->
-            <div class="card shadow-sm border-0 rounded-3 mb-4 bg-white">
+            <!-- SCHEDA FILTRI ISTANTANEI -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
                 <div class="card-body p-3">
-                    <form action="{{ route('admin.personale.associazioni_index') }}" method="GET" class="row g-3 align-items-end">
+                    <div class="row g-2 align-items-end">
                         
+                        <!-- Etichetta Filtra -->
+                        <div class="col-12 col-md-auto fw-bold text-unibs d-flex align-items-center pb-1">
+                            <i class="bi bi-funnel-fill"></i>
+                        </div>
+
                         <!-- 1. Filtro Corso -->
-                        <div class="col-12 col-md-3">
+                        <div class="col-12 col-md">
                             <label for="filtro_corso_id" class="form-label fw-bold text-dark small mb-1">Corso di Laurea:</label>
-                            <select name="corso_id" id="filtro_corso_id" class="form-select form-select-sm shadow-sm">
-                                <option value="">-- Tutti i corsi --</option>
+                            <select id="filtro_corso_id" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                <option value="">-- Tutti i Corsi --</option>
                                 @foreach($corsi as $corso)
-                                    <option value="{{ $corso->corso_id }}" {{ request('corso_id') == $corso->corso_id ? 'selected' : '' }}>
-                                        {{ $corso->nome }} ({{ $corso->tipo_corso }})
+                                    <option value="{{ $corso->corso_id }}">
+                                        {{ $corso->nome }} - {{ $corso->tipo_corso }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- 2. Filtro Insegnamento -->
-                        <div class="col-12 col-md-3">
+                        <!-- 2. Filtro Insegnamento (dipende dal corso scelto) -->
+                        <div class="col-12 col-md">
                             <label for="filtro_ins_corso_id" class="form-label fw-bold text-dark small mb-1">Insegnamento:</label>
-                            <select name="ins_corso_id" 
-                                    id="filtro_ins_corso_id" 
-                                    class="form-select form-select-sm shadow-sm"
-                                    data-initial-value="{{ request('ins_corso_id') }}"
-                                    {{ request('corso_id') ? '' : 'disabled' }}>
-                                <option value="">-- {{ request('corso_id') ? 'Tutti gli insegnamenti del corso' : 'Seleziona prima un Corso' }} --</option>
+                            <select id="filtro_ins_corso_id" 
+                                    class="form-select form-select-sm shadow-sm border-unibs select-filtro"
+                                    disabled>
+                                <option value="">-- Seleziona prima un Corso --</option>
                                 @foreach($insegnamentiCorso as $insCorso)
                                     <option value="{{ $insCorso->ins_corso_id }}" 
-                                            data-corso-id="{{ $insCorso->corso_id }}"
-                                            {{ request('ins_corso_id') == $insCorso->ins_corso_id ? 'selected' : '' }}>
+                                            data-corso-id="{{ $insCorso->corso_id }}">
                                         {{ $insCorso->insegnamento->nome ?? 'N/D' }}
                                     </option>
                                 @endforeach
@@ -55,43 +57,42 @@
                         </div>
 
                         <!-- 3. Filtro Docente -->
-                        <div class="col-12 col-md-3">
+                        <div class="col-12 col-md">
                             <label for="filtro_docente_id" class="form-label fw-bold text-dark small mb-1">Docente:</label>
-                            <select name="docente_id" id="filtro_docente_id" class="form-select form-select-sm shadow-sm">
-                                <option value="">-- Tutti i docenti --</option>
+                            <select id="filtro_docente_id" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                <option value="">-- Tutti i Docenti --</option>
                                 @foreach($docenti as $docente)
-                                    <option value="{{ $docente->utente_id }}" {{ request('docente_id') == $docente->utente_id ? 'selected' : '' }}>
+                                    <option value="{{ $docente->utente_id }}">
                                         {{ $docente->cognome }} {{ $docente->nome }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
 
-                        <!-- 4. Pulsanti Filtra / Resetta -->
-                        <div class="col-12 col-md-3 d-flex gap-2">
-                            <button type="submit" class="btn btn-unibs btn-sm text-white fw-bold w-100 shadow-sm rounded-2">
-                                <i class="bi bi-funnel-fill me-1"></i> Filtra
+                        <!-- 4. Pulsante Reset -->
+                        <div class="col-12 col-md-auto d-grid">
+                            <button type="button" id="btnResetFiltriAssociazioni" class="btn btn-outline-unibs btn-sm fw-bold shadow-sm rounded-2 px-3" title="Reset filtri">
+                                <i class="bi bi-x-circle"></i>
                             </button>
-                            @if(request()->hasAny(['corso_id', 'ins_corso_id', 'docente_id']))
-                                <a href="{{ route('admin.personale.associazioni_index') }}" class="btn btn-outline-secondary btn-sm fw-bold shadow-sm rounded-2">
-                                    <i class="bi bi-x-circle me-1"></i> Reset
-                                </a>
-                            @endif
                         </div>
 
-                    </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avviso dinamico nessun risultato -->
+            <div id="noAssociazioniMatchFilter" class="card shadow-sm border-0 rounded-3 mb-4 d-none bg-white">
+                <div class="card-body text-center text-muted py-5 fs-6">
+                    <i class="bi bi-people fs-3 d-block mb-2 text-secondary"></i>
+                    Nessuna associazione trovata con i filtri selezionati.
                 </div>
             </div>
 
             <!-- Pulsante Aggiungi Associazione -->
-            <div class="mb-4">
-                <a href="{{ route('admin.personale.associa') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                    <i class="bi bi-person-plus-fill me-2 fs-5"></i>Aggiungi Associazione
-                </a>
-            </div>
+            <x-add-button :href="route('admin.personale.associa')" icon="person-plus-fill">Aggiungi Associazione</x-add-button>
 
             <!-- Tabella Associazioni Raggruppate per Corso -->
-            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+            <div id="tabellaAssociazioniCard" class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-white border-bottom">
@@ -106,8 +107,11 @@
                         <tbody>
                             @if($associazioniGrouped->isNotEmpty())
                                 @foreach($associazioniGrouped as $corsoNome => $associazioni)
+                                    @php
+                                        $corsoIdGruppo = $associazioni->first()->insegnamentiCorso->corso_id ?? '';
+                                    @endphp
                                     <!-- Intestazione Gruppo Corso -->
-                                    <tr class="table-light">
+                                    <tr class="table-light gruppo-corso-header" data-corso-id="{{ $corsoIdGruppo }}">
                                         <td colspan="5" class="py-2 px-4 fw-bold text-unibs border-top border-bottom">
                                             <i class="bi bi-journal-bookmark-fill me-2"></i>{{ $corsoNome }}
                                         </td>
@@ -115,7 +119,10 @@
 
                                     <!-- Righe Associazioni del Corso -->
                                     @foreach($associazioni as $assoc)
-                                        <tr>
+                                        <tr class="riga-associazione"
+                                            data-corso-id="{{ $assoc->insegnamentiCorso->corso_id ?? '' }}"
+                                            data-ins-corso-id="{{ $assoc->ins_corso_id }}"
+                                            data-docente-id="{{ $assoc->utente_id }}">
                                             <!-- Docente (Cognome e Nome) -->
                                             <td class="py-3 px-4 fw-bold text-dark">
                                                 {{ $assoc->docente->cognome ?? '' }} {{ $assoc->docente->nome ?? 'N/D' }}
@@ -152,12 +159,7 @@
                                     @endforeach
                                 @endforeach
                             @else
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-5 fs-6">
-                                        <i class="bi bi-people fs-3 d-block mb-2 text-secondary"></i>
-                                        Nessuna associazione trovata con i filtri selezionati.
-                                    </td>
-                                </tr>
+                                <x-empty-state colspan="5" icon="people">Nessuna associazione trovata con i filtri selezionati.</x-empty-state>
                             @endif
                         </tbody>
                     </table>
@@ -167,7 +169,7 @@
         </div>
 
         <!-- Script Filtri Dinamici e Modal di Conferma Eliminazione Personalizzato -->
-        <script src="{{ asset('js/filtriAssociazioni.js') }}"></script>
+        <script src="{{ asset('js/filtriAssociazioni.js') }}?v={{ filemtime(public_path('js/filtriAssociazioni.js')) }}"></script>
         <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>

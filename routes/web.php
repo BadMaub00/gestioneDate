@@ -102,10 +102,8 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::post('/personale/associa', [AssociazioneDocenteController::class, 'store'])->name('admin.personale.storeAssocia');
     Route::delete('/personale/associazioni/{id}', [AssociazioneDocenteController::class, 'destroy'])->name('admin.personale.destroyAssocia');
 
-    // Calendario generale appelli
-    Route::get('/calendario', [CalendarioAdminController::class, 'index'])->name('admin.calendario');
-
-    // Appelli lato Admin (modifica/eliminazione)
+    // Appelli lato Admin (calendario generale, modifica/eliminazione)
+    Route::get('/appelli/calendario', [CalendarioAdminController::class, 'index'])->name('admin.appelli.calendario');
     Route::get('/appelli/{id}/modifica', [AppelloAdminController::class, 'edit'])->name('admin.appelli.edit');
     Route::put('/appelli/{id}', [AppelloAdminController::class, 'update'])->name('admin.appelli.update');
     Route::delete('/appelli/{id}', [AppelloAdminController::class, 'destroy'])->name('admin.appelli.destroy');

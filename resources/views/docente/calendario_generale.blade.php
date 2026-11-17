@@ -22,9 +22,7 @@
                         </p>
                     </div>
 
-                    <a href="{{ route('docente.selezionaFiltriGenerale') }}" class="btn btn-outline-unibs fw-bold rounded-3 shadow-sm px-3 py-2">
-                        <i class="bi bi-arrow-left me-1"></i> Cambia Filtri
-                    </a>
+                    <x-back-button :href="route('docente.selezionaFiltriGenerale')" label="Cambia Filtri" outline />
                 </div>
 
                 <div class="mb-3 d-flex align-items-center gap-3 fs-7">
@@ -135,12 +133,7 @@
                                                     </td>
                                                 </tr>
                                             @empty
-                                                <tr>
-                                                    <td colspan="3" class="text-center py-5 text-muted fw-bold">
-                                                        <i class="bi bi-info-circle fs-3 d-block mb-2 text-secondary"></i>
-                                                        Nessun appello trovato.
-                                                    </td>
-                                                </tr>
+                                                <x-empty-state colspan="3" icon="info-circle">Nessun appello trovato.</x-empty-state>
                                             @endforelse
                                         </tbody>
                                     </table>

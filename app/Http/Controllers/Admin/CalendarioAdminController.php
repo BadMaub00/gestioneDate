@@ -31,6 +31,6 @@ class CalendarioAdminController extends Controller
         $corsi = Corso::orderBy('nome', 'asc')->get();
         $appelliGrouped = $this->calendario->appelliRaggruppati($sessione_id, $corso_id, $anno_di_corso);
 
-        return view('admin.calendario', compact('appelliGrouped', 'sessioni', 'corsi', 'sessione_id', 'corso_id', 'anno_di_corso'));
+        return view('admin.appelli.calendario', compact('appelliGrouped', 'sessioni', 'corsi', 'sessione_id', 'corso_id', 'anno_di_corso'));
     }
 }

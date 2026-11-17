@@ -68,11 +68,7 @@
                                     </select>
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-unibs text-white fw-bold py-2 rounded-pill shadow-sm">
-                                        <i class="bi bi-check-circle me-1"></i>Salva Associazione
-                                    </button>
-                                </div>
+                                <x-submit-button icon="check-circle">Salva Associazione</x-submit-button>
                             </form>
 
                         </div>

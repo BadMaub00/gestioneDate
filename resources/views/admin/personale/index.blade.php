@@ -14,29 +14,79 @@
             <x-flash-messages />
 
             <!-- Titolo, Sottotitolo e Pulsante Torna alla Dashboard -->
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <div>
-                    <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                        <i class="bi bi-people-fill me-2"></i>Personale Universitario
-                    </h1>
-                    <p class="text-muted small mb-0 mt-1">Elenco e gestione degli utenti registrati nel sistema</p>
-                </div>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase">
-                    <i class="bi bi-arrow-left me-2"></i>TORNA ALLA DASHBOARD
-                </a>
-            </div>
+            <x-page-header icon="people-fill" titolo="Personale Universitario" :back-href="route('admin.dashboard')" back-label="Torna alla Dashboard" upper>
+                <p class="text-muted small mb-0 mt-1">Elenco e gestione degli utenti registrati nel sistema</p>
+            </x-page-header>
 
-            <hr class="border-unibs border-2 opacity-100 mb-4">
+            <!-- SCHEDA FILTRI ISTANTANEI -->
+            @if($personale->isNotEmpty())
+                <div class="card border-0 shadow-sm rounded-3 mb-4 bg-white">
+                    <div class="card-body p-3">
+                        <div class="row g-2 align-items-end">
+
+                            <!-- Etichetta Filtra -->
+                            <div class="col-12 col-md-auto fw-bold text-unibs d-flex align-items-center pb-1">
+                                <i class="bi bi-funnel-fill"></i>
+                            </div>
+
+                            <!-- 1. Filtro Ruolo -->
+                            <div class="col-12 col-md">
+                                <label for="filtro_ruolo" class="form-label fw-bold text-dark small mb-1">Ruolo:</label>
+                                <select id="filtro_ruolo" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                    <option value="">-- Tutti i Ruoli --</option>
+                                    @foreach($personale->pluck('ruolo')->unique()->sort() as $ruolo)
+                                        <option value="{{ $ruolo }}">{{ $ruolo }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- 2. Filtro Cognome -->
+                            <div class="col-12 col-md">
+                                <label for="filtro_cognome" class="form-label fw-bold text-dark small mb-1">Cognome:</label>
+                                <select id="filtro_cognome" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                    <option value="">-- Tutti i Cognomi --</option>
+                                    @foreach($personale->pluck('cognome')->unique()->sort() as $cognome)
+                                        <option value="{{ $cognome }}">{{ $cognome }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- 3. Filtro Nome -->
+                            <div class="col-12 col-md">
+                                <label for="filtro_nome" class="form-label fw-bold text-dark small mb-1">Nome:</label>
+                                <select id="filtro_nome" class="form-select form-select-sm shadow-sm border-unibs select-filtro">
+                                    <option value="">-- Tutti i Nomi --</option>
+                                    @foreach($personale->pluck('nome')->unique()->sort() as $nome)
+                                        <option value="{{ $nome }}">{{ $nome }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- 4. Pulsante Reset -->
+                            <div class="col-12 col-md-auto d-grid">
+                                <button type="button" id="btnResetFiltriPersonale" class="btn btn-outline-unibs btn-sm fw-bold shadow-sm rounded-2 px-3" title="Reset filtri">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Avviso dinamico nessun risultato -->
+                <div id="noPersonaleMatchFilter" class="card shadow-sm border-0 rounded-3 mb-4 d-none bg-white">
+                    <div class="card-body text-center text-muted py-5 fs-6">
+                        <i class="bi bi-people fs-3 d-block mb-2 text-secondary"></i>
+                        Nessun utente trovato con i filtri selezionati.
+                    </div>
+                </div>
+            @endif
 
             <!-- Blocco Strutturale Aggiungi Personale -->
-            <div class="mb-4">
-                <a href="{{ route('admin.personale.create') }}" class="btn btn-unibs text-white fw-bold w-100 py-3 rounded-3 shadow-sm d-flex align-items-center justify-content-center text-uppercase fs-6">
-                    <i class="bi bi-person-plus-fill me-2 fs-5"></i> AGGIUNGI PERSONALE
-                </a>
-            </div>
+            <x-add-button :href="route('admin.personale.create')" icon="person-plus-fill" upper large>Aggiungi Personale</x-add-button>
 
             <!-- Tabella Personale (Omologata) -->
-            <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+            <div id="tabellaPersonaleCard" class="card shadow-sm border-0 rounded-3 overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped align-middle mb-0">
                         <thead class="bg-white border-bottom">
@@ -49,7 +99,7 @@
                         </thead>
                         <tbody>
                             @forelse($personale as $p)
-                                <tr>
+                                <tr class="riga-personale" data-ruolo="{{ $p->ruolo }}" data-cognome="{{ $p->cognome }}" data-nome="{{ $p->nome }}">
                                     <td class="py-3 px-4 fw-semibold text-dark">{{ $p->cognome }}</td>
                                     <td class="py-3 px-4 fw-semibold text-dark">{{ $p->nome }}</td>
                                     <td class="py-3 px-4 text-center">
@@ -60,9 +110,7 @@
                                     <td class="py-3 px-4 text-center text-nowrap">
                                         <div class="d-flex justify-content-center gap-2">
                                             <!-- Pulsante Circolare Modifica -->
-                                            <a href="{{ route('admin.personale.edit', $p->utente_id) }}" class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Modifica Utente">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
+                                            <x-edit-button :href="route('admin.personale.edit', $p->utente_id)" title="Modifica Utente" />
 
                                             <!-- Pulsante Circolare Elimina con Modal Personalizzato -->
                                             <x-delete-form :action="route('admin.personale.destroy', $p->utente_id)" title="Elimina Utente">
@@ -72,12 +120,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted py-5 fs-6">
-                                        <i class="bi bi-inbox fs-3 d-block mb-2 text-secondary"></i>
-                                        Nessun utente presente nel sistema.
-                                    </td>
-                                </tr>
+                                <x-empty-state colspan="4" icon="inbox">Nessun utente presente nel sistema.</x-empty-state>
                             @endforelse
                         </tbody>
                     </table>
@@ -86,7 +129,8 @@
 
         </div>
 
-        <!-- Script Modal di Conferma Eliminazione Personalizzato -->
+        <!-- Script Filtri Dinamici e Modal di Conferma Eliminazione Personalizzato -->
+        <script src="{{ asset('js/filtriPersonale.js') }}?v={{ filemtime(public_path('js/filtriPersonale.js')) }}"></script>
         <script src="{{ asset('js/confirmDelete.js') }}"></script>
 
     </body>

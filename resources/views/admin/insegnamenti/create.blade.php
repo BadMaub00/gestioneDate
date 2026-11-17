@@ -26,11 +26,7 @@
                                     <input type="text" name="nome" id="nome" class="form-control" placeholder="es. Programmazione Web" required>
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-unibs text-white fw-bold py-2 rounded-pill shadow-sm">
-                                        <i class="bi bi-plus-circle me-1"></i>Salva Insegnamento
-                                    </button>
-                                </div>
+                                <x-submit-button icon="plus-circle">Salva Insegnamento</x-submit-button>
                             </form>
 
                         </div>

@@ -18,11 +18,7 @@
             <x-page-header icon="building" titolo="Seleziona un Edificio" :back-href="route('admin.dashboard')" back-label="Torna alla Dashboard" />
 
             <!-- Pulsante Aggiungi Edificio -->
-            <div class="mb-4">
-                <a href="{{ route('admin.sedi.createEdificio') }}" class="btn btn-unibs text-white fw-bold w-100 py-2.5 rounded-3 shadow-sm d-flex align-items-center justify-content-center">
-                    <i class="bi bi-plus-circle-fill me-2 fs-5"></i>Aggiungi Edificio
-                </a>
-            </div>
+            <x-add-button :href="route('admin.sedi.createEdificio')">Aggiungi Edificio</x-add-button>
 
             <!-- Griglia degli Edifici -->
             <div class="row g-4">
@@ -37,12 +33,7 @@
                                         
                                         <div class="d-flex align-items-center gap-2 flex-shrink-0">
                                             <!-- Tasto Modifica -->
-                                            <a href="{{ route('admin.sedi.editEdificio', $edificio->edificio_id) }}" 
-                                               class="btn bg-white border border-unibs text-unibs rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center" 
-                                               style="width: 36px; height: 36px;" 
-                                               title="Modifica Edificio">
-                                                <i class="bi bi-pencil-fill"></i>
-                                            </a>
+                                            <x-edit-button :href="route('admin.sedi.editEdificio', $edificio->edificio_id)" title="Modifica Edificio" />
 
                                             <!-- Tasto Elimina -->
                                             <x-delete-form :action="route('admin.sedi.destroyEdificio', $edificio->edificio_id)" title="Elimina Edificio">
@@ -64,9 +55,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="col-12 text-center py-5">
-                        <p class="text-muted fs-5">Nessun edificio presente nel sistema.</p>
-                    </div>
+                    <x-empty-state>Nessun edificio presente nel sistema.</x-empty-state>
                 @endforelse
             </div>
         </div>

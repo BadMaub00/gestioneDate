@@ -77,10 +77,12 @@ class DocenteInsegnamento extends Model
             ->get()
             ->sortBy([
                 fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->nome ?? '', $b->insegnamentiCorso->corso->nome ?? ''),
+                fn ($a, $b) => strcmp($a->insegnamentiCorso->corso->tipo_corso ?? '', $b->insegnamentiCorso->corso->tipo_corso ?? ''),
                 fn ($a, $b) => strcmp($a->docente->cognome ?? '', $b->docente->cognome ?? ''),
                 fn ($a, $b) => strcmp($a->docente->nome ?? '', $b->docente->nome ?? ''),
             ])
-            ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso->nome ?? 'N/D')
+            // Raggruppa per corso (nome + tipo): corsi omonimi di tipo diverso restano separati
+            ->groupBy(fn ($assoc) => $assoc->insegnamentiCorso->corso?->etichetta() ?? 'N/D')
             ->sortKeys();
     }
 

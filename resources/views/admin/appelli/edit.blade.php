@@ -12,7 +12,7 @@
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-7">
 
-                    <x-page-header icon="pencil-square" titolo="Modifica Appello d'Esame" :back-href="route('admin.calendario', ['sessione_id' => $appello->sessione_id, 'corso_id' => $appello->insegnamentoCorso->corso_id ?? null])" back-label="Torna Indietro" />
+                    <x-page-header icon="pencil-square" titolo="Modifica Appello d'Esame" :back-href="route('admin.appelli.calendario', ['sessione_id' => $appello->sessione_id, 'corso_id' => $appello->insegnamentoCorso->corso_id ?? null])" back-label="Torna Indietro" />
 
                     <div class="card shadow-sm border-0 rounded-3">
                         <div class="card-body p-4">
@@ -112,11 +112,7 @@
                                     @enderror
                                 </div>
 
-                                <div class="d-grid">
-                                    <button type="submit" class="btn btn-unibs text-white fw-bold py-2 rounded-pill shadow-sm">
-                                        <i class="bi bi-check-circle me-1"></i>Salva Modifiche
-                                    </button>
-                                </div>
+                                <x-submit-button icon="check-circle">Salva Modifiche</x-submit-button>
                             </form>
 
                         </div>

@@ -11,19 +11,9 @@
         <div class="container py-3">
             
             <!-- Header della Pagina con Pulsante Pill Torna all'Elenco -->
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <div>
-                    <h1 class="h3 fw-bold text-unibs m-0 d-flex align-items-center">
-                        <i class="bi bi-person-plus-fill me-2"></i>Aggiungi Personale
-                    </h1>
-                    <p class="text-muted small mb-0 mt-1">Inserisci un nuovo docente o amministratore nel sistema</p>
-                </div>
-                <a href="{{ route('admin.personale.index') }}" class="btn btn-unibs text-white fw-bold btn-sm rounded-pill px-3 py-2 shadow-sm d-inline-flex align-items-center text-uppercase">
-                    <i class="bi bi-arrow-left me-2"></i>TORNA ALL'ELENCO
-                </a>
-            </div>
-
-            <hr class="border-unibs border-2 opacity-100 mb-4">
+            <x-page-header icon="person-plus-fill" titolo="Aggiungi Personale" :back-href="route('admin.personale.index')" back-label="Torna all'Elenco" upper>
+                <p class="text-muted small mb-0 mt-1">Inserisci un nuovo docente o amministratore nel sistema</p>
+            </x-page-header>
 
             <div class="row justify-content-center">
                 <div class="col-12 col-md-8 col-lg-6">
