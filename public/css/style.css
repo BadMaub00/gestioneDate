@@ -79,12 +79,18 @@ body.bg-dashboard {
 }
 
 .btn-change,
-.btn-delete {
+.btn-delete,
+.btn-view,
+.btn-appelli,
+.btn-calendario {
     transition: filter 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-change:hover,
-.btn-delete:hover {
+.btn-delete:hover,
+.btn-view:hover,
+.btn-appelli:hover,
+.btn-calendario:hover {
     filter: brightness(0.90); /* Riduce la luminosità al 90% (scurisce leggermente) */
 }
 

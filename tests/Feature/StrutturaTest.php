@@ -24,10 +24,10 @@ class StrutturaTest extends BaseDati
     {
         $this->appello($this->insA);
 
-        $this->actingAs($this->admin)->get(route('admin.calendario'))->assertOk();
-        $this->actingAs($this->admin)->get(route('admin.calendario', ['sessione_id' => $this->sessione->sessione_id]))->assertOk();
-        $this->actingAs($this->admin)->get(route('admin.calendario', ['sessione_id' => $this->sessione->sessione_id, 'corso_id' => 2, 'anno_di_corso' => 1]))->assertOk();
-        $this->actingAs($this->admin)->get(route('admin.calendario', ['sessione_id' => 9999]))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.appelli.calendario'))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.appelli.calendario', ['sessione_id' => $this->sessione->sessione_id]))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.appelli.calendario', ['sessione_id' => $this->sessione->sessione_id, 'corso_id' => 2, 'anno_di_corso' => 1]))->assertOk();
+        $this->actingAs($this->admin)->get(route('admin.appelli.calendario', ['sessione_id' => 9999]))->assertOk();
     }
 
     public function test_calendari_docente_personale_e_generale_con_visibilita_differenziata(): void

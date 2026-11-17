@@ -23,7 +23,7 @@ class PianoDiStudiController extends Controller
     public function create($corso_id)
     {
         $corso = Corso::findOrFail($corso_id);
-        $insegnamenti = Insegnamento::all();
+        $insegnamenti = Insegnamento::orderBy('nome', 'asc')->get();
 
         return view('admin.corsi.createInsCorso', compact('corso', 'insegnamenti'));
     }
