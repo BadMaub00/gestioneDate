@@ -29,4 +29,12 @@ document.addEventListener('DOMContentLoaded', function () {
             insegnamentoSelect.disabled = true;
         }
     });
+
+    // Dopo un errore di validazione il form viene ricaricato: ripristina corso e insegnamento scelti
+    if (corsoSelect.value) {
+        corsoSelect.dispatchEvent(new Event('change'));
+        if (insegnamentoSelect.dataset.selected) {
+            insegnamentoSelect.value = insegnamentoSelect.dataset.selected;
+        }
+    }
 });

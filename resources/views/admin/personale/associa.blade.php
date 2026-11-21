@@ -14,6 +14,8 @@
 
                     <x-page-header icon="person-plus-fill" titolo="Associa Docente a Insegnamento" :back-href="route('admin.personale.associazioni_index')" back-label="Torna Indietro" />
 
+                    <x-validation-errors />
+
                     <div class="card shadow-sm border-0 rounded-3">
                         <div class="card-body p-4">
 
@@ -26,7 +28,7 @@
                                     <select name="corso_id" id="corso_id" class="form-select" required>
                                         <option value="" disabled selected>-- Seleziona un corso --</option>
                                         @foreach($corsi as $c)
-                                            <option value="{{ $c->corso_id }}">
+                                            <option value="{{ $c->corso_id }}" @selected(old('corso_id') == $c->corso_id)>
                                                 {{ $c->nome }} ({{ $c->tipo_corso }})
                                             </option>
                                         @endforeach
@@ -36,7 +38,7 @@
                                 <!-- 2. Seleziona Insegnamento (Disabilitato inizialmente) -->
                                 <div class="mb-3">
                                     <label for="ins_corso_id" class="form-label fw-bold">Insegnamento <span class="text-danger">*</span></label>
-                                    <select name="ins_corso_id" id="ins_corso_id" class="form-select" required disabled>
+                                    <select name="ins_corso_id" id="ins_corso_id" class="form-select" required disabled data-selected="{{ old('ins_corso_id') }}">
                                         <option value="" disabled selected>-- Seleziona prima un corso --</option>
                                         @foreach($insegnamentiCorso as $ic)
                                             <option value="{{ $ic->ins_corso_id }}" data-corso-id="{{ $ic->corso_id }}">
@@ -52,7 +54,7 @@
                                     <select name="utente_id" id="utente_id" class="form-select" required>
                                         <option value="" disabled selected>-- Seleziona un docente --</option>
                                         @foreach($docenti as $d)
-                                            <option value="{{ $d->utente_id }}">
+                                            <option value="{{ $d->utente_id }}" @selected(old('utente_id') == $d->utente_id)>
                                                 {{ $d->cognome }} {{ $d->nome }}
                                             </option>
                                         @endforeach
@@ -63,8 +65,8 @@
                                 <div class="mb-4">
                                     <label for="ruolo" class="form-label fw-bold">Ruolo <span class="text-danger">*</span></label>
                                     <select name="ruolo" id="ruolo" class="form-select" required>
-                                        <option value="Primario">Primario</option>
-                                        <option value="Secondario">Secondario</option>
+                                        <option value="Primario" @selected(old('ruolo') === 'Primario')>Primario</option>
+                                        <option value="Secondario" @selected(old('ruolo') === 'Secondario')>Secondario</option>
                                     </select>
                                 </div>
 

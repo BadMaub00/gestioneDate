@@ -206,16 +206,16 @@ class SessioniPerCorsoTest extends BaseDati
         Appello::create($this->payload(['ins_corso_id' => $this->insC, 'aula_id' => $this->aula2]));
 
         // solo corso -> solo appelli di quel corso
-        $r = $this->actingAs($this->admin)->get('/admin/calendario?corso_id=2')->assertOk();
+        $r = $this->actingAs($this->admin)->get('/admin/appelli/calendario?corso_id=2')->assertOk();
         $this->assertSame([$this->sessione2->sessione_id], $r->viewData('appelliGrouped')->keys()->map(fn ($k) => (int) $k)->all());
 
         // sessione senza corso -> il corso viene ricavato dalla sessione
-        $r = $this->actingAs($this->admin)->get('/admin/calendario?sessione_id=' . $this->sessione->sessione_id)->assertOk();
+        $r = $this->actingAs($this->admin)->get('/admin/appelli/calendario?sessione_id=' . $this->sessione->sessione_id)->assertOk();
         $this->assertSame(1, (int) $r->viewData('corso_id'));
         $this->assertSame([$this->sessione->sessione_id], $r->viewData('appelliGrouped')->keys()->map(fn ($k) => (int) $k)->all());
 
         // sessione di un altro corso -> la sessione è ignorata e vale il corso
-        $r = $this->actingAs($this->admin)->get('/admin/calendario?corso_id=1&sessione_id=' . $this->sessione2->sessione_id)->assertOk();
+        $r = $this->actingAs($this->admin)->get('/admin/appelli/calendario?corso_id=1&sessione_id=' . $this->sessione2->sessione_id)->assertOk();
         $this->assertNull($r->viewData('sessione_id'));
         $this->assertSame([$this->sessione->sessione_id], $r->viewData('appelliGrouped')->keys()->map(fn ($k) => (int) $k)->all());
 
