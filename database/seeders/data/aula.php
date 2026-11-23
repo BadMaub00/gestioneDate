@@ -1,0 +1,33 @@
+<?php
+
+// Dati estratti da SQL/coordinamento_date_esame.sql, tabella `aula` (28 righe).
+return [
+    ['aula_id' => 1, 'nome' => 'MTB2', 'edificio_id' => 2, 'capienza' => 120],
+    ['aula_id' => 2, 'nome' => 'MTB3', 'edificio_id' => 2, 'capienza' => 80],
+    ['aula_id' => 3, 'nome' => 'MTB4', 'edificio_id' => 2, 'capienza' => 150],
+    ['aula_id' => 4, 'nome' => 'Aula Magna Ingegneria', 'edificio_id' => 2, 'capienza' => 250],
+    ['aula_id' => 5, 'nome' => 'Lab N1', 'edificio_id' => 3, 'capienza' => 50],
+    ['aula_id' => 6, 'nome' => 'Lab N2', 'edificio_id' => 3, 'capienza' => 45],
+    ['aula_id' => 7, 'nome' => 'Lab Informatica 1', 'edificio_id' => 3, 'capienza' => 60],
+    ['aula_id' => 8, 'nome' => 'Aula A', 'edificio_id' => 4, 'capienza' => 200],
+    ['aula_id' => 9, 'nome' => 'Aula B', 'edificio_id' => 4, 'capienza' => 180],
+    ['aula_id' => 10, 'nome' => 'Aula C', 'edificio_id' => 4, 'capienza' => 120],
+    ['aula_id' => 11, 'nome' => 'Aula Magna Medicina', 'edificio_id' => 4, 'capienza' => 300],
+    ['aula_id' => 12, 'nome' => 'Aula B1', 'edificio_id' => 5, 'capienza' => 140],
+    ['aula_id' => 13, 'nome' => 'Aula B2', 'edificio_id' => 5, 'capienza' => 110],
+    ['aula_id' => 14, 'nome' => 'Aula B3', 'edificio_id' => 5, 'capienza' => 90],
+    ['aula_id' => 15, 'nome' => 'Aula Calini 1', 'edificio_id' => 6, 'capienza' => 130],
+    ['aula_id' => 16, 'nome' => 'Aula Calini 2', 'edificio_id' => 6, 'capienza' => 85],
+    ['aula_id' => 17, 'nome' => 'Aula Magna Giurisprudenza', 'edificio_id' => 6, 'capienza' => 220],
+    ['aula_id' => 18, 'nome' => 'Valotti 1', 'edificio_id' => 7, 'capienza' => 75],
+    ['aula_id' => 19, 'nome' => 'Valotti 2', 'edificio_id' => 7, 'capienza' => 75],
+    ['aula_id' => 20, 'nome' => 'Valotti 3', 'edificio_id' => 7, 'capienza' => 100],
+    ['aula_id' => 21, 'nome' => 'Santa Chiara A1', 'edificio_id' => 8, 'capienza' => 60],
+    ['aula_id' => 22, 'nome' => 'Santa Chiara A2', 'edificio_id' => 8, 'capienza' => 50],
+    ['aula_id' => 23, 'nome' => 'Brixia 1', 'edificio_id' => 9, 'capienza' => 95],
+    ['aula_id' => 24, 'nome' => 'Brixia 2', 'edificio_id' => 9, 'capienza' => 90],
+    ['aula_id' => 25, 'nome' => 'Lab Chimica', 'edificio_id' => 10, 'capienza' => 35],
+    ['aula_id' => 26, 'nome' => 'Lab Fisica', 'edificio_id' => 10, 'capienza' => 40],
+    ['aula_id' => 27, 'nome' => 'Aula Spec 1', 'edificio_id' => 11, 'capienza' => 50],
+    ['aula_id' => 28, 'nome' => 'Aula Spec 2', 'edificio_id' => 11, 'capienza' => 40],
+];
